@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicações — Pedro Martins · AI Governance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:      #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --navy:      #1a2d3d;
+      --cream:     #f5f3ee;
+      --muted:     #5a6a78;
+      --card-bg:   #ffffff;
+      --border:    rgba(26,45,61,0.08);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245, 243, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.95rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--teal); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 7rem 4vw 3.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; font-weight: 500;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .page-header .eyebrow::before {
+      content: ''; width: 28px; height: 2px; background: var(--teal);
+    }
+    .page-header h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: clamp(2.6rem, 5vw, 4rem);
+      text-transform: uppercase; line-height: 0.95;
+      letter-spacing: -0.01em; color: var(--navy);
+    }
+    .page-header h1 em {
+      font-style: normal; color: var(--teal);
+    }
+    .page-header p {
+      margin-top: 1rem;
+      font-size: 0.97rem; line-height: 1.7;
+      color: var(--muted); max-width: 52ch; font-weight: 300;
+    }
+
+    /* ── GRID ── */
+    .posts-section {
+      padding: 3.5rem 4vw 5rem;
+    }
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.75rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(26,45,61,0.10);
+      transform: translateY(-3px);
+    }
+    .card-img {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover; display: block;
+      background: linear-gradient(135deg, #dff0ec 0%, #b2d8cf 100%);
+    }
+    .card-img-placeholder {
+      width: 100%; aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #dff0ec 0%, #b2d8cf 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-img-placeholder svg {
+      opacity: 0.35;
+    }
+    .card-body {
+      padding: 1.5rem 1.75rem 1.75rem;
+      display: flex; flex-direction: column; flex: 1;
+    }
+    .card-date {
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--teal);
+      font-weight: 500; margin-bottom: 0.6rem;
+    }
+    .card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1.25rem;
+      line-height: 1.2; color: var(--navy);
+      margin-bottom: 0.85rem;
+      letter-spacing: 0.01em;
+    }
+    .card-excerpt {
+      font-size: 0.88rem; line-height: 1.65;
+      color: var(--muted); font-weight: 300;
+      flex: 1; margin-bottom: 1.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-link {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--teal); text-decoration: none;
+      border-bottom: 1.5px solid transparent;
+      transition: border-color 0.2s;
+      align-self: flex-start;
+    }
+    .card-link:hover { border-color: var(--teal); }
+    .card-link svg { transition: transform 0.2s; }
+    .card-link:hover svg { transform: translateX(3px); }
+
+    /* ── ESTADO VAZIO / ERRO ── */
+    .empty-state {
+      padding: 4rem 0;
+      text-align: center;
+      border: 1px dashed var(--border);
+    }
+    .empty-state-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 1.25rem;
+      color: var(--teal); opacity: 0.5;
+    }
+    .empty-state h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1.4rem;
+      text-transform: uppercase; color: var(--navy);
+      margin-bottom: 0.6rem;
+    }
+    .empty-state p {
+      font-size: 0.9rem; color: var(--muted);
+      font-weight: 300; max-width: 38ch; margin: 0 auto 0.5rem;
+    }
+    .empty-state code {
+      font-size: 0.82rem; background: rgba(26,158,138,0.08);
+      color: var(--teal); padding: 0.15rem 0.45rem;
+      border-radius: 2px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 4vw;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    footer p {
+      font-size: 0.78rem; color: var(--muted); font-weight: 300;
+    }
+    footer a {
+      font-size: 0.78rem; color: var(--teal);
+      text-decoration: none; letter-spacing: 0.06em;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-header { padding: 5.5rem 1.5rem 2.5rem; }
+      .posts-section { padding: 2.5rem 1.5rem 4rem; }
+      .posts-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">Pedro Martins</a>
+    <ul class="nav-links">
+      <li><a href="#">Framework</a></li>
+      <li><a href="#">Serviços</a></li>
+      <li><a href="/publicacoes" class="active">Publicações</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- CABEÇALHO DA PÁGINA -->
+  <header class="page-header">
+    <div class="eyebrow">Perspetiva &amp; Análise</div>
+    <h1>Publi<em>cações</em></h1>
+    <p>Artigos sobre AI Governance, Compliance by Design e a intersecção entre regulação europeia e estratégia organizacional.</p>
+  </header>
+
+  <!-- GRELHA DE ARTIGOS -->
+  <section class="posts-section">
+
+    {% if not wp_configured %}
+    <!-- WP_API_URL não configurado -->
+    <div class="empty-state">
+      <svg class="empty-state-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+      </svg>
+      <h2>WordPress não configurado</h2>
+      <p>Define a variável de ambiente <code>WP_API_URL</code> com o endereço do teu WordPress.</p>
+      <p style="margin-top:0.4rem">Exemplo: <code>https://o-teu-site.railway.app</code></p>
+    </div>
+
+    {% elif posts %}
+    <div class="posts-grid">
+      {% for post in posts %}
+      <article class="card">
+
+        {% if post.featured_img %}
+        <img
+          class="card-img"
+          src="{{ post.featured_img }}"
+          alt="{{ post.title }}"
+          loading="lazy"
+        >
+        {% else %}
+        <div class="card-img-placeholder">
+          <svg width="48" height="48" fill="none" stroke="#1a9e8a" stroke-width="1.2" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="1"/>
+            <path d="M3 15l5-5 4 4 3-3 6 6"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+          </svg>
+        </div>
+        {% endif %}
+
+        <div class="card-body">
+          <div class="card-date">{{ post.date }}</div>
+          <h2 class="card-title">{{ post.title }}</h2>
+          {% if post.excerpt %}
+          <p class="card-excerpt">{{ post.excerpt }}</p>
+          {% endif %}
+          <a href="{{ post.link }}" class="card-link" target="_blank" rel="noopener">
+            Ler artigo
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+        </div>
+
+      </article>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- API configurada mas sem artigos -->
+    <div class="empty-state">
+      <svg class="empty-state-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+      </svg>
+      <h2>Ainda sem publicações</h2>
+      <p>Os artigos publicados no WordPress aparecerão aqui automaticamente.</p>
+    </div>
+    {% endif %}
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Pedro Martins · AI Governance</p>
+    <a href="/">← Voltar ao início</a>
+  </footer>
+
+</body>
+</html>
