@@ -9,6 +9,22 @@ app = Flask(__name__)
 # Exemplo: https://o-teu-site.railway.app
 WP_API_URL = os.environ.get("WP_API_URL", "").rstrip("/")
 
+# URL base do bucket R2 (Cloudflare) para servir imagens
+# Exemplo: https://pub-XXXX.r2.dev  ou  https://media.example.com
+R2_BASE_URL = os.environ.get("R2_BASE_URL", "").rstrip("/")
+
+
+def transform_image_url(url):
+    """Substitui o domínio wp-content/uploads pela URL do bucket R2."""
+    if not url or not R2_BASE_URL:
+        return url
+    if "/wp-content/uploads/" in url:
+        # Extrai o caminho relativo após /wp-content/uploads/
+        # Ex: 2026/05/grounding-cover.png
+        path = url.split("/wp-content/uploads/", 1)[-1]
+        return f"{R2_BASE_URL}/{path}"
+    return url
+
 
 def get_wp_posts(per_page=12):
     """Obtém artigos publicados via WordPress REST API."""
@@ -38,6 +54,9 @@ def get_wp_posts(per_page=12):
             except (KeyError, IndexError, TypeError):
                 pass
 
+            # Aplicar transformação para URL do bucket R2
+            featured_img = transform_image_url(featured_img)
+
             # Excerto — limpar tags HTML residuais
             excerpt_raw = p.get("excerpt", {}).get("rendered", "")
             excerpt = (
@@ -65,7 +84,8 @@ def get_wp_posts(per_page=12):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    posts = get_wp_posts(per_page=3)   # últimos 3 artigos para a homepage
+    return render_template("index.html", posts=posts)
 
 
 @app.route("/publicacoes")
