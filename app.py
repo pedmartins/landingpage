@@ -15,18 +15,15 @@ R2_BASE_URL = os.environ.get("R2_BASE_URL", "").rstrip("/")
 
 
 def transform_image_url(url):
-    """Substitui o domínio wp-content/uploads pela URL do bucket R2.
-    Usa apenas o nome do ficheiro (sem o prefixo de data) porque o R2
-    armazena os ficheiros na raiz do bucket.
-    Ex: .../wp-content/uploads/2026/05/grounding-cover.png
-        → https://pub-XXX.r2.dev/grounding-cover.png
+    """Substitui o domínio do WordPress pelo domínio do bucket R2,
+    mantendo o path completo (o WP Offload Media replica a estrutura).
+    Ex: https://wordpress.../wp-content/uploads/2026/05/grounding-cover.png
+        → https://pub-XXX.r2.dev/wp-content/uploads/2026/05/grounding-cover.png
     """
     if not url or not R2_BASE_URL:
         return url
-    if "/wp-content/uploads/" in url:
-        path = url.split("/wp-content/uploads/", 1)[-1]
-        filename = path.split("/")[-1]   # apenas o nome do ficheiro
-        return f"{R2_BASE_URL}/{filename}"
+    if WP_API_URL and url.startswith(WP_API_URL):
+        return R2_BASE_URL + url[len(WP_API_URL):]
     return url
 
 
