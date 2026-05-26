@@ -37,7 +37,9 @@ def get_wp_posts(per_page=12):
             params={
                 "per_page": per_page,
                 "status": "publish",
-                "_embed": True,          # inclui imagem em destaque e autor
+                # Passa o tipo explícito — "_embed=True" (bool Python)
+                # seria serializado como a string "True" que o WordPress não reconhece.
+                "_embed": "wp:featuredmedia",
             },
             timeout=6,
         )
@@ -46,7 +48,7 @@ def get_wp_posts(per_page=12):
 
         result = []
         for p in posts:
-            # Imagem em destaque
+            # Imagem em destaque — tenta via _embed, fallback via media endpoint
             featured_img = None
             try:
                 featured_img = (
@@ -54,6 +56,18 @@ def get_wp_posts(per_page=12):
                 )
             except (KeyError, IndexError, TypeError):
                 pass
+
+            # Fallback: se _embed não devolveu nada, consulta o media endpoint
+            if not featured_img and p.get("featured_media"):
+                try:
+                    m = requests.get(
+                        f"{WP_API_URL}/wp-json/wp/v2/media/{p['featured_media']}",
+                        timeout=4,
+                    )
+                    if m.status_code == 200:
+                        featured_img = m.json().get("source_url")
+                except Exception:
+                    pass
 
             # Aplicar transformação para URL do bucket R2
             featured_img = transform_image_url(featured_img)
