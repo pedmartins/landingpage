@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conhecer o Framework — AI Governance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:       #1a9e8a;
+      --teal-dark:  #0d6e5f;
+      --navy:       #1a2d3d;
+      --cream:      #f5f3ee;
+      --muted:      #5a6a78;
+
+      --c-unacceptable: #E05555;
+      --c-high:         #C4408C;
+      --c-limited:      #5B3F9E;
+      --c-minimal:      #1a9e8a;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245, 243, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(26,45,61,0.07);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.95rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 3.5rem 4vw 2.5rem;
+      border-bottom: 1px solid rgba(26,45,61,0.08);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; font-weight: 500;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .eyebrow::before {
+      content: ''; width: 28px; height: 2px; background: var(--teal);
+    }
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    .page-title em { font-style: normal; color: var(--teal); }
+    .page-desc {
+      font-size: 0.97rem; line-height: 1.75;
+      color: var(--muted); max-width: 60ch;
+      font-weight: 300;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .framework-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: calc(100vh - 220px);
+    }
+
+    /* ── LEFT: PYRAMID ── */
+    .pyramid-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem 3rem 4vw;
+      position: relative;
+    }
+    .pyramid-col::after {
+      content: '';
+      position: absolute; right: 0; top: 10%; bottom: 10%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(26,45,61,0.12), transparent);
+    }
+
+    .pyramid-wrap {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* SVG pyramid layers */
+    .pyramid-layer {
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+    .pyramid-layer:hover {
+      filter: brightness(1.12);
+    }
+    .pyramid-layer.active {
+      filter: brightness(1.18) drop-shadow(0 0 14px rgba(0,0,0,0.25));
+    }
+    .pyramid-layer:not(.active) {
+      opacity: 0.72;
+    }
+    .pyramid-layer-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      fill: white;
+      pointer-events: none;
+      dominant-baseline: middle;
+      text-anchor: middle;
+    }
+    .pyramid-layer-sub {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      fill: rgba(255,255,255,0.8);
+      pointer-events: none;
+      dominant-baseline: middle;
+      text-anchor: middle;
+    }
+
+    /* ── RIGHT: INFO PANEL ── */
+    .info-col {
+      padding: 3rem 4vw 3rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .info-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .info-panel.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 2px;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+      text-transform: uppercase;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+    }
+
+    .info-lead {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      max-width: 48ch;
+    }
+
+    .info-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-left: 2px solid rgba(26,45,61,0.1);
+      padding-left: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .info-item {
+      padding: 0.6rem 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--navy);
+      border-bottom: 1px solid rgba(26,45,61,0.06);
+    }
+    .info-item:last-child { border-bottom: none; }
+    .info-item strong {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+    .info-item span {
+      font-weight: 300;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    .info-obligation {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.2rem;
+      border-radius: 3px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    /* Default / prompt state */
+    .info-default {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+    .info-default-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(26,45,61,0.3);
+    }
+    .pyramid-hint {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .pyramid-hint-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      color: rgba(26,45,61,0.45);
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 0.3rem 0;
+    }
+    .pyramid-hint-item:hover { color: var(--navy); }
+    .pyramid-hint-dot {
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER NOTE ── */
+    .framework-footer {
+      padding: 2rem 4vw;
+      border-top: 1px solid rgba(26,45,61,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .framework-footer p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .framework-footer a {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal);
+      text-decoration: none;
+      border-bottom: 1.5px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .framework-footer a:hover { border-color: var(--teal); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .framework-layout {
+        grid-template-columns: 1fr;
+      }
+      .pyramid-col {
+        padding: 2rem 1.5rem;
+      }
+      .pyramid-col::after { display: none; }
+      .info-col {
+        padding: 0 1.5rem 3rem;
+      }
+      .page-header {
+        padding: 2.5rem 1.5rem 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">Pedro Martins</a>
+    <ul class="nav-links">
+      <li><a href="/" class="active">Framework</a></li>
+      <li><a href="#">Serviços</a></li>
+      <li><a href="/publicacoes">Publicações</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <div class="page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="eyebrow">EU AI Act — Regulação Europeia</div>
+      <h1 class="page-title">A Pirâmide de <em>Risco</em></h1>
+      <p class="page-desc">
+        O regulamento europeu de Inteligência Artificial classifica os sistemas de IA em quatro níveis de risco. Cada nível implica obrigações distintas para as organizações que desenvolvem ou utilizam IA na União Europeia.
+      </p>
+    </div>
+
+    <!-- MAIN -->
+    <div class="framework-layout">
+
+      <!-- PYRAMID -->
+      <div class="pyramid-col">
+        <div class="pyramid-wrap">
+          <svg id="pyramid-svg" viewBox="-55 0 585 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+
+            <!-- Layer 4: MINIMAL RISK (bottom, widest) -->
+            <g class="pyramid-layer" id="layer-minimal" onclick="selectLayer('minimal')">
+              <polygon points="10,385 490,385 428,295 72,295" fill="#1a9e8a"/>
+              <text class="pyramid-layer-label" x="250" y="336">Risco Mínimo</text>
+              <text class="pyramid-layer-sub" x="250" y="352">Minimal Risk</text>
+            </g>
+
+            <!-- Layer 3: LIMITED RISK -->
+            <g class="pyramid-layer" id="layer-limited" onclick="selectLayer('limited')">
+              <polygon points="72,292 428,292 366,208 134,208" fill="#5B3F9E"/>
+              <text class="pyramid-layer-label" x="250" y="247">Risco Limitado</text>
+              <text class="pyramid-layer-sub" x="250" y="263">Limited Risk</text>
+            </g>
+
+            <!-- Layer 2: HIGH RISK -->
+            <g class="pyramid-layer" id="layer-high" onclick="selectLayer('high')">
+              <polygon points="134,205 366,205 314,123 186,123" fill="#C4408C"/>
+              <text class="pyramid-layer-label" x="250" y="161">Risco Elevado</text>
+              <text class="pyramid-layer-sub" x="250" y="176">High Risk</text>
+            </g>
+
+            <!-- Layer 1: UNACCEPTABLE RISK (top, smallest) -->
+            <g class="pyramid-layer" id="layer-unacceptable" onclick="selectLayer('unacceptable')">
+              <polygon points="186,120 314,120 250,38" fill="#E05555"/>
+              <text class="pyramid-layer-label" x="250" y="90">Inibido</text>
+              <text class="pyramid-layer-sub" x="250" y="106">Unacceptable Risk</text>
+            </g>
+
+            <!-- Divider lines -->
+            <line x1="72" y1="293" x2="428" y2="293" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
+            <line x1="134" y1="206" x2="366" y2="206" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
+            <line x1="186" y1="121" x2="314" y2="121" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
+
+            <!-- Selection indicator: 3 arrows on left side pointing toward pyramid -->
+            <polygon id="indicator-arrow-1" points="-22,330 -8,340 -22,350" fill="#1a9e8a" opacity="1"/>
+            <polygon id="indicator-arrow-2" points="-36,330 -22,340 -36,350" fill="#1a9e8a" opacity="0.55"/>
+            <polygon id="indicator-arrow-3" points="-50,330 -36,340 -50,350" fill="#1a9e8a" opacity="0.25"/>
+
+          </svg>
+        </div>
+      </div>
+
+      <!-- INFO PANEL -->
+      <div class="info-col">
+
+        <!-- Default state -->
+        <div class="info-default" id="panel-default">
+          <div class="info-default-title">Selecione uma camada</div>
+          <div class="pyramid-hint">
+            <div class="pyramid-hint-item" onclick="selectLayer('unacceptable')">
+              <div class="pyramid-hint-dot" style="background:#E05555"></div>
+              Risco Inaceitável — Proibido
+            </div>
+            <div class="pyramid-hint-item" onclick="selectLayer('high')">
+              <div class="pyramid-hint-dot" style="background:#C4408C"></div>
+              Risco Elevado — Obrigações Estritas
+            </div>
+            <div class="pyramid-hint-item" onclick="selectLayer('limited')">
+              <div class="pyramid-hint-dot" style="background:#5B3F9E"></div>
+              Risco Limitado — Transparência
+            </div>
+            <div class="pyramid-hint-item" onclick="selectLayer('minimal')">
+              <div class="pyramid-hint-dot" style="background:#1a9e8a"></div>
+              Risco Mínimo — Livre Utilização
+            </div>
+          </div>
+        </div>
+
+        <!-- MINIMAL RISK panel -->
+        <div class="info-panel" id="panel-minimal">
+          <div class="info-badge" style="background:var(--c-minimal)">Risco Mínimo</div>
+          <h2 class="info-title">Livre Utilização</h2>
+          <p class="info-lead">
+            A grande maioria dos sistemas de IA em uso hoje enquadra-se nesta categoria. O AI Act não impõe obrigações específicas — as organizações podem desenvolvê-los e implementá-los ao abrigo da legislação existente.
+          </p>
+          <div class="info-items">
+            <div class="info-item">
+              <strong>Exemplos</strong>
+              <span>Filtros de spam, recomendações de conteúdo, videojogos com IA, assistentes de escrita, ferramentas criativas, chatbots de suporte simples</span>
+            </div>
+            <div class="info-item">
+              <strong>O que a lei exige</strong>
+              <span>Nenhuma obrigação mandatória. Adoção voluntária de códigos de conduta é encorajada, mas não obrigatória.</span>
+            </div>
+            <div class="info-item">
+              <strong>Impacto organizacional</strong>
+              <span>Baixo. As equipas podem continuar a inovar sem burocracia regulatória adicional.</span>
+            </div>
+          </div>
+          <div class="info-obligation" style="background:rgba(26,158,138,0.1); color:var(--teal)">
+            ✓ Sem obrigações específicas ao abrigo do AI Act
+          </div>
+        </div>
+
+        <!-- LIMITED RISK panel -->
+        <div class="info-panel" id="panel-limited">
+          <div class="info-badge" style="background:var(--c-limited)">Risco Limitado</div>
+          <h2 class="info-title">Obrigações de<br>Transparência</h2>
+          <p class="info-lead">
+            Sistemas com risco limitado devem cumprir obrigações de transparência específicas — os utilizadores têm o direito de saber que estão a interagir com IA ou a consumir conteúdo gerado por IA.
+          </p>
+          <div class="info-items">
+            <div class="info-item">
+              <strong>Exemplos</strong>
+              <span>Chatbots, sistemas de reconhecimento de emoções, deepfakes, conteúdo sintético de áudio/vídeo/imagem, sistemas de recomendação com impacto nas escolhas dos utilizadores</span>
+            </div>
+            <div class="info-item">
+              <strong>Obrigação de divulgação</strong>
+              <span>Os utilizadores devem ser informados de que interagem com um sistema de IA. Conteúdo gerado por IA deve ser identificado como tal (exceto em contextos claramente artísticos ou satíricos).</span>
+            </div>
+            <div class="info-item">
+              <strong>Impacto organizacional</strong>
+              <span>Moderado. Requer atualizações às interfaces e comunicações, mas sem processos de conformidade pesados.</span>
+            </div>
+          </div>
+          <div class="info-obligation" style="background:rgba(91,63,158,0.1); color:var(--c-limited)">
+            ⚠ Obrigação de informar e rotular conteúdo gerado por IA
+          </div>
+        </div>
+
+        <!-- HIGH RISK panel -->
+        <div class="info-panel" id="panel-high">
+          <div class="info-badge" style="background:var(--c-high)">Risco Elevado</div>
+          <h2 class="info-title">Conformidade<br>Obrigatória</h2>
+          <p class="info-lead">
+            Sistemas de IA de alto risco estão sujeitos a requisitos rigorosos antes de poderem ser colocados no mercado europeu. Representam o núcleo da regulação e o maior desafio operacional para as organizações.
+          </p>
+          <div class="info-items">
+            <div class="info-item">
+              <strong>Domínios abrangidos</strong>
+              <span>Infraestruturas críticas, educação e formação profissional, emprego e gestão de trabalhadores, acesso a serviços essenciais, aplicação da lei, migração e controlo de fronteiras, administração da justiça</span>
+            </div>
+            <div class="info-item">
+              <strong>Requisitos mandatórios</strong>
+              <span>Sistema de gestão de risco, governação de dados, documentação técnica, registo de atividades, transparência com utilizadores, supervisão humana, avaliação de conformidade, registo na base de dados da UE</span>
+            </div>
+            <div class="info-item">
+              <strong>Impacto organizacional</strong>
+              <span>Alto. Exige processos, documentação e estruturas de governação dedicadas — semelhante à gestão de qualidade em setores regulados (saúde, finanças).</span>
+            </div>
+          </div>
+          <div class="info-obligation" style="background:rgba(196,64,140,0.1); color:var(--c-high)">
+            ⚠ Avaliação de conformidade obrigatória antes da entrada no mercado
+          </div>
+        </div>
+
+        <!-- UNACCEPTABLE RISK panel -->
+        <div class="info-panel" id="panel-unacceptable">
+          <div class="info-badge" style="background:var(--c-unacceptable)">Risco Inaceitável</div>
+          <h2 class="info-title">Proibido<br>na União Europeia</h2>
+          <p class="info-lead">
+            Estes sistemas são considerados uma ameaça inaceitável aos direitos fundamentais e aos valores da União Europeia. A sua utilização é estritamente proibida, com coimas que podem atingir 35 milhões de euros ou 7% do volume de negócios global.
+          </p>
+          <div class="info-items">
+            <div class="info-item">
+              <strong>Práticas proibidas</strong>
+              <span>Social scoring por entidades governamentais, vigilância biométrica em tempo real em espaços públicos (com exceções limitadas), sistemas de manipulação subliminar, exploração de vulnerabilidades de grupos específicos</span>
+            </div>
+            <div class="info-item">
+              <strong>Também proibido</strong>
+              <span>Inferência de emoções em contextos de trabalho e educação, categorização biométrica baseada em características sensíveis (raça, religião, orientação sexual, opiniões políticas)</span>
+            </div>
+            <div class="info-item">
+              <strong>Consequências do incumprimento</strong>
+              <span>Coimas até €35 000 000 ou 7% do volume de negócios global anual, o que for mais elevado. Aplicação a partir de fevereiro de 2025.</span>
+            </div>
+          </div>
+          <div class="info-obligation" style="background:rgba(224,85,85,0.1); color:var(--c-unacceptable)">
+            ✕ Proibição absoluta — não há conformidade possível, apenas abstenção
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="framework-footer">
+      <p>Fonte: Regulamento (UE) 2024/1689 — Artificial Intelligence Act, em vigor desde agosto de 2024.</p>
+      <a href="/">← Voltar ao início</a>
+    </div>
+
+  </div>
+
+  <script>
+    const layers = ['minimal', 'limited', 'high', 'unacceptable'];
+
+    // Vertical center of each layer in the SVG coordinate space
+    const layerCenters = {
+      minimal:      340,
+      limited:      250,
+      high:         164,
+      unacceptable:  79
+    };
+
+const layerColors = {
+      minimal:      '#1a9e8a',
+      limited:      '#5B3F9E',
+      high:         '#C4408C',
+      unacceptable: '#E05555'
+    };
+
+    function moveIndicator(id) {
+      const cy = layerCenters[id];
+      const color = layerColors[id];
+      const h = 10; // half-height of arrow
+
+      // 3 arrows pointing right, cascading left with decreasing opacity
+      document.getElementById('indicator-arrow-1').setAttribute('points', `-22,${cy-h} -8,${cy} -22,${cy+h}`);
+      document.getElementById('indicator-arrow-1').setAttribute('fill', color);
+      document.getElementById('indicator-arrow-2').setAttribute('points', `-36,${cy-h} -22,${cy} -36,${cy+h}`);
+      document.getElementById('indicator-arrow-2').setAttribute('fill', color);
+      document.getElementById('indicator-arrow-3').setAttribute('points', `-50,${cy-h} -36,${cy} -50,${cy+h}`);
+      document.getElementById('indicator-arrow-3').setAttribute('fill', color);
+    }
+
+    function selectLayer(id) {
+      layers.forEach(l => {
+        document.getElementById('layer-' + l).classList.remove('active');
+        document.getElementById('panel-' + l).classList.remove('visible');
+      });
+
+      document.getElementById('layer-' + id).classList.add('active');
+      document.getElementById('panel-default').style.display = 'none';
+      document.getElementById('panel-' + id).classList.add('visible');
+      moveIndicator(id);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      const order = ['minimal', 'limited', 'high', 'unacceptable'];
+      const active = layers.find(l => document.getElementById('layer-' + l).classList.contains('active'));
+      const idx = order.indexOf(active);
+      if (e.key === 'ArrowUp' && idx < order.length - 1) selectLayer(order[idx + 1]);
+      if (e.key === 'ArrowDown' && idx > 0) selectLayer(order[idx - 1]);
+    });
+
+    // Activate minimal by default after a short delay
+    setTimeout(() => selectLayer('minimal'), 400);
+  </script>
+
+</body>
+</html>

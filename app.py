@@ -103,6 +103,11 @@ def home():
     return render_template("index.html", posts=posts)
 
 
+@app.route("/framework")
+def framework():
+    return render_template("conhecer_framework.html")
+
+
 @app.route("/publicacoes")
 def publicacoes():
     posts = get_wp_posts()
