@@ -114,6 +114,11 @@ def framework():
     return render_template("conhecer_framework.html")
 
 
+@app.route("/en/framework")
+def framework_en():
+    return render_template("conhecer_framework_en.html")
+
+
 @app.route("/publicacoes")
 def publicacoes():
     posts = get_wp_posts()
