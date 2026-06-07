@@ -1,7 +1,7 @@
 # app.py
 import os
 import requests
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -27,20 +27,42 @@ def transform_image_url(url):
     return url
 
 
-def get_wp_posts(per_page=12):
-    """Obtém artigos publicados via WordPress REST API."""
+def get_category_id(slug):
+    """Devolve o ID numérico de uma categoria pelo slug, ou None se não encontrar."""
+    if not WP_API_URL:
+        return None
+    try:
+        r = requests.get(
+            f"{WP_API_URL}/wp-json/wp/v2/categories",
+            params={"slug": slug, "per_page": 1},
+            timeout=4,
+        )
+        data = r.json()
+        return data[0]["id"] if data else None
+    except Exception:
+        return None
+
+
+def get_wp_posts(per_page=12, category_slug=None):
+    """Obtém artigos publicados via WordPress REST API.
+    Se category_slug for fornecido, filtra por essa categoria.
+    """
     if not WP_API_URL:
         return []
     try:
+        params = {
+            "per_page": per_page,
+            "status": "publish",
+            "_embed": "wp:featuredmedia",
+        }
+        if category_slug:
+            cat_id = get_category_id(category_slug)
+            if cat_id:
+                params["categories"] = cat_id
+
         resp = requests.get(
             f"{WP_API_URL}/wp-json/wp/v2/posts",
-            params={
-                "per_page": per_page,
-                "status": "publish",
-                # Passa o tipo explícito — "_embed=True" (bool Python)
-                # seria serializado como a string "True" que o WordPress não reconhece.
-                "_embed": "wp:featuredmedia",
-            },
+            params=params,
             timeout=6,
         )
         resp.raise_for_status()
@@ -121,9 +143,18 @@ def framework_en():
 
 @app.route("/publicacoes")
 def publicacoes():
-    posts = get_wp_posts()
+    # Suporta ?category=ai-gov na query string
+    cat = request.args.get("category")
+    posts = get_wp_posts(category_slug=cat)
     wp_configured = bool(WP_API_URL)
-    return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured)
+    return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=cat)
+
+
+@app.route("/publicacoes/<category_slug>")
+def publicacoes_categoria(category_slug):
+    posts = get_wp_posts(category_slug=category_slug)
+    wp_configured = bool(WP_API_URL)
+    return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
 
 
 if __name__ == "__main__":
