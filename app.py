@@ -144,7 +144,7 @@ def framework_en():
 @app.route("/publicacoes")
 def publicacoes():
     # Suporta ?category=ai-gov na query string
-    cat = request.args.get("category")
+    cat = 'ai-gov'
     posts = get_wp_posts(category_slug=cat)
     wp_configured = bool(WP_API_URL)
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=cat)
@@ -152,7 +152,8 @@ def publicacoes():
 
 @app.route("/publicacoes/<category_slug>")
 def publicacoes_categoria(category_slug):
-    posts = get_wp_posts(category_slug=category_slug)
+    cat = 'ai-gov'
+    posts = get_wp_posts(category_slug=cat)
     wp_configured = bool(WP_API_URL)
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
 
