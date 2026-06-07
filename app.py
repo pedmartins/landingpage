@@ -13,6 +13,12 @@ WP_API_URL = os.environ.get("WP_API_URL", "").rstrip("/")
 # Exemplo: https://pub-XXXX.r2.dev  ou  https://media.example.com
 R2_BASE_URL = os.environ.get("R2_BASE_URL", "").rstrip("/")
 
+# Thumbnails alternativos para cards — sobrepõem a featured image do WordPress
+# Formato: slug → path relativo no R2 (sem o R2_BASE_URL)
+CARD_THUMBNAILS = {
+    "confirmation-bias-llm": "/wp-content/uploads/2026/06/Confirmation-Bias.png",
+}
+
 
 def transform_image_url(url):
     """Substitui o domínio do WordPress pelo domínio do bucket R2,
@@ -93,6 +99,10 @@ def get_wp_posts(per_page=12, category_slug=None):
 
             # Aplicar transformação para URL do bucket R2
             featured_img = transform_image_url(featured_img)
+
+            # Override do thumbnail para card se existir mapeamento local
+            if p["slug"] in CARD_THUMBNAILS and R2_BASE_URL:
+                featured_img = R2_BASE_URL + CARD_THUMBNAILS[p["slug"]]
 
             # Excerto — limpar tags HTML residuais
             excerpt_raw = p.get("excerpt", {}).get("rendered", "")
