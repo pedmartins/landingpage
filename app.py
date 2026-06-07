@@ -121,13 +121,13 @@ def get_wp_posts(per_page=12, category_slug=None):
 
 @app.route("/")
 def home():
-    posts = get_wp_posts(per_page=3)   # últimos 3 artigos para a homepage
+    posts = get_wp_posts(per_page=3, category_slug="ai-gov")
     return render_template("index.html", posts=posts)
 
 
 @app.route("/en")
 def home_en():
-    posts = get_wp_posts(per_page=3)
+    posts = get_wp_posts(per_page=3, category_slug="ai-gov")
     return render_template("index_en.html", posts=posts)
 
 
