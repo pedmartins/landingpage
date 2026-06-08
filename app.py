@@ -1,6 +1,5 @@
 # app.py
 import os
-import json
 import html as html_lib
 import requests
 from flask import Flask, render_template, request, abort
@@ -189,17 +188,64 @@ def publicacoes_categoria(category_slug):
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
 
 
-def load_article_json(slug, lang):
-    """Carrega um artigo do ficheiro JSON correspondente ao idioma."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    if lang == "en":
-        path = os.path.join(base_dir, "artigos", "en", f"{slug}.json")
-    else:
-        path = os.path.join(base_dir, "artigos", f"{slug}.json")
-    if not os.path.exists(path):
+def get_wp_post_by_slug(wp_slug):
+    """Obtém um artigo do WordPress pelo slug via REST API."""
+    if not WP_API_URL:
         return None
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        resp = requests.get(
+            f"{WP_API_URL}/wp-json/wp/v2/posts",
+            params={"slug": wp_slug, "status": "publish", "_embed": "wp:featuredmedia,wp:term"},
+            timeout=6,
+        )
+        resp.raise_for_status()
+        posts = resp.json()
+        if not posts:
+            return None
+        p = posts[0]
+
+        # Imagem em destaque
+        featured_img = None
+        try:
+            featured_img = p["_embedded"]["wp:featuredmedia"][0]["source_url"]
+        except (KeyError, IndexError, TypeError):
+            pass
+        featured_img = transform_image_url(featured_img)
+
+        # Tags — excluir tags de idioma (lang-pt / lang-en)
+        tags = []
+        try:
+            for term_group in p["_embedded"].get("wp:term", []):
+                for term in term_group:
+                    if term.get("taxonomy") == "post_tag":
+                        name = term["name"]
+                        if not name.startswith("lang-"):
+                            tags.append(name)
+        except (KeyError, TypeError):
+            pass
+
+        # Excerto
+        excerpt_raw = p.get("excerpt", {}).get("rendered", "")
+        excerpt = (
+            excerpt_raw
+            .replace("<p>", "").replace("</p>", "")
+            .replace("\n", " ")
+            .strip()
+        )
+        if excerpt.endswith("[&hellip;]"):
+            excerpt = excerpt[:-10].rstrip() + "…"
+
+        return {
+            "title":     html_lib.unescape(p["title"]["rendered"]),
+            "slug":      p["slug"],
+            "date":      p["date"][:10],
+            "excerpt":   html_lib.unescape(excerpt),
+            "content":   p["content"]["rendered"],
+            "tags":      tags,
+            "image_url": featured_img,
+        }
+    except Exception:
+        return None
 
 
 @app.route("/article/<slug>")
@@ -208,15 +254,15 @@ def article(slug):
     if lang not in ("pt", "en"):
         lang = "pt"
 
-    art = load_article_json(slug, lang)
+    # O slug WP para EN tem sufixo -en
+    wp_slug = f"{slug}-en" if lang == "en" else slug
+
+    art = get_wp_post_by_slug(wp_slug)
     if art is None:
         abort(404)
 
-    # Construir URL da imagem de capa a partir do R2
-    if art.get("image_path") and R2_BASE_URL:
-        art["image_url"] = f"{R2_BASE_URL}/{art['image_path']}"
-    else:
-        art["image_url"] = None
+    # Normalizar slug para o language switcher (slug base sem -en)
+    art["slug"] = slug
 
     return render_template("article.html", article=art, lang=lang)
 
