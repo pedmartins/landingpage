@@ -269,7 +269,9 @@
     {% if article.tags %}
     <div class="article-tags">
       {% for tag in article.tags %}
+      {% if not tag.startswith('lang-') %}
       <span class="tag">#{{ tag }}</span>
+      {% endif %}
       {% endfor %}
     </div>
     {% endif %}
