@@ -17,7 +17,8 @@ R2_BASE_URL = os.environ.get("R2_BASE_URL", "").rstrip("/")
 # Thumbnails alternativos para cards — sobrepõem a featured image do WordPress
 # Formato: slug → path relativo no R2 (sem o R2_BASE_URL)
 CARD_THUMBNAILS = {
-    "confirmation-bias-llm": "/2026/06/f2eer10W-Confirmation-Bias.png",
+    "confirmation-bias-llm":    "/2026/06/f2eer10W-Confirmation-Bias.png",
+    "confirmation-bias-llm-en": "/2026/06/f2eer10W-Confirmation-Bias.png",
 }
 
 
