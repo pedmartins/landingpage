@@ -1,6 +1,7 @@
 # app.py
 import os
 import json
+import html as html_lib
 import requests
 from flask import Flask, render_template, request, abort
 
@@ -131,8 +132,8 @@ def get_wp_posts(per_page=12, category_slug=None, tag_slug=None):
 
             result.append({
                 "id":           p["id"],
-                "title":        p["title"]["rendered"],
-                "excerpt":      excerpt,
+                "title":        html_lib.unescape(p["title"]["rendered"]),
+                "excerpt":      html_lib.unescape(excerpt),
                 "date":         p["date"][:10],          # YYYY-MM-DD
                 "link":         p["link"],
                 "featured_img": featured_img,
