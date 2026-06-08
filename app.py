@@ -34,13 +34,13 @@ def transform_image_url(url):
     return url
 
 
-def get_category_id(slug):
-    """Devolve o ID numérico de uma categoria pelo slug, ou None se não encontrar."""
+def get_taxonomy_id(endpoint, slug):
+    """Devolve o ID numérico de uma categoria ou tag pelo slug, ou None."""
     if not WP_API_URL:
         return None
     try:
         r = requests.get(
-            f"{WP_API_URL}/wp-json/wp/v2/categories",
+            f"{WP_API_URL}/wp-json/wp/v2/{endpoint}",
             params={"slug": slug, "per_page": 1},
             timeout=4,
         )
@@ -50,7 +50,15 @@ def get_category_id(slug):
         return None
 
 
-def get_wp_posts(per_page=12, category_slug=None):
+def get_category_id(slug):
+    return get_taxonomy_id("categories", slug)
+
+
+def get_tag_id(slug):
+    return get_taxonomy_id("tags", slug)
+
+
+def get_wp_posts(per_page=12, category_slug=None, tag_slug=None):
     """Obtém artigos publicados via WordPress REST API.
     Se category_slug for fornecido, filtra por essa categoria.
     """
@@ -66,6 +74,10 @@ def get_wp_posts(per_page=12, category_slug=None):
             cat_id = get_category_id(category_slug)
             if cat_id:
                 params["categories"] = cat_id
+        if tag_slug:
+            tag_id = get_tag_id(tag_slug)
+            if tag_id:
+                params["tags"] = tag_id
 
         resp = requests.get(
             f"{WP_API_URL}/wp-json/wp/v2/posts",
@@ -132,13 +144,13 @@ def get_wp_posts(per_page=12, category_slug=None):
 
 @app.route("/")
 def home():
-    posts = get_wp_posts(per_page=3, category_slug="ai-gov")
+    posts = get_wp_posts(per_page=3, category_slug="ai-gov", tag_slug="lang-pt")
     return render_template("index.html", posts=posts)
 
 
 @app.route("/en")
 def home_en():
-    posts = get_wp_posts(per_page=3, category_slug="ai-gov")
+    posts = get_wp_posts(per_page=3, category_slug="ai-gov", tag_slug="lang-en")
     return render_template("index_en.html", posts=posts)
 
 
@@ -154,9 +166,8 @@ def framework_en():
 
 @app.route("/publicacoes")
 def publicacoes():
-    # Suporta ?category=ai-gov na query string
     cat = 'ai-gov'
-    posts = get_wp_posts(category_slug=cat)
+    posts = get_wp_posts(category_slug=cat, tag_slug="lang-pt")
     wp_configured = bool(WP_API_URL)
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=cat)
 
@@ -164,7 +175,7 @@ def publicacoes():
 @app.route("/publicacoes/<category_slug>")
 def publicacoes_categoria(category_slug):
     cat = 'ai-gov'
-    posts = get_wp_posts(category_slug=cat)
+    posts = get_wp_posts(category_slug=cat, tag_slug="lang-pt")
     wp_configured = bool(WP_API_URL)
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
 
