@@ -1,7 +1,8 @@
 # app.py
 import os
+import json
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 
 app = Flask(__name__)
 
@@ -166,6 +167,38 @@ def publicacoes_categoria(category_slug):
     posts = get_wp_posts(category_slug=cat)
     wp_configured = bool(WP_API_URL)
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
+
+
+def load_article_json(slug, lang):
+    """Carrega um artigo do ficheiro JSON correspondente ao idioma."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if lang == "en":
+        path = os.path.join(base_dir, "artigos", "en", f"{slug}.json")
+    else:
+        path = os.path.join(base_dir, "artigos", f"{slug}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+@app.route("/article/<slug>")
+def article(slug):
+    lang = request.args.get("lang", "pt")
+    if lang not in ("pt", "en"):
+        lang = "pt"
+
+    art = load_article_json(slug, lang)
+    if art is None:
+        abort(404)
+
+    # Construir URL da imagem de capa a partir do R2
+    if art.get("image_path") and R2_BASE_URL:
+        art["image_url"] = f"{R2_BASE_URL}/{art['image_path']}"
+    else:
+        art["image_url"] = None
+
+    return render_template("article.html", article=art, lang=lang)
 
 
 if __name__ == "__main__":
