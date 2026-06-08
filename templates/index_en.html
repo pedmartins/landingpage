@@ -391,7 +391,7 @@
 
     <div class="articles-grid">
       {% for post in posts %}
-      <a href="{{ post.link }}" class="art-card" target="_blank" rel="noopener">
+      <a href="{{ post.link }}" class="art-card">
 
         {% if post.featured_img %}
         <img class="art-card-img" src="{{ post.featured_img }}" alt="{{ post.title }}" loading="lazy">

@@ -130,14 +130,21 @@ def get_wp_posts(per_page=12, category_slug=None, tag_slug=None):
             if excerpt.endswith("[&hellip;]"):
                 excerpt = excerpt[:-10].rstrip() + "…"
 
+            # Construir URL Flask em vez de usar o link do WordPress
+            post_slug = p["slug"]
+            if post_slug.endswith("-en"):
+                flask_link = f"/article/{post_slug[:-3]}?lang=en"
+            else:
+                flask_link = f"/article/{post_slug}"
+
             result.append({
                 "id":           p["id"],
                 "title":        html_lib.unescape(p["title"]["rendered"]),
                 "excerpt":      html_lib.unescape(excerpt),
                 "date":         p["date"][:10],          # YYYY-MM-DD
-                "link":         p["link"],
+                "link":         flask_link,
                 "featured_img": featured_img,
-                "slug":         p["slug"],
+                "slug":         post_slug,
             })
         return result
     except Exception:

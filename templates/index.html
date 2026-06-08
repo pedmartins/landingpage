@@ -391,11 +391,11 @@
 
     <div class="articles-grid">
       {% for post in posts %}
-      <a href="{{ post.link }}" class="art-card" target="_blank" rel="noopener">
+      <a href="{{ post.link }}" class="art-card">
 
         {% if post.featured_img %}
         <img class="art-card-img" src="{{ post.featured_img }}" alt="{{ post.title }}" loading="lazy"
-          {% if post.slug == 'confirmation-bias-llm' %}style="object-position: left center;"{% endif %}>
+>
         {% else %}
         <div class="art-card-placeholder">
           <svg width="40" height="40" fill="none" stroke="#1a9e8a" stroke-width="1.2" viewBox="0 0 24 24" opacity="0.4">
