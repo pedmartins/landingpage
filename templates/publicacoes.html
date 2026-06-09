@@ -203,6 +203,25 @@
       .posts-grid { grid-template-columns: 1fr; gap: 1.25rem; }
       footer { flex-direction: column; gap: 0.5rem; text-align: center; }
     }
+    /* ── MISSION BAR ── */
+    .mission-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 4vw;
+      text-align: center;
+      background: var(--cream);
+    }
+    .mission-bar p {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(0.75rem, 1.4vw, 0.88rem);
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin: 0;
+    }
+    .mission-bar strong { font-weight: 800; }
+
   </style>
 </head>
 <body>
@@ -293,6 +312,11 @@
     {% endif %}
 
   </section>
+
+  <!-- MISSION BAR -->
+  <div class="mission-bar">
+    <p>Turning <strong>AI</strong> into real, sustainable competitive advantage</p>
+  </div>
 
   <!-- FOOTER -->
   <footer>
