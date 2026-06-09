@@ -360,7 +360,7 @@
       </div>
 
       <div class="author">
-        <div class="avatar">{{ wp_author.name[:2] | upper if wp_author.name else 'PM' }}</div>
+        <div class="avatar">{{ wp_author.initials or 'PM' }}</div>
         <div>
           <div class="author-name">{{ wp_author.name or 'Pedro Martins' }}</div>
           <div class="author-role">{{ wp_author.description or 'Senior Adviser, AI Governance' }}</div>

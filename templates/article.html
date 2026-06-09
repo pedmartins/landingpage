@@ -301,18 +301,20 @@
     {% endif %}
 
     <!-- AUTHOR CARD -->
+    {% if article.author and article.author.name %}
     <div class="author-card">
-      <div class="author-avatar">PM</div>
+      <div class="author-avatar">{{ wp_author.initials or 'PM' }}</div>
       <div class="author-info">
-        <strong>Pedro Martins</strong>
-        {% if lang == 'pt' %}
-        <span>Consultor Sénior, AI Governance &amp; Estratégia</span>
-        {% else %}
-        <span>Senior Adviser, AI Governance &amp; Strategy</span>
+        <strong>{{ article.author.name }}</strong>
+        {% if article.author.description %}
+        <span>{{ article.author.description }}</span>
         {% endif %}
-        <a href="https://www.linkedin.com/in/pedromartinsai/" target="_blank" rel="noopener">LinkedIn →</a>
+        {% if article.author.url %}
+        <a href="{{ article.author.url }}" target="_blank" rel="noopener">LinkedIn →</a>
+        {% endif %}
       </div>
     </div>
+    {% endif %}
 
   </main>
 
