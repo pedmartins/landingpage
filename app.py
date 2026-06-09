@@ -303,10 +303,12 @@ def article(slug):
     if lang not in ("pt", "en"):
         lang = "pt"
 
-    # O slug WP para EN tem sufixo -en
-    wp_slug = f"{slug}-en" if lang == "en" else slug
+    # Tenta slug com sufixo de idioma, com fallback para o slug base
+    if lang == "en":
+        art = get_wp_post_by_slug(f"{slug}-en") or get_wp_post_by_slug(slug)
+    else:
+        art = get_wp_post_by_slug(slug) or get_wp_post_by_slug(f"{slug}-en")
 
-    art = get_wp_post_by_slug(wp_slug)
     if art is None:
         abort(404)
 
