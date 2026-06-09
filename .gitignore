@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.env
+*.egg-info/
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+
+# Local content (not for deploy)
+lab/
+artigos/

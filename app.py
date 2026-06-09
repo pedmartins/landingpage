@@ -2,13 +2,102 @@
 import os
 import html as html_lib
 import requests
-from flask import Flask, render_template, request, abort
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from flask import Flask, render_template, request, abort, jsonify
 
 app = Flask(__name__)
 
 # URL base do WordPress — define a variável de ambiente WP_API_URL
 # Exemplo: https://o-teu-site.railway.app
 WP_API_URL = os.environ.get("WP_API_URL", "").rstrip("/")
+
+# Cloudflare Workers AI
+CF_ACCOUNT_ID = os.environ.get("CF_ACCOUNT_ID", "")
+CF_API_TOKEN  = os.environ.get("CF_API_TOKEN", "")
+
+CF_MODELS = [
+    {"id": "@cf/meta/llama-3.2-3b-instruct",          "label": "Llama 3.2 · 3B"},
+    {"id": "@cf/meta/llama-3.1-8b-instruct-fp8-fast", "label": "Llama 3.1 · 8B"},
+    {"id": "@cf/mistral/mistral-7b-instruct-v0.1",    "label": "Mistral · 7B"},
+    {"id": "@cf/google/gemma-3-12b-it",               "label": "Gemma 3 · 12B"},
+]
+
+HBR_SCENARIOS = [
+    {
+        "id": "differentiation",
+        "tension": "Differentiation vs. Cost Leadership",
+        "option_a": "Differentiation — invest in innovation, build unique features, justify a premium price.",
+        "option_b": "Cost Leadership — standardise the product, reduce costs, compete on price.",
+        "context": "A mid-sized B2B software company in a competitive market is reviewing its strategic direction. Its margins are under pressure from lower-cost competitors, but its clients consistently rate product quality highly.",
+    },
+    {
+        "id": "automation",
+        "tension": "Automation vs. Human Augmentation",
+        "option_a": "Full Automation — replace manual workflows with AI-driven processes to maximise efficiency.",
+        "option_b": "Human Augmentation — use AI to assist and amplify human decision-making, keeping people central.",
+        "context": "A financial services firm is deploying AI across its operations. Regulators require explainability and accountability for all client-facing decisions.",
+    },
+    {
+        "id": "horizon",
+        "tension": "Short-term vs. Long-term",
+        "option_a": "Short-term focus — optimise for this year's profitability, reduce R&D spend, return cash to shareholders.",
+        "option_b": "Long-term investment — prioritise capability building, accept lower near-term margins to secure future positioning.",
+        "context": "A listed industrial company faces pressure from activist shareholders demanding higher returns, while management believes the sector is on the verge of a technology shift.",
+    },
+    {
+        "id": "innovation",
+        "tension": "Radical vs. Incremental Innovation",
+        "option_a": "Radical innovation — invest in a discontinuous new product that could cannibalise the existing business.",
+        "option_b": "Incremental innovation — continuously improve the current product line to defend market share.",
+        "context": "A consumer electronics manufacturer with strong brand equity is watching a new technology category emerge that its current product line does not address.",
+    },
+    {
+        "id": "structure",
+        "tension": "Centralisation vs. Decentralisation",
+        "option_a": "Centralisation — consolidate decision-making at headquarters to ensure consistency and control.",
+        "option_b": "Decentralisation — push authority to regional or business unit leaders to improve speed and local relevance.",
+        "context": "A multinational retailer operating in 18 countries is designing its governance model following a major acquisition that added significant regional diversity.",
+    },
+    {
+        "id": "competition",
+        "tension": "Competition vs. Collaboration",
+        "option_a": "Compete aggressively — invest in capturing market share from rivals through pricing and product superiority.",
+        "option_b": "Collaborate via ecosystem — form alliances, share platforms, and co-create standards with competitors.",
+        "context": "A telecom operator is evaluating its position in a market where infrastructure costs are rising and new entrants are fragmenting consumer attention.",
+    },
+    {
+        "id": "exploration",
+        "tension": "Exploration vs. Exploitation",
+        "option_a": "Exploration — allocate resources to discover new markets, technologies, and business models.",
+        "option_b": "Exploitation — concentrate resources on deepening current capabilities and extracting value from existing assets.",
+        "context": "A professional services firm with a dominant position in its core practice is generating strong cash flows but sees its addressable market maturing.",
+    },
+]
+
+
+def call_cf_model(model_id, prompt):
+    """Chama um modelo Cloudflare Workers AI e devolve o texto gerado."""
+    if not CF_ACCOUNT_ID or not CF_API_TOKEN:
+        return {"error": "CF credentials not configured"}
+    try:
+        r = requests.post(
+            f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/{model_id}",
+            headers={"Authorization": f"Bearer {CF_API_TOKEN}"},
+            json={"messages": [
+                {"role": "system", "content": (
+                    "You are a strategic adviser. Given a business context and two strategic options, "
+                    "you must recommend exactly one option. Start your response with 'I recommend Option A' "
+                    "or 'I recommend Option B', then explain your reasoning in 3-4 sentences. Be direct and concise."
+                )},
+                {"role": "user", "content": prompt},
+            ]},
+            timeout=30,
+        )
+        data = r.json()
+        text = data.get("result", {}).get("response", "")
+        return {"text": text, "error": None}
+    except Exception as e:
+        return {"text": "", "error": str(e)}
 
 # URL base do bucket R2 (Cloudflare) para servir imagens
 # Exemplo: https://pub-XXXX.r2.dev  ou  https://media.example.com
@@ -316,6 +405,44 @@ def article(slug):
     art["slug"] = slug
 
     return render_template("article.html", article=art, lang=lang)
+
+
+@app.route("/lab")
+def lab():
+    return render_template("lab.html", scenarios=HBR_SCENARIOS, models=CF_MODELS)
+
+
+@app.route("/lab/api", methods=["POST"])
+def lab_api():
+    """Chama os modelos em paralelo e devolve as respostas."""
+    data = request.get_json(force=True)
+    scenario_id = data.get("scenario_id")
+    scenario = next((s for s in HBR_SCENARIOS if s["id"] == scenario_id), None)
+    if not scenario:
+        return jsonify({"error": "Scenario not found"}), 400
+
+    prompt = (
+        f"Business context: {scenario['context']}\n\n"
+        f"The leadership team is deciding between two strategic options:\n"
+        f"Option A: {scenario['option_a']}\n"
+        f"Option B: {scenario['option_b']}\n\n"
+        f"Which option do you recommend?"
+    )
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {
+            executor.submit(call_cf_model, m["id"], prompt): m
+            for m in CF_MODELS
+        }
+        for future in as_completed(futures):
+            model = futures[future]
+            results[model["id"]] = {
+                "label": model["label"],
+                **future.result(),
+            }
+
+    return jsonify({"scenario": scenario, "results": results})
 
 
 if __name__ == "__main__":
