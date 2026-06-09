@@ -59,6 +59,39 @@ def get_tag_id(slug):
     return get_taxonomy_id("tags", slug)
 
 
+_wp_author_cache = None
+
+def get_wp_author(user_id=1):
+    """Obtém dados do autor principal via WP REST API, com cache em memória."""
+    global _wp_author_cache
+    if _wp_author_cache is not None:
+        return _wp_author_cache
+    if not WP_API_URL:
+        return {}
+    try:
+        r = requests.get(
+            f"{WP_API_URL}/wp-json/wp/v2/users/{user_id}",
+            timeout=4,
+        )
+        if r.status_code == 200:
+            a = r.json()
+            _wp_author_cache = {
+                "name":        a.get("name", ""),
+                "url":         a.get("url", ""),        # campo Website → LinkedIn
+                "description": a.get("description", ""),
+            }
+            return _wp_author_cache
+    except Exception:
+        pass
+    return {}
+
+
+@app.context_processor
+def inject_author():
+    """Disponibiliza {{ wp_author }} em todos os templates."""
+    return {"wp_author": get_wp_author()}
+
+
 def get_wp_posts(per_page=12, category_slug=None, tag_slug=None):
     """Obtém artigos publicados via WordPress REST API.
     Se category_slug for fornecido, filtra por essa categoria.
@@ -195,7 +228,7 @@ def get_wp_post_by_slug(wp_slug):
     try:
         resp = requests.get(
             f"{WP_API_URL}/wp-json/wp/v2/posts",
-            params={"slug": wp_slug, "status": "publish", "_embed": "wp:featuredmedia,wp:term"},
+            params={"slug": wp_slug, "status": "publish", "_embed": "wp:featuredmedia,wp:term,author"},
             timeout=6,
         )
         resp.raise_for_status()
@@ -235,6 +268,18 @@ def get_wp_post_by_slug(wp_slug):
         if excerpt.endswith("[&hellip;]"):
             excerpt = excerpt[:-10].rstrip() + "…"
 
+        # Autor
+        author = {}
+        try:
+            a = p["_embedded"]["author"][0]
+            author = {
+                "name": a.get("name", ""),
+                "url":  a.get("url", ""),   # campo "Website" do perfil WP → LinkedIn
+                "description": a.get("description", ""),
+            }
+        except (KeyError, IndexError, TypeError):
+            pass
+
         return {
             "title":     html_lib.unescape(p["title"]["rendered"]),
             "slug":      p["slug"],
@@ -243,6 +288,7 @@ def get_wp_post_by_slug(wp_slug):
             "content":   p["content"]["rendered"],
             "tags":      tags,
             "image_url": featured_img,
+            "author":    author,
         }
     except Exception:
         return None
