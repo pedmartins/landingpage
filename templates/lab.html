@@ -89,8 +89,18 @@
     .lab-desc {
       font-size: 0.97rem; line-height: 1.75;
       color: var(--muted); font-weight: 300;
-      max-width: 68ch; margin-bottom: 2.5rem;
+      max-width: 68ch; margin-bottom: 1rem;
     }
+    .article-ref {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.76rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--teal);
+      text-decoration: none;
+      border-bottom: 1.5px solid transparent;
+      transition: border-color 0.2s;
+      margin-bottom: 2.5rem;
+    }
+    .article-ref:hover { border-color: var(--teal); }
 
     /* ── SCENARIO SELECTOR ── */
     .scenario-grid {
@@ -313,6 +323,12 @@
       is the variable that most influences AI recommendations — not context, not data, not reasoning depth.
       Select a strategic tension below and compare how four different models respond to the same prompt.
     </p>
+    <a href="/article/confirmation-bias-llm?lang=en" class="article-ref">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Article — Confirmation Bias in AI Models
+    </a>
 
     <!-- SCENARIO SELECTOR -->
     <div class="scenario-grid">
