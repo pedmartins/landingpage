@@ -190,6 +190,30 @@
       padding: 0.25rem 0.65rem;
     }
 
+    /* ── AUTHOR CARD ── */
+    .author-card {
+      display: flex; align-items: center; gap: 1rem;
+      margin-top: 3rem; padding: 1.25rem 1.5rem;
+      border-top: 2px solid var(--teal);
+      background: var(--card-bg);
+    }
+    .author-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--teal); color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.95rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; letter-spacing: 0.04em;
+    }
+    .author-info { display: flex; flex-direction: column; gap: 0.2rem; }
+    .author-info strong { color: var(--navy); font-size: 0.95rem; display: block; }
+    .author-info span   { color: var(--muted); font-size: 0.82rem; font-weight: 300; display: block; }
+    .author-info a {
+      color: var(--teal); font-size: 0.78rem; text-decoration: none;
+      letter-spacing: 0.06em; margin-top: 0.2rem; display: inline-block;
+    }
+    .author-info a:hover { text-decoration: underline; }
+
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
@@ -275,6 +299,20 @@
       {% endfor %}
     </div>
     {% endif %}
+
+    <!-- AUTHOR CARD -->
+    <div class="author-card">
+      <div class="author-avatar">PM</div>
+      <div class="author-info">
+        <strong>Pedro Martins</strong>
+        {% if lang == 'pt' %}
+        <span>Consultor Sénior, AI Governance &amp; Estratégia</span>
+        {% else %}
+        <span>Senior Adviser, AI Governance &amp; Strategy</span>
+        {% endif %}
+        <a href="https://www.linkedin.com/in/pedromartinsai/" target="_blank" rel="noopener">LinkedIn →</a>
+      </div>
+    </div>
 
   </main>
 
