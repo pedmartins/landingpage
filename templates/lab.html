@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation Bias Lab — Pedro Martins · AI Governance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:      #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --navy:      #1a2d3d;
+      --cream:     #f5f3ee;
+      --muted:     #5a6a78;
+      --card-bg:   #ffffff;
+      --border:    rgba(26,45,61,0.08);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245,243,238,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand { display: flex; align-items: center; flex-wrap: wrap; row-gap: 0.28rem; }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.76rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+      display: inline;
+      margin-left: 1.2rem; padding-left: 1.2rem;
+      border-left: 1px solid var(--border, rgba(26,45,61,0.12));
+      line-height: 1.6;
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 4vw 5rem;
+    }
+
+    /* ── HEADER ── */
+    .lab-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; font-weight: 500;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .lab-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--teal); }
+
+    .lab-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: clamp(2rem, 4vw, 3rem);
+      text-transform: uppercase; line-height: 1;
+      letter-spacing: -0.01em; color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    .lab-title em { font-style: normal; color: var(--teal); }
+
+    .lab-desc {
+      font-size: 0.97rem; line-height: 1.75;
+      color: var(--muted); font-weight: 300;
+      max-width: 68ch; margin-bottom: 2.5rem;
+    }
+
+    /* ── SCENARIO SELECTOR ── */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .scenario-btn {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      padding: 1rem 1.25rem;
+      text-align: left; cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: 'Barlow', sans-serif;
+    }
+    .scenario-btn:hover { border-color: var(--teal); }
+    .scenario-btn.active {
+      border-color: var(--teal);
+      box-shadow: inset 3px 0 0 var(--teal);
+    }
+    .scenario-btn .tension {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.88rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--navy); display: block; margin-bottom: 0.3rem;
+    }
+    .scenario-btn .vs {
+      font-size: 0.75rem; color: var(--teal); font-weight: 500;
+    }
+
+    /* ── SCENARIO DETAIL ── */
+    .scenario-detail {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--teal);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+    .scenario-detail.visible { display: block; }
+    .scenario-detail .context-label {
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--teal);
+      margin-bottom: 0.5rem; display: block;
+    }
+    .scenario-detail .context-text {
+      font-size: 0.95rem; line-height: 1.7; color: var(--muted);
+      font-weight: 300; margin-bottom: 1.25rem;
+    }
+    .options-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .option-box {
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--cream);
+    }
+    .option-box .opt-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.8rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--teal); display: block; margin-bottom: 0.3rem;
+    }
+    .option-box p { font-size: 0.88rem; line-height: 1.6; color: var(--navy); font-weight: 300; }
+
+    /* ── RUN BUTTON ── */
+    .run-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--navy); color: #fff;
+      border: none; cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em;
+      padding: 0.85rem 2rem;
+      transition: background 0.2s;
+      margin-bottom: 2.5rem;
+    }
+    .run-btn:hover { background: var(--teal-dark); }
+    .run-btn:disabled { background: var(--muted); cursor: not-allowed; }
+    .run-btn .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: none;
+      animation: spin 0.7s linear infinite;
+    }
+    .run-btn.loading .spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESULTS ── */
+    .results-header {
+      display: none;
+      margin-bottom: 1.25rem;
+    }
+    .results-header.visible { display: flex; align-items: baseline; gap: 1rem; }
+    .results-header h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1.1rem;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy);
+    }
+    .results-header .subtitle {
+      font-size: 0.8rem; color: var(--muted); font-weight: 300;
+    }
+
+    .verdict-bar {
+      display: none;
+      align-items: center; gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      font-size: 0.82rem;
+    }
+    .verdict-bar.visible { display: flex; }
+    .verdict-label { font-weight: 500; color: var(--muted); }
+    .verdict-a, .verdict-b {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1rem;
+      letter-spacing: 0.06em; padding: 0.2rem 0.8rem;
+    }
+    .verdict-a { background: rgba(26,158,138,0.12); color: var(--teal); }
+    .verdict-b { background: rgba(26,45,61,0.08); color: var(--navy); }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .model-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .model-card-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .model-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy);
+    }
+    .model-verdict {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.78rem;
+      letter-spacing: 0.08em; padding: 0.15rem 0.55rem;
+      display: none;
+    }
+    .model-verdict.opt-a { background: rgba(26,158,138,0.12); color: var(--teal); }
+    .model-verdict.opt-b { background: rgba(26,45,61,0.08); color: var(--navy); }
+    .model-verdict.visible { display: inline-block; }
+
+    .model-card-body {
+      padding: 1rem;
+      min-height: 120px;
+    }
+    .model-response {
+      font-size: 0.88rem; line-height: 1.7;
+      color: var(--navy); font-weight: 300;
+    }
+    .model-loading {
+      display: flex; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.82rem;
+    }
+    .model-loading .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .model-loading .dot:nth-child(2) { animation-delay: 0.2s; }
+    .model-loading .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+    .model-error { color: #c83c3c; font-size: 0.82rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 4vw;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 4rem;
+    }
+    footer p { font-size: 0.78rem; color: var(--muted); font-weight: 300; }
+    footer a { font-size: 0.78rem; color: var(--teal); text-decoration: none; }
+
+    @media (max-width: 700px) {
+      .options-row { grid-template-columns: 1fr; }
+      .models-grid { grid-template-columns: 1fr; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">
+      <a href="/en" class="nav-logo">Pedro Martins</a>
+      <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/en/framework">Framework</a></li>
+      <li><a href="/en/publicacoes">Publications</a></li>
+      <li><a href="/lab" class="active">Lab</a></li>
+    </ul>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="lab-eyebrow">Confirmation Bias Lab</div>
+    <h1 class="lab-title">Does <em>AI</em> Recommend<br>What You Ask It To?</h1>
+    <p class="lab-desc">
+      A HBR study tested 15,000+ scenarios and found that the order options are presented
+      is the variable that most influences AI recommendations — not context, not data, not reasoning depth.
+      Select a strategic tension below and compare how four different models respond to the same prompt.
+    </p>
+
+    <!-- SCENARIO SELECTOR -->
+    <div class="scenario-grid">
+      {% for s in scenarios %}
+      <button class="scenario-btn" data-id="{{ s.id }}" onclick="selectScenario('{{ s.id }}')">
+        <span class="tension">{{ s.tension.split(' vs. ')[0] }}</span>
+        <span class="vs">vs. {{ s.tension.split(' vs. ')[1] }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- SCENARIO DETAIL -->
+    <div class="scenario-detail" id="scenario-detail">
+      <span class="context-label">Business Context</span>
+      <p class="context-text" id="context-text"></p>
+      <div class="options-row">
+        <div class="option-box">
+          <span class="opt-label">Option A</span>
+          <p id="option-a-text"></p>
+        </div>
+        <div class="option-box">
+          <span class="opt-label">Option B</span>
+          <p id="option-b-text"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUN BUTTON -->
+    <button class="run-btn" id="run-btn" onclick="runAnalysis()" disabled>
+      <span class="spinner"></span>
+      Run Model Comparison
+    </button>
+
+    <!-- VERDICT BAR -->
+    <div class="verdict-bar" id="verdict-bar">
+      <span class="verdict-label">Models recommending:</span>
+      <span class="verdict-a" id="verdict-a-count">— × Option A</span>
+      <span class="verdict-b" id="verdict-b-count">— × Option B</span>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-header" id="results-header">
+      <h2>Model Responses</h2>
+      <span class="subtitle" id="results-subtitle"></span>
+    </div>
+
+    <div class="models-grid" id="models-grid">
+      {% for m in models %}
+      <div class="model-card" id="card-{{ loop.index }}">
+        <div class="model-card-header">
+          <span class="model-name">{{ m.label }}</span>
+          <span class="model-verdict" id="verdict-{{ loop.index }}"></span>
+        </div>
+        <div class="model-card-body" id="body-{{ loop.index }}">
+          <div class="model-loading" style="display:none">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <span>Waiting…</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Pedro Martins · AI Governance</p>
+    <a href="/en">← Back to home</a>
+  </footer>
+
+  <script>
+    const MODELS = {{ models | tojson }};
+    let selectedScenario = null;
+
+    function selectScenario(id) {
+      selectedScenario = id;
+      document.querySelectorAll('.scenario-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === id);
+      });
+
+      // Fetch scenario data from server-side rendered data
+      const scenarios = {{ scenarios | tojson }};
+      const s = scenarios.find(x => x.id === id);
+      if (!s) return;
+
+      document.getElementById('context-text').textContent = s.context;
+      document.getElementById('option-a-text').textContent = s.option_a;
+      document.getElementById('option-b-text').textContent = s.option_b;
+      document.getElementById('scenario-detail').classList.add('visible');
+      document.getElementById('run-btn').disabled = false;
+
+      // Reset results
+      document.getElementById('results-header').classList.remove('visible');
+      document.getElementById('verdict-bar').classList.remove('visible');
+      MODELS.forEach((m, i) => {
+        const body = document.getElementById(`body-${i+1}`);
+        body.innerHTML = '';
+        document.getElementById(`verdict-${i+1}`).className = 'model-verdict';
+        document.getElementById(`verdict-${i+1}`).textContent = '';
+      });
+    }
+
+    async function runAnalysis() {
+      if (!selectedScenario) return;
+
+      const btn = document.getElementById('run-btn');
+      btn.disabled = true;
+      btn.classList.add('loading');
+
+      // Show loading state in all cards
+      MODELS.forEach((m, i) => {
+        const body = document.getElementById(`body-${i+1}`);
+        body.innerHTML = `<div class="model-loading">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <span>Querying ${m.label}…</span>
+        </div>`;
+        document.getElementById(`verdict-${i+1}`).className = 'model-verdict';
+      });
+
+      document.getElementById('results-header').classList.add('visible');
+      document.getElementById('results-subtitle').textContent = 'All models received the same prompt.';
+      document.getElementById('verdict-bar').classList.remove('visible');
+
+      try {
+        const resp = await fetch('/lab/api', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({scenario_id: selectedScenario}),
+        });
+        const data = await resp.json();
+
+        let countA = 0, countB = 0;
+
+        MODELS.forEach((m, i) => {
+          const result = data.results[m.id];
+          const body = document.getElementById(`body-${i+1}`);
+          const verdictEl = document.getElementById(`verdict-${i+1}`);
+
+          if (!result || result.error) {
+            body.innerHTML = `<span class="model-error">Error: ${result?.error || 'unknown'}</span>`;
+            return;
+          }
+
+          body.innerHTML = `<p class="model-response">${result.text}</p>`;
+
+          // Detect recommendation
+          const text = result.text.toLowerCase();
+          const picksA = text.includes('option a') && !text.match(/not.*option a|option b.*not.*option a/);
+          const picksB = text.includes('option b') && !text.match(/not.*option b|option a.*not.*option b/);
+
+          if (picksA && !picksB) {
+            verdictEl.textContent = 'Option A';
+            verdictEl.className = 'model-verdict opt-a visible';
+            countA++;
+          } else if (picksB && !picksA) {
+            verdictEl.textContent = 'Option B';
+            verdictEl.className = 'model-verdict opt-b visible';
+            countB++;
+          }
+        });
+
+        // Show verdict bar
+        document.getElementById('verdict-a-count').textContent = `${countA} × Option A`;
+        document.getElementById('verdict-b-count').textContent = `${countB} × Option B`;
+        document.getElementById('verdict-bar').classList.add('visible');
+
+      } catch (err) {
+        MODELS.forEach((m, i) => {
+          document.getElementById(`body-${i+1}`).innerHTML =
+            `<span class="model-error">Request failed</span>`;
+        });
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  </script>
+
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9dbd0b155b28463494355b6113e8efcd"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
