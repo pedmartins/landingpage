@@ -50,6 +50,7 @@
     .nav-tagline strong { font-weight: 700; color: var(--navy); }
     @media (min-width: 900px) { .nav-tagline { display: inline; } }
 
+    .nav-brand { display: flex; align-items: center; }
     .nav-logo {
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 700; font-size: 0.95rem;
@@ -255,8 +256,10 @@
 
   <!-- NAV -->
   <nav>
+    <div class="nav-brand">
     <a href="{{ '/' if lang == 'pt' else '/en' }}" class="nav-logo">Pedro Martins</a>
     <span class="nav-tagline">{% if lang == "pt" %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</span>
+    </div>
     <ul class="nav-links">
       <li><a href="{{ '/framework' if lang == 'pt' else '/en/framework' }}">{{ 'Framework' }}</a></li>
       <li><a href="{{ '/publicacoes' if lang == 'pt' else '/en/publicacoes' }}">{{ 'Publicações' if lang == 'pt' else 'Publications' }}</a></li>

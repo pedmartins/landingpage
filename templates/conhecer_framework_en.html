@@ -52,6 +52,7 @@
     .nav-tagline strong { font-weight: 700; color: var(--navy); }
     @media (min-width: 900px) { .nav-tagline { display: inline; } }
 
+    .nav-brand { display: flex; align-items: center; }
     .nav-logo {
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 700; font-size: 0.95rem;
@@ -349,8 +350,10 @@
 
   <!-- NAV -->
   <nav>
+    <div class="nav-brand">
     <a href="/en" class="nav-logo">Pedro Martins</a>
     <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
+    </div>
     <ul class="nav-links">
       <li><a href="/en" class="active">Framework</a></li>
       <li><a href="#">Services</a></li>
