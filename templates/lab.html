@@ -226,19 +226,22 @@
     .verdict-b { background: rgba(26,45,61,0.08); color: var(--navy); }
 
     .models-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
     }
     .model-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 180px 1fr;
       overflow: hidden;
     }
     .model-card-header {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      justify-content: center; gap: 0.4rem;
     }
     .model-name {
       font-family: 'Barlow Condensed', sans-serif;
@@ -247,17 +250,18 @@
     }
     .model-verdict {
       font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700; font-size: 0.78rem;
+      font-weight: 700; font-size: 0.75rem;
       letter-spacing: 0.08em; padding: 0.15rem 0.55rem;
-      display: none;
+      display: none; align-self: flex-start;
     }
     .model-verdict.opt-a { background: rgba(26,158,138,0.12); color: var(--teal); }
     .model-verdict.opt-b { background: rgba(26,45,61,0.08); color: var(--navy); }
     .model-verdict.visible { display: inline-block; }
 
     .model-card-body {
-      padding: 1rem;
-      min-height: 120px;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center;
+      min-height: 64px;
     }
     .model-response {
       font-size: 0.88rem; line-height: 1.7;
@@ -292,7 +296,8 @@
 
     @media (max-width: 700px) {
       .options-row { grid-template-columns: 1fr; }
-      .models-grid { grid-template-columns: 1fr; }
+      .model-card { grid-template-columns: 1fr; }
+      .model-card-header { border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; align-items: center; justify-content: space-between; }
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
     }
