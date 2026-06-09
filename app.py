@@ -75,13 +75,13 @@ def get_wp_author(user_id=1):
         )
         if r.status_code == 200:
             a = r.json()
-            full_name = a.get("name", "")
+            full_name = html_lib.unescape(a.get("name", ""))
             initials  = "".join(w[0] for w in full_name.split()[:2]).upper() or "PM"
             _wp_author_cache = {
                 "name":        full_name,
                 "initials":    initials,
-                "url":         a.get("url", ""),        # campo Website → LinkedIn
-                "description": a.get("description", ""),
+                "url":         a.get("url", ""),
+                "description": html_lib.unescape(a.get("description", "")),
             }
             return _wp_author_cache
     except Exception:
