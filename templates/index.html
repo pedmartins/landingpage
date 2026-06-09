@@ -363,7 +363,7 @@
         <div class="avatar">{{ wp_author.initials or 'PM' }}</div>
         <div>
           <div class="author-name">{{ wp_author.name or 'Pedro Martins' }}</div>
-          <div class="author-role">{{ wp_author.description or 'Senior Adviser, AI Governance' }}</div>
+          <div class="author-role">{{ wp_author.description | safe or 'Senior Adviser, AI Governance' }}</div>
         </div>
       </div>
     </div>

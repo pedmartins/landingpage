@@ -307,7 +307,7 @@
       <div class="author-info">
         <strong>{{ article.author.name }}</strong>
         {% if article.author.description %}
-        <span>{{ article.author.description }}</span>
+        <span>{{ article.author.description | safe }}</span>
         {% endif %}
         {% if article.author.url %}
         <a href="{{ article.author.url }}" target="_blank" rel="noopener">LinkedIn →</a>
