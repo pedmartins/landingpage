@@ -94,7 +94,12 @@ def call_cf_model(model_id, prompt):
             timeout=30,
         )
         data = r.json()
-        text = data.get("result", {}).get("response", "")
+        if not data.get("success", True):
+            errors = data.get("errors") or []
+            msg = errors[0].get("message", "API error") if errors else f"HTTP {r.status_code}"
+            return {"text": "", "error": msg}
+        result = data.get("result") or {}
+        text = result.get("response", "")
         return {"text": text, "error": None}
     except Exception as e:
         return {"text": "", "error": str(e)}
