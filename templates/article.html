@@ -37,6 +37,19 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 1.2rem;
+      padding-left: 1.2rem;
+      border-left: 1px solid var(--border, rgba(26,45,61,0.12));
+      display: none; /* hidden mobile */
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    @media (min-width: 900px) { .nav-tagline { display: inline; } }
+
     .nav-logo {
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 700; font-size: 0.95rem;
@@ -236,25 +249,6 @@
       .article-wrapper { padding: 2.5rem 1.5rem 4rem; }
       footer { flex-direction: column; gap: 0.5rem; text-align: center; }
     }
-    /* ── MISSION BAR ── */
-    .mission-bar {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 1.1rem 4vw;
-      text-align: center;
-      background: var(--cream);
-    }
-    .mission-bar p {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(0.75rem, 1.4vw, 0.88rem);
-      font-weight: 300;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--navy);
-      margin: 0;
-    }
-    .mission-bar strong { font-weight: 800; }
-
   </style>
 </head>
 <body>
@@ -262,6 +256,7 @@
   <!-- NAV -->
   <nav>
     <a href="{{ '/' if lang == 'pt' else '/en' }}" class="nav-logo">Pedro Martins</a>
+    <span class="nav-tagline">{% if lang == "pt" %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</span>
     <ul class="nav-links">
       <li><a href="{{ '/framework' if lang == 'pt' else '/en/framework' }}">{{ 'Framework' }}</a></li>
       <li><a href="{{ '/publicacoes' if lang == 'pt' else '/en/publicacoes' }}">{{ 'Publicações' if lang == 'pt' else 'Publications' }}</a></li>
@@ -273,11 +268,6 @@
       </li>
     </ul>
   </nav>
-
-  <!-- MISSION BAR -->
-  <div class="mission-bar">
-    <p>{% if lang == "pt" %}Transformar a <strong>AI</strong> em vantagem competitiva real e sustentável{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</p>
-  </div>
 
 
   <!-- HERO IMAGE -->

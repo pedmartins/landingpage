@@ -39,6 +39,19 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(26,45,61,0.07);
     }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 1.2rem;
+      padding-left: 1.2rem;
+      border-left: 1px solid var(--border, rgba(26,45,61,0.12));
+      display: none; /* hidden mobile */
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    @media (min-width: 900px) { .nav-tagline { display: inline; } }
+
     .nav-logo {
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 700; font-size: 0.95rem;
@@ -303,25 +316,6 @@
       .articles-grid { grid-template-columns: 1fr; gap: 1.25rem; }
       .articles-header { flex-direction: column; gap: 1rem; }
     }
-    /* ── MISSION BAR ── */
-    .mission-bar {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 1.1rem 4vw;
-      text-align: center;
-      background: var(--cream);
-    }
-    .mission-bar p {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(0.75rem, 1.4vw, 0.88rem);
-      font-weight: 300;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--navy);
-      margin: 0;
-    }
-    .mission-bar strong { font-weight: 800; }
-
   </style>
 
 </head>
@@ -330,6 +324,7 @@
   <!-- NAV -->
   <nav>
     <a href="/" class="nav-logo">Pedro Martins</a>
+    <span class="nav-tagline">Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis</span>
     <ul class="nav-links">
       <li><a href="#">Framework</a></li>
       <li><a href="#">Serviços</a></li>
@@ -338,11 +333,6 @@
       <li><a href="/en">EN</a></li>
     </ul>
   </nav>
-
-  <!-- MISSION BAR -->
-  <div class="mission-bar">
-    <p>Transformar a <strong>AI</strong> em vantagem competitiva real e sustentável</p>
-  </div>
 
 
   <!-- HERO -->
