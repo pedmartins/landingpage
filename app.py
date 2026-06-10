@@ -416,14 +416,14 @@ def article(slug):
     return render_template("article.html", article=art, lang=lang)
 
 
-@app.route("/agendar")
-def agendar():
-    return render_template("agendar.html", zoho_url=ZOHO_BOOKINGS_URL)
-
-
 @app.route("/book")
 def book():
     return render_template("book.html", zoho_url=ZOHO_BOOKINGS_URL)
+
+
+@app.route("/en/book")
+def book_en():
+    return render_template("book_en.html", zoho_url=ZOHO_BOOKINGS_URL)
 
 
 @app.route("/lab")
