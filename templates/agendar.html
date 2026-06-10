@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendar Conversa — Pedro Martins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:       #1a9e8a;
+      --teal-dark:  #0d6e5f;
+      --navy:       #1a2d3d;
+      --cream:      #f5f3ee;
+      --muted:      #5a6a78;
+      --border:     rgba(26,45,61,0.12);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV (igual ao index) ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245, 243, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(26,45,61,0.07);
+    }
+    .nav-brand { display: flex; align-items: center; flex-wrap: wrap; row-gap: 0.28rem; }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.76rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); display: inline;
+      margin-left: 1.2rem; padding-left: 1.2rem;
+      border-left: 1px solid var(--border); line-height: 1.6;
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+
+    /* ── PÁGINA ── */
+    .agendar {
+      max-width: 920px; margin: 0 auto;
+      padding: calc(64px + 3.5rem) 4vw 4rem;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 500; color: var(--teal); margin-bottom: 1.2rem;
+    }
+    .eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--teal); }
+
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; text-transform: uppercase;
+      font-size: clamp(2.6rem, 5vw, 4rem);
+      line-height: 0.95; letter-spacing: -0.01em;
+      color: var(--navy); margin-bottom: 1rem;
+    }
+    .page-title em { font-style: normal; color: var(--teal); }
+
+    .page-desc {
+      font-size: 1rem; line-height: 1.75; color: var(--muted);
+      max-width: 60ch; margin-bottom: 2.4rem;
+    }
+
+    /* âmbitos de serviço */
+    .scopes {
+      list-style: none; margin-bottom: 2.6rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.9rem;
+    }
+    .scope {
+      border: 1.5px solid var(--border); background: rgba(255,255,255,0.5);
+      padding: 1rem 1.1rem; transition: border-color 0.2s, background 0.2s;
+    }
+    .scope:hover { border-color: var(--teal); background: rgba(26,158,138,0.05); }
+    .scope h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      font-size: 0.95rem; color: var(--navy); margin-bottom: 0.35rem;
+    }
+    .scope p { font-size: 0.86rem; line-height: 1.55; color: var(--muted); }
+    .scope .dur {
+      display: inline-block; margin-top: 0.6rem;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600;
+    }
+
+    /* moldura do calendário */
+    .calwrap {
+      border: 1.5px solid var(--border); background: #fff;
+      box-shadow: 0 10px 40px -22px rgba(26,45,61,0.4);
+    }
+    .calbar {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      font-size: 0.78rem; font-weight: 700; color: var(--navy);
+    }
+    .calbar::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--teal); }
+    .cal-iframe { width: 100%; border: 0; display: block; min-height: 760px; }
+
+    .cal-empty {
+      padding: 3rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.92rem;
+    }
+    .cal-empty code {
+      font-family: monospace; background: rgba(26,45,61,0.06);
+      padding: 0.15rem 0.4rem; border-radius: 3px; color: var(--navy);
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .agendar { padding-top: calc(56px + 2.4rem); }
+      .cal-iframe { min-height: 680px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">
+      <a href="/" class="nav-logo">Pedro Martins</a>
+      <span class="nav-tagline">Converter <strong>AI</strong> em vantagens competitivas reais e sustentáveis</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/framework">Framework</a></li>
+      <li><a href="/publicacoes/ai-gov">Publicações</a></li>
+      <li><a href="/agendar">Agendar</a></li>
+      <li><a href="/en">EN</a></li>
+    </ul>
+  </nav>
+
+  <main class="agendar">
+    <span class="eyebrow">Vamos falar</span>
+    <h1 class="page-title">Agendar <em>conversa</em></h1>
+    <p class="page-desc">
+      Escolha um horário disponível para uma sessão de 30 minutos. A agenda mostra
+      apenas os períodos efectivamente livres — basta seleccionar o âmbito, o dia e a hora.
+    </p>
+
+    <ul class="scopes">
+      <li class="scope">
+        <h3>Diagnóstico inicial</h3>
+        <p>Primeira conversa para enquadrar o desafio de governação de IA.</p>
+        <span class="dur">30 min</span>
+      </li>
+      <li class="scope">
+        <h3>Revisão de framework</h3>
+        <p>Análise de políticas, riscos e conformidade já existentes.</p>
+        <span class="dur">30 min</span>
+      </li>
+      <li class="scope">
+        <h3>Sessão de aconselhamento</h3>
+        <p>Apoio pontual a uma decisão ou implementação concreta.</p>
+        <span class="dur">30 min</span>
+      </li>
+    </ul>
+
+    <div class="calwrap">
+      <div class="calbar">Disponibilidade em tempo real</div>
+      {% if zoho_url %}
+        <iframe
+          class="cal-iframe"
+          src="{{ zoho_url }}"
+          title="Agendar conversa — calendário"
+          loading="lazy"
+          allowfullscreen></iframe>
+      {% else %}
+        <div class="cal-empty">
+          Calendário por configurar — define a variável de ambiente
+          <code>ZOHO_BOOKINGS_URL</code> com o URL do iframe do Zoho Bookings.
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+</body>
+</html>
