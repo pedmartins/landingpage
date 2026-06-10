@@ -11,6 +11,10 @@ app = Flask(__name__)
 # Exemplo: https://o-teu-site.railway.app
 WP_API_URL = os.environ.get("WP_API_URL", "").rstrip("/")
 
+# Zoho Bookings — URL do iframe da Booking Page (Embed/Share)
+# Exemplo: https://NOME.zohobookings.eu/portal-embed#/SERVICO
+ZOHO_BOOKINGS_URL = os.environ.get("ZOHO_BOOKINGS_URL", "")
+
 # Cloudflare Workers AI
 CF_ACCOUNT_ID = os.environ.get("CF_ACCOUNT_ID", "")
 CF_API_TOKEN  = os.environ.get("CF_API_TOKEN", "")
@@ -19,7 +23,7 @@ CF_MODELS = [
     {"id": "@cf/meta/llama-3.2-3b-instruct",          "label": "Llama 3.2 · 3B"},
     {"id": "@cf/meta/llama-3.1-8b-instruct-fp8-fast", "label": "Llama 3.1 · 8B"},
     {"id": "@cf/mistral/mistral-7b-instruct-v0.1",    "label": "Mistral · 7B"},
-    {"id": "@cf/google/gemma-3-12b-it",               "label": "Gemma 3 · 12B"},
+    {"id": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",  "label": "Llama 3.1 · 8B · v2"},
 ]
 
 HBR_SCENARIOS = [
@@ -410,6 +414,11 @@ def article(slug):
     art["slug"] = slug
 
     return render_template("article.html", article=art, lang=lang)
+
+
+@app.route("/agendar")
+def agendar():
+    return render_template("agendar.html", zoho_url=ZOHO_BOOKINGS_URL)
 
 
 @app.route("/lab")

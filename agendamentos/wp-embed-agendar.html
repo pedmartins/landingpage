@@ -1,0 +1,173 @@
+<!--
+  ════════════════════════════════════════════════════════════════════
+  AGENDAR CONVERSA — bloco de embed para WordPress
+  Cola este ficheiro inteiro num bloco "HTML personalizado" (Custom HTML)
+  na página "Agendar conversa".
+
+  Passo único de configuração:
+    1. No Zoho Bookings → Booking Page → "Embed/Share" → copia o URL do iframe.
+    2. Substitui o valor de  data-zoho-src  mais abaixo  (procura por  COLAR_URL_ZOHO_AQUI ).
+    3. (Opcional) Dentro do Zoho → Booking Page → Branding, define
+       cor primária = #1a9e8a  e fonte = Barlow, para o INTERIOR do formulário
+       combinar com esta moldura. O CSS daqui NÃO entra no iframe (cross-origin).
+  ════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<section class="rai-agendar">
+  <style>
+    /* tokens herdados do site Flask, encapsulados para não colidir com o tema WP */
+    .rai-agendar {
+      --teal:      #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --navy:      #1a2d3d;
+      --cream:     #f5f3ee;
+      --muted:     #5a6a78;
+      --border:    rgba(26,45,61,0.12);
+
+      font-family: 'Barlow', sans-serif;
+      color: var(--navy);
+      background: var(--cream);
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 3rem 4vw 3.5rem;
+      box-sizing: border-box;
+    }
+    .rai-agendar *, .rai-agendar *::before, .rai-agendar *::after { box-sizing: border-box; }
+
+    .rai-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 500; color: var(--teal); margin-bottom: 1.2rem;
+    }
+    .rai-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--teal); }
+
+    .rai-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; text-transform: uppercase;
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      line-height: 0.95; letter-spacing: -0.01em;
+      color: var(--navy); margin: 0 0 1rem;
+    }
+    .rai-title em { font-style: normal; color: var(--teal); }
+
+    .rai-desc {
+      font-size: 1rem; line-height: 1.75; color: var(--muted);
+      max-width: 60ch; margin: 0 0 2.2rem;
+    }
+
+    /* lista de âmbitos de serviço — caso optes por descrevê-los aqui,
+       em vez de (ou além de) os mapear como serviços no Zoho */
+    .rai-scopes {
+      list-style: none; margin: 0 0 2.4rem; padding: 0;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.9rem;
+    }
+    .rai-scope {
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.5);
+      padding: 1rem 1.1rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .rai-scope:hover { border-color: var(--teal); background: rgba(26,158,138,0.05); }
+    .rai-scope h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      font-size: 0.95rem; color: var(--navy); margin: 0 0 0.35rem;
+    }
+    .rai-scope p { font-size: 0.86rem; line-height: 1.55; color: var(--muted); margin: 0; }
+    .rai-scope .rai-dur {
+      display: inline-block; margin-top: 0.6rem;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600;
+    }
+
+    /* moldura do calendário */
+    .rai-calwrap {
+      border: 1.5px solid var(--border);
+      background: #fff;
+      box-shadow: 0 10px 40px -22px rgba(26,45,61,0.4);
+    }
+    .rai-calbar {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.85rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      font-size: 0.78rem; font-weight: 700; color: var(--navy);
+    }
+    .rai-calbar::before {
+      content: ''; width: 9px; height: 9px; border-radius: 50%;
+      background: var(--teal);
+    }
+    .rai-iframe { width: 100%; border: 0; display: block; min-height: 760px; }
+
+    /* fallback de carregamento / link directo */
+    .rai-fallback {
+      padding: 2.5rem 1.2rem; text-align: center;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .rai-fallback a {
+      color: var(--teal-dark); font-weight: 600; text-decoration: none;
+      border-bottom: 1px solid currentColor;
+    }
+
+    @media (max-width: 600px) {
+      .rai-agendar { padding: 2.2rem 5vw 2.6rem; }
+      .rai-iframe { min-height: 680px; }
+    }
+  </style>
+
+  <span class="rai-eyebrow">Vamos falar</span>
+  <h1 class="rai-title">Agendar <em>conversa</em></h1>
+  <p class="rai-desc">
+    Escolhe um horário disponível para uma sessão de 30 minutos. A agenda mostra
+    apenas os períodos efectivamente livres — basta seleccionar o âmbito, o dia e a hora.
+  </p>
+
+  <!--
+    LISTA DE ÂMBITOS DE SERVIÇO
+    Mantém só os que se aplicam. Se cada âmbito for um "serviço" distinto no Zoho,
+    esta lista é informativa; o utilizador escolhe o âmbito dentro do próprio calendário.
+  -->
+  <ul class="rai-scopes">
+    <li class="rai-scope">
+      <h3>Diagnóstico inicial</h3>
+      <p>Primeira conversa para enquadrar o desafio de governação de IA.</p>
+      <span class="rai-dur">30 min</span>
+    </li>
+    <li class="rai-scope">
+      <h3>Revisão de framework</h3>
+      <p>Análise de políticas, riscos e conformidade já existentes.</p>
+      <span class="rai-dur">30 min</span>
+    </li>
+    <li class="rai-scope">
+      <h3>Sessão de aconselhamento</h3>
+      <p>Apoio pontual a uma decisão ou implementação concreta.</p>
+      <span class="rai-dur">30 min</span>
+    </li>
+  </ul>
+
+  <div class="rai-calwrap">
+    <div class="rai-calbar">Disponibilidade em tempo real</div>
+
+    <!-- ▼▼▼  SUBSTITUI o src por COLAR_URL_ZOHO_AQUI ▼▼▼ -->
+    <iframe
+      class="rai-iframe"
+      src="COLAR_URL_ZOHO_AQUI"
+      title="Agendar conversa — calendário"
+      loading="lazy"
+      allowfullscreen>
+    </iframe>
+    <!-- ▲▲▲ ------------------------------------------ ▲▲▲ -->
+
+    <noscript>
+      <div class="rai-fallback">
+        O calendário precisa de JavaScript activo.
+        <a href="COLAR_URL_ZOHO_AQUI" target="_blank" rel="noopener">Abrir página de marcação →</a>
+      </div>
+    </noscript>
+  </div>
+</section>
