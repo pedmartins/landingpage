@@ -421,6 +421,11 @@ def agendar():
     return render_template("agendar.html", zoho_url=ZOHO_BOOKINGS_URL)
 
 
+@app.route("/book")
+def book():
+    return render_template("book.html", zoho_url=ZOHO_BOOKINGS_URL)
+
+
 @app.route("/lab")
 def lab():
     return render_template("lab.html", scenarios=HBR_SCENARIOS, models=CF_MODELS)

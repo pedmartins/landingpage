@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agendar Conversa — Pedro Martins</title>
+  <title>Book a Conversation — Pedro Martins</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 
@@ -143,40 +143,40 @@
   <!-- NAV -->
   <nav>
     <div class="nav-brand">
-      <a href="/" class="nav-logo">Pedro Martins</a>
-      <span class="nav-tagline">Converter <strong>AI</strong> em vantagens competitivas reais e sustentáveis</span>
+      <a href="/en" class="nav-logo">Pedro Martins</a>
+      <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
     </div>
     <ul class="nav-links">
-      <li><a href="/framework">Framework</a></li>
-      <li><a href="/publicacoes/ai-gov">Publicações</a></li>
-      <li><a href="/agendar">Agendar</a></li>
-      <li><a href="/en">EN</a></li>
+      <li><a href="/en/framework">Framework</a></li>
+      <li><a href="/publicacoes/ai-gov">Publications</a></li>
+      <li><a href="/book">Book</a></li>
+      <li><a href="/agendar">PT</a></li>
     </ul>
   </nav>
 
   <main class="agendar">
-    <span class="eyebrow">Vamos falar</span>
-    <h1 class="page-title">Agendar <em>conversa</em></h1>
+    <span class="eyebrow">Let's talk</span>
+    <h1 class="page-title">Book a <em>conversation</em></h1>
     <p class="page-desc">
-      Escolha um horário disponível para uma sessão de 30 minutos. A agenda mostra
-      apenas os períodos efectivamente livres — basta escolher o dia e a hora.
+      Pick an available slot for a 30-minute session. The calendar shows only the
+      times that are genuinely free — just choose the day and the hour.
     </p>
 
     <div class="calwrap">
-      <div class="calbar">Disponibilidade em tempo real</div>
+      <div class="calbar">Calendar availability</div>
       {% if zoho_url %}
         <div id="zoho-bookings-inline"></div>
       {% else %}
         <div class="cal-empty">
-          Calendário por configurar — define a variável de ambiente
-          <code>ZOHO_BOOKINGS_URL</code> com o URL do iframe do Zoho Bookings.
+          Calendar not configured — set the <code>ZOHO_BOOKINGS_URL</code>
+          environment variable with the Zoho Bookings embed URL.
         </div>
       {% endif %}
     </div>
   </main>
 
   {% if zoho_url %}
-  <!-- Embed JS do Zoho Bookings (auto-altura) -->
+  <!-- Zoho Bookings JS embed (auto-height) -->
   <script src="https://bookings.nimbuspop.com/assets/embed.js"></script>
   <script>
     window.addEventListener('load', function () {
