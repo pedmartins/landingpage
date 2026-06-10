@@ -322,6 +322,22 @@ def publicacoes_categoria(category_slug):
     return render_template("publicacoes.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
 
 
+@app.route("/en/publicacoes")
+def publicacoes_en():
+    cat = 'ai-gov'
+    posts = get_wp_posts(category_slug=cat, tag_slug="lang-en")
+    wp_configured = bool(WP_API_URL)
+    return render_template("publicacoes_en.html", posts=posts, wp_configured=wp_configured, active_category=cat)
+
+
+@app.route("/en/publicacoes/<category_slug>")
+def publicacoes_en_categoria(category_slug):
+    cat = 'ai-gov'
+    posts = get_wp_posts(category_slug=cat, tag_slug="lang-en")
+    wp_configured = bool(WP_API_URL)
+    return render_template("publicacoes_en.html", posts=posts, wp_configured=wp_configured, active_category=category_slug)
+
+
 def get_wp_post_by_slug(wp_slug):
     """Obtém um artigo do WordPress pelo slug via REST API."""
     if not WP_API_URL:
