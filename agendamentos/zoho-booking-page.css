@@ -1,0 +1,65 @@
+/* ════════════════════════════════════════════════════════════════
+   CSS personalizado para a Booking Page do Zoho Bookings
+   Cola em: Zoho Bookings → Definições → Booking Page → "Apply your own CSS"
+   Objetivo: aproximar a tipografia (Barlow) e a cor (teal #1a9e8a) do site Flask.
+
+   NOTA: os seletores são largos de propósito, porque os nomes de classe
+   do Zoho não são públicos. Se algum elemento não mudar, usa o
+   "inspecionar elemento" do browser para descobrir a classe real e
+   acrescenta-a aqui. O @import pode ser removido pelo Zoho em alguns
+   planos — se a Barlow não carregar, é esse o motivo.
+   ════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap');
+
+/* ── Tipografia base ── */
+body, input, select, textarea, button, span, p, label, div {
+  font-family: 'Barlow', sans-serif !important;
+}
+
+/* ── Títulos / cabeçalhos ── */
+h1, h2, h3, h4,
+[class*="title"], [class*="Title"],
+[class*="heading"], [class*="Heading"] {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  letter-spacing: 0.005em !important;
+}
+
+/* ── Cor de acento: botões principais ── */
+button, .btn,
+[class*="button"], [class*="Button"],
+[class*="submit"], [class*="Submit"],
+[type="submit"] {
+  background-color: #1a9e8a !important;
+  border-color: #1a9e8a !important;
+  color: #ffffff !important;
+}
+button:hover, .btn:hover,
+[class*="button"]:hover, [class*="submit"]:hover,
+[type="submit"]:hover {
+  background-color: #0d6e5f !important;
+  border-color: #0d6e5f !important;
+}
+
+/* ── Slots de hora / dias: selecionado e hover ── */
+[class*="slot"]:hover,
+[class*="time"]:hover,
+[class*="selected"],
+[class*="Selected"],
+[class*="active"],
+[class*="Active"] {
+  background-color: #1a9e8a !important;
+  border-color: #1a9e8a !important;
+  color: #ffffff !important;
+}
+
+/* ── Links ── */
+a { color: #0d6e5f !important; }
+a:hover { color: #1a9e8a !important; }
+
+/* ── Pequenos detalhes de cor (indicadores, foco) ── */
+[class*="focus"],
+input:focus, select:focus, textarea:focus {
+  border-color: #1a9e8a !important;
+  outline-color: #1a9e8a !important;
+}

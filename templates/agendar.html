@@ -183,12 +183,7 @@
     <div class="calwrap">
       <div class="calbar">Disponibilidade em tempo real</div>
       {% if zoho_url %}
-        <iframe
-          class="cal-iframe"
-          src="{{ zoho_url }}"
-          title="Agendar conversa — calendário"
-          loading="lazy"
-          allowfullscreen></iframe>
+        <div id="zoho-bookings-inline"></div>
       {% else %}
         <div class="cal-empty">
           Calendário por configurar — define a variável de ambiente
@@ -197,6 +192,20 @@
       {% endif %}
     </div>
   </main>
+
+  {% if zoho_url %}
+  <!-- Embed JS do Zoho Bookings (auto-altura) -->
+  <script src="https://bookings.nimbuspop.com/assets/embed.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      Bookings.inlineEmbed({
+        url: "{{ zoho_url }}",
+        parent: "#zoho-bookings-inline",
+        height: "760px"
+      });
+    });
+  </script>
+  {% endif %}
 
 </body>
 </html>
