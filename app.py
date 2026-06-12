@@ -503,9 +503,22 @@ def lab_api():
         samples = 5
     samples = max(1, min(7, samples))
 
-    scenario = next((s for s in HBR_SCENARIOS if s["id"] == scenario_id), None)
-    if not scenario:
-        return jsonify({"error": "Scenario not found"}), 400
+    preset = next((s for s in HBR_SCENARIOS if s["id"] == scenario_id), None)
+
+    # O conteúdo enviado pelo cliente (contexto/opções editados) tem precedência
+    # sobre o preset. Permite cenários personalizados e edição inline.
+    context = (data.get("context") or (preset or {}).get("context") or "").strip()
+    option_a = (data.get("option_a") or (preset or {}).get("option_a") or "").strip()
+    option_b = (data.get("option_b") or (preset or {}).get("option_b") or "").strip()
+    if not (context and option_a and option_b):
+        return jsonify({"error": "context, option_a and option_b are required"}), 400
+
+    scenario = {
+        "id": scenario_id,
+        "context": context,
+        "option_a": option_a,
+        "option_b": option_b,
+    }
 
     # Define o que aparece em cada posição consoante a ordem.
     # label_to_content mapeia o rótulo devolvido pelo modelo (A/B) de volta

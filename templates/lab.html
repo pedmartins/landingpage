@@ -167,6 +167,45 @@
     }
     .option-box p { font-size: 0.88rem; line-height: 1.6; color: var(--navy); font-weight: 300; }
 
+    /* ── EDITABLE FIELDS ── */
+    .field-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; margin-bottom: 0.5rem;
+    }
+    .reset-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.04em; color: var(--teal-dark);
+      text-decoration: underline; padding: 0; display: none;
+    }
+    .reset-btn.visible { display: inline; }
+    .reset-btn:hover { color: var(--teal); }
+    .context-input {
+      width: 100%; box-sizing: border-box; resize: vertical;
+      font-family: 'Barlow', sans-serif; font-size: 0.95rem; line-height: 1.7;
+      color: var(--navy); font-weight: 300;
+      background: var(--card-bg); border: 1px solid var(--border);
+      padding: 0.7rem 0.85rem; margin-bottom: 1.25rem;
+      transition: border-color 0.15s;
+    }
+    .context-input:focus { outline: none; border-color: var(--teal); }
+    .option-input {
+      width: 100%; box-sizing: border-box; resize: vertical;
+      font-family: 'Barlow', sans-serif; font-size: 0.88rem; line-height: 1.6;
+      color: var(--navy); font-weight: 300;
+      background: transparent; border: none; padding: 0;
+    }
+    .option-input:focus { outline: none; }
+    .option-input:not([readonly]) {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.6rem; margin-top: 0.1rem;
+    }
+    .option-input:not([readonly]):focus { border-color: var(--teal); }
+    .scenario-btn-custom {
+      border-style: dashed; color: var(--teal-dark);
+    }
+
     /* ── ORDER TOGGLE ── */
     .order-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -429,12 +468,21 @@
         <span class="vs">vs. {{ s.tension.split(' vs. ')[1] }}</span>
       </button>
       {% endfor %}
+      <button class="scenario-btn scenario-btn-custom" data-id="custom" onclick="selectCustom()">
+        <span class="tension">+ Custom scenario</span>
+        <span class="vs">write your own</span>
+      </button>
     </div>
 
     <!-- SCENARIO DETAIL -->
     <div class="scenario-detail" id="scenario-detail">
-      <span class="context-label">Business Context</span>
-      <p class="context-text" id="context-text"></p>
+      <div class="field-head">
+        <span class="context-label">Business Context</span>
+        <button class="reset-btn" id="reset-btn" onclick="resetToOriginal()">Reset to original</button>
+      </div>
+      <textarea class="context-input" id="context-input" rows="3"
+                placeholder="Describe the business situation the model must reason about…"
+                oninput="onContextEdit()"></textarea>
       <div class="order-row">
         <span class="order-hint" id="order-hint">Original order</span>
         <button class="swap-btn" id="swap-btn" onclick="swapOrder()">
@@ -447,11 +495,13 @@
       <div class="options-row">
         <div class="option-box">
           <span class="opt-label">Option A</span>
-          <p id="option-a-text"></p>
+          <textarea class="option-input" id="option-a-input" rows="3" readonly
+                    placeholder="First strategic option…" oninput="onOptionEdit('A')"></textarea>
         </div>
         <div class="option-box">
           <span class="opt-label">Option B</span>
-          <p id="option-b-text"></p>
+          <textarea class="option-input" id="option-b-input" rows="3" readonly
+                    placeholder="Second strategic option…" oninput="onOptionEdit('B')"></textarea>
         </div>
       </div>
     </div>
@@ -523,25 +573,34 @@
     let selectedScenario = null;
     let currentOrder = 'ab';          // 'ab' = original, 'ba' = swapped
     let samples = 5;
+    let isCustom = false;             // true = blank/custom scenario (options editable)
+    let editable = {context: '', option_a: '', option_b: ''};  // current content state
+    let original = null;              // preset snapshot, for "reset to original"
     const lastRuns = {};               // { scenarioId: { ab: data, ba: data } }
 
     // Short label for an option, e.g. "Full Automation" from "Full Automation — replace…"
     function shortLabel(text) {
       if (!text) return '';
       const t = text.split('—')[0].split(' - ')[0].trim();
-      return t.length ? t : text.split(/\s+/).slice(0, 3).join(' ');
+      return (t.length && t.length < text.length) ? t : text.split(/\s+/).slice(0, 4).join(' ');
     }
-    function currentScenario() { return SCENARIOS.find(x => x.id === selectedScenario); }
     function pct(n, d) { return d ? Math.round(100 * n / d) : 0; }
 
-    // Render the two option boxes according to the current presentation order.
-    function renderOptionBoxes() {
-      const s = currentScenario();
-      if (!s) return;
-      const posA = currentOrder === 'ab' ? s.option_a : s.option_b;
-      const posB = currentOrder === 'ab' ? s.option_b : s.option_a;
-      document.getElementById('option-a-text').textContent = posA;
-      document.getElementById('option-b-text').textContent = posB;
+    // Which content id ('option_a'/'option_b') currently sits in a given position.
+    function contentKeyForPos(pos) {
+      if (currentOrder === 'ab') return pos === 'A' ? 'option_a' : 'option_b';
+      return pos === 'A' ? 'option_b' : 'option_a';
+    }
+
+    // Render context + the two option boxes from `editable`, honouring order & edit mode.
+    function renderFields() {
+      document.getElementById('context-input').value = editable.context;
+      const aInput = document.getElementById('option-a-input');
+      const bInput = document.getElementById('option-b-input');
+      aInput.value = editable[contentKeyForPos('A')];
+      bInput.value = editable[contentKeyForPos('B')];
+      aInput.readOnly = !isCustom;
+      bInput.readOnly = !isCustom;
       document.getElementById('order-hint').innerHTML =
         currentOrder === 'ab'
           ? 'Presentation: <strong>original order</strong>'
@@ -558,26 +617,84 @@
       });
     }
 
-    function selectScenario(id) {
-      selectedScenario = id;
-      currentOrder = 'ab';
-      document.querySelectorAll('.scenario-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.id === id);
-      });
-      const s = currentScenario();
-      if (!s) return;
-      document.getElementById('context-text').textContent = s.context;
-      renderOptionBoxes();
-      document.getElementById('scenario-detail').classList.add('visible');
-      document.getElementById('run-btn').disabled = false;
+    // Editing changes the content, so any prior run is no longer comparable.
+    function invalidateRuns() {
+      delete lastRuns[selectedScenario];
       resetResults();
       document.getElementById('compare-panel').classList.remove('visible');
+    }
+
+    function validateRun() {
+      const ok = editable.context.trim() && editable.option_a.trim() && editable.option_b.trim();
+      document.getElementById('run-btn').disabled = !ok;
+    }
+
+    function isEdited() {
+      return original && (
+        editable.context !== original.context ||
+        editable.option_a !== original.option_a ||
+        editable.option_b !== original.option_b);
+    }
+    function refreshResetBtn() {
+      document.getElementById('reset-btn').classList.toggle('visible', !isCustom && isEdited());
+    }
+
+    function selectScenario(id) {
+      const s = SCENARIOS.find(x => x.id === id);
+      if (!s) return;
+      selectedScenario = id;
+      isCustom = false;
+      currentOrder = 'ab';
+      original = {context: s.context, option_a: s.option_a, option_b: s.option_b};
+      editable = {...original};
+      document.querySelectorAll('.scenario-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+      renderFields();
+      document.getElementById('scenario-detail').classList.add('visible');
+      resetResults();
+      document.getElementById('compare-panel').classList.remove('visible');
+      refreshResetBtn();
+      validateRun();
+    }
+
+    function selectCustom() {
+      selectedScenario = 'custom';
+      isCustom = true;
+      currentOrder = 'ab';
+      original = null;
+      editable = {context: '', option_a: '', option_b: ''};
+      document.querySelectorAll('.scenario-btn').forEach(b => b.classList.toggle('active', b.dataset.id === 'custom'));
+      renderFields();
+      document.getElementById('scenario-detail').classList.add('visible');
+      resetResults();
+      document.getElementById('compare-panel').classList.remove('visible');
+      document.getElementById('reset-btn').classList.remove('visible');
+      validateRun();
+    }
+
+    function resetToOriginal() {
+      if (!original) return;
+      editable = {...original};
+      currentOrder = 'ab';
+      renderFields();
+      invalidateRuns();
+      refreshResetBtn();
+      validateRun();
+    }
+
+    function onContextEdit() {
+      editable.context = document.getElementById('context-input').value;
+      invalidateRuns(); refreshResetBtn(); validateRun();
+    }
+    function onOptionEdit(pos) {
+      const id = pos === 'A' ? 'option-a-input' : 'option-b-input';
+      editable[contentKeyForPos(pos)] = document.getElementById(id).value;
+      invalidateRuns(); refreshResetBtn(); validateRun();
     }
 
     function swapOrder() {
       if (!selectedScenario) return;
       currentOrder = currentOrder === 'ab' ? 'ba' : 'ab';
-      renderOptionBoxes();
+      renderFields();
     }
 
     function setSamples(v) { samples = parseInt(v, 10) || 5; }
@@ -651,7 +768,8 @@
 
     async function runAnalysis() {
       if (!selectedScenario) return;
-      const s = currentScenario();
+      if (!(editable.context.trim() && editable.option_a.trim() && editable.option_b.trim())) return;
+      const sc = editable;
       const btn = document.getElementById('run-btn');
       btn.disabled = true; btn.classList.add('loading');
 
@@ -672,24 +790,27 @@
         const resp = await fetch('/lab/api', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({scenario_id: selectedScenario, order: currentOrder, samples}),
+          body: JSON.stringify({
+            scenario_id: selectedScenario, order: currentOrder, samples,
+            context: sc.context, option_a: sc.option_a, option_b: sc.option_b,
+          }),
         });
         const data = await resp.json();
 
         let majA = 0, majB = 0;
         MODELS.forEach((m, i) => {
           const res = data.results[i];
-          renderModel(i, res, s);
+          renderModel(i, res, sc);
           if (res) { const mc = majContent(res); if (mc === 'a') majA++; else if (mc === 'b') majB++; }
         });
 
-        document.getElementById('verdict-a-count').textContent = `${majA} × ${shortLabel(s.option_a)}`;
-        document.getElementById('verdict-b-count').textContent = `${majB} × ${shortLabel(s.option_b)}`;
+        document.getElementById('verdict-a-count').textContent = `${majA} × ${shortLabel(sc.option_a)}`;
+        document.getElementById('verdict-b-count').textContent = `${majB} × ${shortLabel(sc.option_b)}`;
         document.getElementById('verdict-bar').classList.add('visible');
 
         lastRuns[selectedScenario] = lastRuns[selectedScenario] || {};
         lastRuns[selectedScenario][currentOrder] = data;
-        renderComparison(s);
+        renderComparison(sc);
 
       } catch (err) {
         MODELS.forEach((m, i) => {
