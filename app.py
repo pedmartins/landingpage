@@ -79,6 +79,32 @@ HBR_SCENARIOS = [
 ]
 
 
+import re
+
+def parse_choice(text):
+    """Extrai a opção recomendada (A/B) a partir do texto do modelo.
+    Procura primeiro a frase de recomendação explícita ('I recommend Option X'),
+    com fallback para a primeira opção mencionada. Devolve 'A', 'B' ou None.
+    """
+    if not text:
+        return None
+    t = text.lower()
+    # Formato obrigatório no system prompt: "I recommend Option X"
+    m = re.search(r"\bi recommend\b[^.]*?option\s+([ab])", t)
+    if m:
+        return m.group(1).upper()
+    # Fallback: qualquer frase de recomendação não-negada
+    m = re.search(r"(?<!not )recommend\w*\b[^.]*?option\s+([ab])", t)
+    if m:
+        return m.group(1).upper()
+    ia, ib = t.find("option a"), t.find("option b")
+    if ia != -1 and (ib == -1 or ia < ib):
+        return "A"
+    if ib != -1:
+        return "B"
+    return None
+
+
 def call_cf_model(model_id, prompt):
     """Chama um modelo Cloudflare Workers AI e devolve o texto gerado."""
     if not CF_ACCOUNT_ID or not CF_API_TOKEN:
@@ -104,7 +130,7 @@ def call_cf_model(model_id, prompt):
             return {"text": "", "error": msg}
         result = data.get("result") or {}
         text = result.get("response", "")
-        return {"text": text, "error": None}
+        return {"text": text, "choice": parse_choice(text), "error": None}
     except Exception as e:
         return {"text": "", "error": str(e)}
 

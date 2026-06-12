@@ -480,16 +480,27 @@
 
           body.innerHTML = `<p class="model-response">${result.text}</p>`;
 
-          // Detect recommendation
-          const text = result.text.toLowerCase();
-          const picksA = text.includes('option a') && !text.match(/not.*option a|option b.*not.*option a/);
-          const picksB = text.includes('option b') && !text.match(/not.*option b|option a.*not.*option b/);
+          // Prefer the structured choice computed server-side; only fall
+          // back to client-side text parsing if it is missing.
+          let pick = result.choice ? result.choice.toLowerCase() : null;
+          if (!pick) {
+            const text = result.text.toLowerCase();
+            const recMatch = text.match(/recommend\w*\b[^.]*?option\s+([ab])/);
+            if (recMatch) {
+              pick = recMatch[1];
+            } else {
+              const ia = text.indexOf('option a');
+              const ib = text.indexOf('option b');
+              if (ia !== -1 && (ib === -1 || ia < ib)) pick = 'a';
+              else if (ib !== -1) pick = 'b';
+            }
+          }
 
-          if (picksA && !picksB) {
+          if (pick === 'a') {
             verdictEl.textContent = 'Option A';
             verdictEl.className = 'model-verdict opt-a visible';
             countA++;
-          } else if (picksB && !picksA) {
+          } else if (pick === 'b') {
             verdictEl.textContent = 'Option B';
             verdictEl.className = 'model-verdict opt-b visible';
             countB++;

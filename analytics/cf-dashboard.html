@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkWith · Cloudflare Analytics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --accent: #4f7dff;
+    --accent2: #7c4fff;
+    --green: #22d3a0;
+    --yellow: #f0b429;
+    --red: #ff5c5c;
+    --text: #e8eaf2;
+    --muted: #6b7394;
+    --font: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: #fff;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .logo-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-label { font-size: 12px; color: var(--muted); }
+
+  /* SETUP PANEL */
+  #setup-panel {
+    max-width: 520px; margin: 80px auto; padding: 40px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  }
+  #setup-panel h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  #setup-panel p { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 13px; font-family: 'Courier New', monospace;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { outline: none; border-color: var(--accent); }
+  .field input::placeholder { color: var(--muted); }
+  .btn-primary {
+    width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px;
+    color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .setup-note {
+    margin-top: 16px; padding: 12px 14px; background: rgba(79,125,255,0.08);
+    border: 1px solid rgba(79,125,255,0.2); border-radius: 8px;
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+  .setup-note strong { color: var(--accent); }
+
+  /* DASHBOARD */
+  #dashboard { display: none; padding: 24px 32px; }
+
+  /* CONTROLS BAR */
+  .controls {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  .controls-left { display: flex; align-items: center; gap: 8px; }
+  .period-btn {
+    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .period-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .period-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+  .refresh-btn {
+    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); }
+  .last-updated { font-size: 11px; color: var(--muted); }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .kpi-card.blue::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.yellow::before { background: var(--yellow); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .kpi-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+  .kpi-delta { font-size: 11px; margin-top: 6px; }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+  .kpi-delta.neutral { color: var(--muted); }
+
+  /* CHARTS GRID */
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .chart-sub { font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+  .chart-wrap { position: relative; }
+
+  /* BOTTOM GRID */
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th { text-align: left; padding: 8px 10px; color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 10px; letter-spacing: 0.6px; border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 10px; border-bottom: 1px solid rgba(37,42,58,0.5); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+  .page-path { color: var(--accent); font-family: 'Courier New', monospace; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .bar-cell { display: flex; align-items: center; gap: 8px; }
+  .mini-bar { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); min-width: 4px; }
+
+  /* COUNTRY LIST */
+  .country-list { list-style: none; }
+  .country-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(37,42,58,0.5); }
+  .country-item:last-child { border-bottom: none; }
+  .country-left { display: flex; align-items: center; gap: 10px; }
+  .country-flag { font-size: 18px; }
+  .country-name { font-size: 12px; }
+  .country-bar-wrap { flex: 1; margin: 0 12px; height: 3px; background: var(--border); border-radius: 2px; }
+  .country-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+  .country-count { font-size: 12px; font-weight: 600; min-width: 40px; text-align: right; }
+
+  /* ERROR / LOADING */
+  .msg-box { padding: 40px; text-align: center; }
+  .msg-box .icon { font-size: 32px; margin-bottom: 12px; }
+  .msg-box p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .msg-box .err-detail { margin-top: 8px; font-family: monospace; font-size: 11px; color: var(--red); }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* LOADING OVERLAY */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(13,15,20,0.85);
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    z-index: 100; display: none;
+  }
+  #loading-overlay p { color: var(--muted); font-size: 13px; }
+
+  /* DISCONNECT */
+  .disconnect-btn {
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 11px; cursor: pointer;
+  }
+  .disconnect-btn:hover { border-color: var(--red); color: var(--red); }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid, .bottom-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">LW</div>
+    <div>
+      <div class="logo-text">LinkWith Analytics</div>
+      <div class="logo-sub">Cloudflare · Tráfego Web</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-dot" id="status-dot" style="background:var(--muted);box-shadow:none"></div>
+    <span class="status-label" id="status-label">Não ligado</span>
+    <button class="disconnect-btn" id="disconnect-btn" style="display:none" onclick="disconnect()">Desligar</button>
+  </div>
+</header>
+
+<!-- SETUP -->
+<div id="setup-panel">
+  <h2>Configurar ligação</h2>
+  <p>Introduz as credenciais da Cloudflare para ligar ao Analytics. Os dados ficam apenas no teu browser — não são enviados para nenhum servidor externo.</p>
+  <div class="field">
+    <label>API Token</label>
+    <input type="password" id="cf-token" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+  </div>
+  <div class="field">
+    <label>Zone ID</label>
+    <input type="text" id="cf-zone" placeholder="a1b2c3d4e5f6..." />
+  </div>
+  <div class="field">
+    <label>Account ID (opcional — para métricas de conta)</label>
+    <input type="text" id="cf-account" placeholder="a1b2c3d4e5f6..." />
+  </div>
+  <button class="btn-primary" id="connect-btn" onclick="connect()">Ligar ao Cloudflare</button>
+  <div class="setup-note">
+    🔒 <strong>Credenciais seguras:</strong> guardadas apenas em memória durante esta sessão. Cria um token com permissão <strong>Zone → Analytics → Read</strong> em <strong>dash.cloudflare.com/profile/api-tokens</strong>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p id="loading-msg">A carregar dados...</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="controls">
+    <div class="controls-left">
+      <button class="period-btn active" onclick="setPeriod(1, this)">24h</button>
+      <button class="period-btn" onclick="setPeriod(7, this)">7 dias</button>
+      <button class="period-btn" onclick="setPeriod(14, this)">14 dias</button>
+      <button class="period-btn" onclick="setPeriod(30, this)">30 dias</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="last-updated" id="last-updated"></span>
+      <button class="refresh-btn" onclick="loadData()">↻ Actualizar</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total de Pedidos</div>
+      <div class="kpi-value" id="kpi-requests">—</div>
+      <div class="kpi-delta neutral" id="kpi-requests-d">A calcular...</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Visitantes Únicos</div>
+      <div class="kpi-value" id="kpi-uniq">—</div>
+      <div class="kpi-delta neutral" id="kpi-uniq-d">A calcular...</div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="kpi-label">Largura de Banda</div>
+      <div class="kpi-value" id="kpi-bw">—</div>
+      <div class="kpi-delta neutral" id="kpi-bw-d">A calcular...</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Taxa de Ameaças</div>
+      <div class="kpi-value" id="kpi-threats">—</div>
+      <div class="kpi-delta neutral" id="kpi-threats-d">Pedidos bloqueados</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Tráfego ao longo do tempo</div>
+      <div class="chart-sub">Pedidos e visitantes únicos por dia</div>
+      <div class="chart-wrap"><canvas id="traffic-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribuição por país</div>
+      <div class="chart-sub">Top países por pedidos</div>
+      <div class="chart-wrap"><canvas id="country-chart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom-grid">
+    <div class="chart-card">
+      <div class="chart-title">Top Páginas</div>
+      <div class="chart-sub">Páginas mais visitadas no período</div>
+      <div id="pages-table-wrap">
+        <div class="msg-box"><div class="spinner"></div></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Top Países</div>
+      <div class="chart-sub">Breakdown de tráfego geográfico</div>
+      <div id="country-list-wrap">
+        <div class="msg-box"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let cfg = { token: '', zone: '', account: '' };
+let period = 1;
+let charts = {};
+
+const FLAGS = {
+  US:'🇺🇸',PT:'🇵🇹',NL:'🇳🇱',GB:'🇬🇧',DE:'🇩🇪',FR:'🇫🇷',ES:'🇪🇸',
+  IT:'🇮🇹',CA:'🇨🇦',AU:'🇦🇺',BR:'🇧🇷',JP:'🇯🇵',CN:'🇨🇳',IN:'🇮🇳',
+  SG:'🇸🇬',AD:'🇦🇩',BE:'🇧🇪',IE:'🇮🇪',LU:'🇱🇺',SE:'🇸🇪',NO:'🇳🇴',
+  CH:'🇨🇭',AT:'🇦🇹',DK:'🇩🇰',FI:'🇫🇮',PL:'🇵🇱',UA:'🇺🇦',RU:'🇷🇺',
+  HK:'🇭🇰',KR:'🇰🇷',AR:'🇦🇷',PE:'🇵🇪',BD:'🇧🇩',ID:'🇮🇩',AE:'🇦🇪',
+  RO:'🇷🇴',HU:'🇭🇺',T1:'🏴'
+};
+
+const COUNTRY_NAMES = {
+  US:'Estados Unidos',PT:'Portugal',NL:'Holanda',GB:'Reino Unido',DE:'Alemanha',
+  FR:'França',ES:'Espanha',IT:'Itália',CA:'Canadá',AU:'Austrália',BR:'Brasil',
+  JP:'Japão',CN:'China',IN:'Índia',SG:'Singapura',AD:'Andorra',BE:'Bélgica',
+  IE:'Irlanda',LU:'Luxemburgo',SE:'Suécia',NO:'Noruega',CH:'Suíça',AT:'Áustria',
+  DK:'Dinamarca',FI:'Finlândia',PL:'Polónia',UA:'Ucrânia',RU:'Rússia',
+  HK:'Hong Kong',KR:'Coreia do Sul',AR:'Argentina',PE:'Peru',BD:'Bangladesh',
+  ID:'Indonésia',AE:'Emirados Árabes',RO:'Roménia',HU:'Hungria',T1:'Tor/VPN'
+};
+
+// ─── CONNECT ─────────────────────────────────────────────────────────────────
+async function connect() {
+  const token = document.getElementById('cf-token').value.trim();
+  const zone = document.getElementById('cf-zone').value.trim();
+  const account = document.getElementById('cf-account').value.trim();
+
+  if (!token || !zone) {
+    alert('API Token e Zone ID são obrigatórios.');
+    return;
+  }
+
+  cfg = { token, zone, account };
+  document.getElementById('connect-btn').disabled = true;
+  document.getElementById('connect-btn').textContent = 'A verificar...';
+
+  // Test connection via proxy local
+  try {
+    const res = await fetch(`${window.location.origin}/cf/zone/${zone}`, {
+      headers: { 'X-CF-Token': token, 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.errors?.[0]?.message || 'Erro de autenticação');
+
+    document.getElementById('setup-panel').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('disconnect-btn').style.display = 'inline';
+    setStatus(true, data.result?.name || 'Ligado');
+    await loadData();
+  } catch(e) {
+    alert('Erro: ' + e.message);
+    document.getElementById('connect-btn').disabled = false;
+    document.getElementById('connect-btn').textContent = 'Ligar ao Cloudflare';
+  }
+}
+
+function disconnect() {
+  cfg = { token: '', zone: '', account: '' };
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('disconnect-btn').style.display = 'none';
+  document.getElementById('cf-token').value = '';
+  document.getElementById('cf-zone').value = '';
+  document.getElementById('cf-account').value = '';
+  document.getElementById('connect-btn').disabled = false;
+  document.getElementById('connect-btn').textContent = 'Ligar ao Cloudflare';
+  setStatus(false, 'Não ligado');
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+}
+
+function setStatus(ok, label) {
+  const dot = document.getElementById('status-dot');
+  const lbl = document.getElementById('status-label');
+  dot.style.background = ok ? 'var(--green)' : 'var(--muted)';
+  dot.style.boxShadow = ok ? '0 0 6px var(--green)' : 'none';
+  lbl.textContent = label;
+}
+
+function setPeriod(days, btn) {
+  period = days;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadData();
+}
+
+// ─── FETCH (via proxy local) ─────────────────────────────────────────────────
+const PROXY = window.location.origin; // http://192.168.4.59:8003
+
+function cfFetch(url, body) {
+  // Redirige para o proxy local em vez de chamar a CF directamente
+  const isGraphQL = url.includes('graphql');
+  const proxyUrl = isGraphQL ? `${PROXY}/cf/graphql` : `${PROXY}/cf/zone/${cfg.zone}`;
+  return fetch(proxyUrl, {
+    method: body ? 'POST' : 'GET',
+    headers: {
+      'X-CF-Token': cfg.token,
+      'Content-Type': 'application/json'
+    },
+    ...(body ? { body: JSON.stringify(body) } : {})
+  });
+}
+
+function getDateRange(days) {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - days);
+  return {
+    start: start.toISOString().split('T')[0],
+    end: end.toISOString().split('T')[0]
+  };
+}
+
+// ─── GRAPHQL QUERIES ─────────────────────────────────────────────────────────
+function buildZoneQuery(days) {
+  const { start, end } = getDateRange(days);
+  const groupBy = days <= 2 ? 'httpRequests1hGroups' : 'httpRequests1dGroups';
+  const limit = days <= 2 ? 48 : days + 1;
+
+  return {
+    query: `
+      query ZoneAnalytics($zoneTag: String!, $since: String!, $until: String!) {
+        viewer {
+          zones(filter: { zoneTag: $zoneTag }) {
+            ${groupBy}(limit: ${limit}, filter: { date_geq: $since, date_leq: $until }) {
+              dimensions { date }
+              sum {
+                requests
+                bytes
+                threats
+                pageViews
+              }
+              uniq {
+                uniques
+              }
+            }
+            httpRequests1dGroups(limit: 5, filter: { date_geq: $since, date_leq: $until }, orderBy: [date_DESC]) {
+              dimensions { date }
+              sum { countryMap { clientCountryName requests threats } }
+            }
+          }
+        }
+      }
+    `,
+    variables: { zoneTag: cfg.zone, since: start, until: end }
+  };
+}
+
+// ─── LOAD DATA ───────────────────────────────────────────────────────────────
+async function loadData() {
+  showLoading('A consultar Cloudflare Analytics...');
+
+  try {
+    const query = buildZoneQuery(period);
+    const res = await cfFetch('graphql', query);
+    const data = await res.json();
+
+    if (data.errors) {
+      throw new Error(data.errors[0]?.message || 'GraphQL error');
+    }
+
+    const zone = data?.data?.viewer?.zones?.[0];
+    if (!zone) throw new Error('Sem dados de zona. Verifica o Zone ID.');
+
+    const groupKey = period <= 2 ? 'httpRequests1hGroups' : 'httpRequests1dGroups';
+    const timeSeries = zone[groupKey] || [];
+
+    // Agregar countryMap de todos os dias
+    const countryMap = {};
+    timeSeries.forEach(d => {
+      (d.sum?.countryMap || []).forEach(c => {
+        const k = c.clientCountryName || 'Unknown';
+        countryMap[k] = (countryMap[k] || 0) + (c.requests || 0);
+      });
+    });
+
+    renderKPIs(timeSeries);
+    renderTrafficChart(timeSeries);
+    renderCountryChart(countryMap);
+    renderPagesTable(null);
+    renderCountryList(countryMap);
+
+    document.getElementById('last-updated').textContent =
+      'Actualizado: ' + new Date().toLocaleTimeString('pt-PT');
+
+  } catch(e) {
+    showError(e.message);
+    console.error(e);
+  } finally {
+    hideLoading();
+  }
+}
+
+// ─── RENDER KPIs ─────────────────────────────────────────────────────────────
+function renderKPIs(series) {
+  const totReq = series.reduce((s, d) => s + (d.sum?.requests || 0), 0);
+  const totUniq = series.reduce((s, d) => s + (d.uniq?.uniques || 0), 0);
+  const totBw = series.reduce((s, d) => s + (d.sum?.bytes || 0), 0);
+  const totThr = series.reduce((s, d) => s + (d.sum?.threats || 0), 0);
+
+  document.getElementById('kpi-requests').textContent = fmt(totReq);
+  document.getElementById('kpi-uniq').textContent = fmt(totUniq);
+  document.getElementById('kpi-bw').textContent = fmtBytes(totBw);
+  document.getElementById('kpi-threats').textContent = fmt(totThr);
+
+  const pct = totReq > 0 ? ((totThr / totReq) * 100).toFixed(1) : 0;
+  document.getElementById('kpi-threats-d').textContent = `${pct}% do tráfego total`;
+  document.getElementById('kpi-requests-d').textContent = `Últimos ${period} dia(s)`;
+  document.getElementById('kpi-uniq-d').textContent = `Visitantes distintos`;
+  document.getElementById('kpi-bw-d').textContent = `Transferência total`;
+}
+
+// ─── TRAFFIC CHART ───────────────────────────────────────────────────────────
+function renderTrafficChart(series) {
+  const labels = series.map(d => {
+    const raw = d.dimensions?.date || d.dimensions?.datetime || '';
+    return raw.includes('T')
+      ? new Date(raw).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
+      : raw.slice(5);
+  });
+  const reqs = series.map(d => d.sum?.requests || 0);
+  const uniqs = series.map(d => d.uniq?.uniques || 0);
+
+  if (charts.traffic) charts.traffic.destroy();
+  const ctx = document.getElementById('traffic-chart').getContext('2d');
+  charts.traffic = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Pedidos',
+          data: reqs,
+          borderColor: '#4f7dff',
+          backgroundColor: 'rgba(79,125,255,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        },
+        {
+          label: 'Únicos',
+          data: uniqs,
+          borderColor: '#22d3a0',
+          backgroundColor: 'rgba(34,211,160,0.05)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#6b7394', font: { size: 11 } } }
+      },
+      scales: {
+        x: { ticks: { color: '#6b7394', font: { size: 10 } }, grid: { color: '#252a3a' } },
+        y: { ticks: { color: '#6b7394', font: { size: 10 } }, grid: { color: '#252a3a' } }
+      }
+    }
+  });
+}
+
+// ─── COUNTRY CHART ───────────────────────────────────────────────────────────
+function renderCountryChart(countryMap) {
+  const sorted = Object.entries(countryMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+
+  if (charts.country) charts.country.destroy();
+  const ctx = document.getElementById('country-chart').getContext('2d');
+  charts.country = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: sorted.map(([c]) => c),
+      datasets: [{
+        data: sorted.map(([,v]) => v),
+        backgroundColor: ['#4f7dff','#22d3a0','#7c4fff','#f0b429','#ff5c5c','#38bdf8','#fb923c','#a78bfa'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#6b7394', font: { size: 10 }, padding: 8, boxWidth: 12 } }
+      }
+    }
+  });
+}
+
+// ─── PAGES TABLE ─────────────────────────────────────────────────────────────
+function renderPagesTable(data) {
+  const wrap = document.getElementById('pages-table-wrap');
+  wrap.innerHTML = `<div class="msg-box"><div class="icon">🔒</div><p>Dados de páginas individuais não disponíveis no plano Free.<br>Requer plano <strong style="color:var(--accent)">Cloudflare Pro</strong> ou superior.</p></div>`;
+}
+
+// ─── COUNTRY LIST ─────────────────────────────────────────────────────────────
+function renderCountryList(countryMap) {
+  const sorted = Object.entries(countryMap).sort((a,b) => b[1]-a[1]).slice(0,10);
+  const max = sorted[0]?.[1] || 1;
+
+  const wrap = document.getElementById('country-list-wrap');
+  if (!sorted.length) {
+    wrap.innerHTML = `<div class="msg-box"><div class="icon">🌍</div><p>Sem dados geográficos disponíveis.</p></div>`;
+    return;
+  }
+
+  // Map full country name to code
+  const nameToCode = {};
+  Object.entries(COUNTRY_NAMES).forEach(([code, name]) => { nameToCode[name] = code; nameToCode[name.toLowerCase()] = code; });
+
+  let html = '<ul class="country-list">';
+  sorted.forEach(([country, count]) => {
+    const code = nameToCode[country] || nameToCode[country.toLowerCase()] || country.slice(0,2).toUpperCase();
+    const flag = FLAGS[code] || '🌐';
+    const name = COUNTRY_NAMES[code] || country;
+    const pct = (count / max) * 100;
+    html += `<li class="country-item">
+      <div class="country-left">
+        <span class="country-flag">${flag}</span>
+        <span class="country-name">${name}</span>
+      </div>
+      <div class="country-bar-wrap"><div class="country-bar" style="width:${pct}%"></div></div>
+      <span class="country-count">${fmt(count)}</span>
+    </li>`;
+  });
+  html += '</ul>';
+  wrap.innerHTML = html;
+}
+
+// ─── ERROR ───────────────────────────────────────────────────────────────────
+function showError(msg) {
+  const panels = ['pages-table-wrap','country-list-wrap'];
+  panels.forEach(id => {
+    document.getElementById(id).innerHTML = `<div class="msg-box"><div class="icon">⚠️</div><p>Erro ao carregar dados</p><div class="err-detail">${msg}</div></div>`;
+  });
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function fmt(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+function fmtBytes(b) {
+  if (b >= 1e9) return (b/1e9).toFixed(1) + ' GB';
+  if (b >= 1e6) return (b/1e6).toFixed(1) + ' MB';
+  if (b >= 1e3) return (b/1e3).toFixed(0) + ' KB';
+  return b + ' B';
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg;
+  document.getElementById('loading-overlay').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+</script>
+</body>
+</html>
