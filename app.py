@@ -105,15 +105,18 @@ def parse_choice(text):
     return None
 
 
-def call_cf_model(model_id, prompt):
-    """Chama um modelo Cloudflare Workers AI e devolve o texto gerado."""
+def call_cf_model(model_id, prompt, temperature=0.7):
+    """Chama um modelo Cloudflare Workers AI e devolve o texto gerado.
+    temperature > 0 introduz variação entre amostras — necessário para que
+    correr N amostras por ordem produza uma distribuição com significado.
+    """
     if not CF_ACCOUNT_ID or not CF_API_TOKEN:
         return {"error": "CF credentials not configured"}
     try:
         r = requests.post(
             f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/{model_id}",
             headers={"Authorization": f"Bearer {CF_API_TOKEN}"},
-            json={"messages": [
+            json={"temperature": temperature, "messages": [
                 {"role": "system", "content": (
                     "You are a strategic adviser. Given a business context and two strategic options, "
                     "you must recommend exactly one option. Start your response with 'I recommend Option A' "
@@ -475,35 +478,102 @@ def lab():
 
 @app.route("/lab/api", methods=["POST"])
 def lab_api():
-    """Chama os modelos em paralelo e devolve as respostas."""
+    """Corre cada modelo N vezes para uma dada ordem de apresentação das
+    opções e devolve a distribuição das recomendações.
+
+    Parâmetros (JSON):
+      scenario_id : id do cenário
+      order       : "ab" (Option A = option_a) ou "ba" (Option A = option_b)
+      samples     : nº de amostras por modelo (clamp 1..7, default 5)
+
+    A agregação é feita por *conteúdo* (qual a alternativa recomendada,
+    independentemente da posição/rótulo) e por *posição* (qual o rótulo
+    A/B recomendado). Comparar as duas ordens revela o viés posicional:
+    se a distribuição por posição não muda mas a por conteúdo muda, o
+    modelo está a seguir a posição, não o mérito.
+    """
     data = request.get_json(force=True)
     scenario_id = data.get("scenario_id")
+    order = data.get("order", "ab")
+    if order not in ("ab", "ba"):
+        order = "ab"
+    try:
+        samples = int(data.get("samples", 5))
+    except (TypeError, ValueError):
+        samples = 5
+    samples = max(1, min(7, samples))
+
     scenario = next((s for s in HBR_SCENARIOS if s["id"] == scenario_id), None)
     if not scenario:
         return jsonify({"error": "Scenario not found"}), 400
 
+    # Define o que aparece em cada posição consoante a ordem.
+    # label_to_content mapeia o rótulo devolvido pelo modelo (A/B) de volta
+    # ao id de conteúdo ('a' = option_a original, 'b' = option_b original).
+    if order == "ab":
+        pos_a, pos_b = scenario["option_a"], scenario["option_b"]
+        label_to_content = {"A": "a", "B": "b"}
+    else:
+        pos_a, pos_b = scenario["option_b"], scenario["option_a"]
+        label_to_content = {"A": "b", "B": "a"}
+
     prompt = (
         f"Business context: {scenario['context']}\n\n"
         f"The leadership team is deciding between two strategic options:\n"
-        f"Option A: {scenario['option_a']}\n"
-        f"Option B: {scenario['option_b']}\n\n"
+        f"Option A: {pos_a}\n"
+        f"Option B: {pos_b}\n\n"
         f"Which option do you recommend?"
     )
 
-    results = {}
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    # Lança todas as amostras de todos os modelos em paralelo.
+    # Indexa por POSIÇÃO na lista, não por id — há modelos distintos que
+    # partilham o mesmo id Cloudflare (ex: "v2"), e indexar por id fundiria
+    # as respostas dos dois.
+    tasks = [(idx, m) for idx, m in enumerate(CF_MODELS) for _ in range(samples)]
+    raw = [[] for _ in CF_MODELS]
+    with ThreadPoolExecutor(max_workers=min(8, len(tasks))) as executor:
         futures = {
-            executor.submit(call_cf_model, m["id"], prompt): m
-            for m in CF_MODELS
+            executor.submit(call_cf_model, m["id"], prompt): idx
+            for (idx, m) in tasks
         }
         for future in as_completed(futures):
-            model = futures[future]
-            results[model["id"]] = {
-                "label": model["label"],
-                **future.result(),
-            }
+            raw[futures[future]].append(future.result())
 
-    return jsonify({"scenario": scenario, "results": results})
+    results = {}
+    for idx, m in enumerate(CF_MODELS):
+        outputs = raw[idx]
+        content_dist = {"a": 0, "b": 0, "none": 0}   # por mérito
+        label_dist = {"A": 0, "B": 0, "none": 0}      # por posição
+        errors = 0
+        sample_text = ""
+        for o in outputs:
+            if o.get("error"):
+                errors += 1
+                continue
+            if not sample_text and o.get("text"):
+                sample_text = o["text"]
+            choice = o.get("choice")  # 'A' / 'B' / None
+            if choice in ("A", "B"):
+                label_dist[choice] += 1
+                content_dist[label_to_content[choice]] += 1
+            else:
+                label_dist["none"] += 1
+                content_dist["none"] += 1
+        results[str(idx)] = {
+            "label": m["label"],
+            "samples": len(outputs),
+            "content_dist": content_dist,
+            "label_dist": label_dist,
+            "sample_text": sample_text,
+            "errors": errors,
+        }
+
+    return jsonify({
+        "scenario": scenario,
+        "order": order,
+        "samples": samples,
+        "results": results,
+    })
 
 
 if __name__ == "__main__":
