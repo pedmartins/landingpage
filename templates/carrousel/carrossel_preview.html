@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pré-visualização — Carrossel de Frameworks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --teal:#1a9e8a; --teal-dark:#0d6e5f; --navy:#1a2d3d; --cream:#f5f3ee; --muted:#5a6a78;
+    --stage-1:#D4844A; --stage-2:#C83C3C; --stage-3:#28B4CC; --stage-4:#52963C;
+    --line:rgba(26,45,61,0.10); --orange:#D4844A;
+  }
+  html,body{font-family:'Barlow',sans-serif;background:var(--cream);color:var(--navy);-webkit-font-smoothing:antialiased;}
+
+  /* ════ FRAMEWORK CAROUSEL ════ */
+  .fw-section{ padding:4rem 4vw 5rem; }
+  .fw-head{ margin-bottom:2.4rem; }
+  .fw-eyebrow{ display:inline-flex; align-items:center; gap:0.6rem; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; font-weight:500; color:var(--teal); }
+  .fw-eyebrow::before{ content:''; width:28px; height:2px; background:var(--teal); }
+  .fw-heading{ font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:clamp(1.8rem,3vw,2.6rem); text-transform:uppercase; line-height:1; letter-spacing:-0.01em; color:var(--navy); margin-top:0.5rem; }
+  .fw-heading em{ font-style:normal; color:var(--teal); }
+  .fw-sub{ font-size:0.9rem; color:var(--muted); font-weight:300; max-width:46ch; margin-top:0.7rem; line-height:1.6; }
+
+  .fw-carousel{ position:relative; }
+  .fw-viewport{ overflow:hidden; }
+  .fw-track{ display:flex; transition:transform .55s cubic-bezier(.4,0,.2,1); will-change:transform; }
+  .fw-slide{ flex:0 0 100%; display:flex; justify-content:center; padding:0.5rem 0; }
+  .fw-frame{ width:calc(1080px * var(--s,0.45)); height:calc(1920px * var(--s,0.45)); position:relative; }
+  .fw-card{ position:absolute; top:0; left:0; width:1080px; height:1920px; transform:scale(var(--s,0.45)); transform-origin:top left; background:var(--cream); border:1px solid var(--line); box-shadow:0 24px 70px rgba(26,45,61,0.16); color:var(--navy); overflow:hidden; display:flex; flex-direction:column; }
+
+  .fw-nav{ position:absolute; top:50%; transform:translateY(-50%); width:50px; height:50px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,0.92); color:var(--navy); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; transition:all .2s; }
+  .fw-nav:hover{ border-color:var(--teal); color:var(--teal); }
+  .fw-prev{ left:0.5rem; } .fw-next{ right:0.5rem; }
+  .fw-dots{ display:flex; justify-content:center; gap:0.6rem; margin-top:1.6rem; }
+  .fw-dot{ width:9px; height:9px; border-radius:50%; border:none; padding:0; background:rgba(26,45,61,0.18); cursor:pointer; transition:all .2s; }
+  .fw-dot.active{ background:var(--teal); transform:scale(1.3); }
+  .fw-counter{ text-align:center; margin-top:0.7rem; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.12em; color:var(--muted); font-size:0.82rem; }
+
+  .fw-card .s-topbar{ display:flex; align-items:center; justify-content:space-between; padding:26px 56px; border-bottom:1px solid var(--line); }
+  .fw-card .s-brand{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:18px; letter-spacing:0.18em; text-transform:uppercase; color:var(--navy); }
+  .fw-card .s-tag{ font-family:'Barlow Condensed',sans-serif; font-weight:400; font-size:14px; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+  .fw-card .s-head{ padding:44px 56px 0; }
+  .fw-card .s-eyebrow{ display:inline-flex; align-items:center; gap:0.7rem; font-size:15px; letter-spacing:0.2em; text-transform:uppercase; font-weight:500; color:var(--teal); margin-bottom:22px; }
+  .fw-card .s-eyebrow::before{ content:''; width:34px; height:2px; background:var(--teal); }
+  .fw-card .s-title{ font-family:'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:52px; line-height:0.98; letter-spacing:-0.01em; color:var(--navy); }
+  .fw-card .s-title em{ font-style:normal; color:var(--teal); }
+  .fw-card .s-lede{ font-size:21px; color:var(--muted); font-weight:300; margin-top:22px; }
+  .fw-card .s-lede b{ color:var(--navy); font-weight:600; }
+  .fw-card .s-compare{ display:flex; flex-direction:column; padding:40px 56px 0; }
+  .fw-card .s-col{ background:#fff; border:1px solid var(--line); border-top:4px solid; padding:30px 32px 26px; }
+  .fw-card .s-col.from{ border-top-color:var(--orange); }
+  .fw-card .s-col.to{ border-top-color:var(--teal); }
+  .fw-card .s-badge{ display:inline-block; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.16em; text-transform:uppercase; padding:5px 14px; border:1px solid; margin-bottom:16px; }
+  .fw-card .s-badge.from{ color:var(--orange); border-color:rgba(212,132,74,0.4); background:rgba(212,132,74,0.07); }
+  .fw-card .s-badge.to{ color:var(--teal); border-color:rgba(26,158,138,0.4); background:rgba(26,158,138,0.06); }
+  .fw-card .s-sub{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:24px; letter-spacing:0.02em; text-transform:uppercase; color:var(--navy); margin-bottom:20px; }
+  .fw-card .s-list{ display:flex; flex-direction:column; gap:13px; margin-bottom:20px; }
+  .fw-card .s-li{ display:flex; align-items:flex-start; gap:13px; font-size:19px; line-height:1.4; color:#37485a; }
+  .fw-card .s-li .s-dot{ flex-shrink:0; margin-top:7px; width:9px; height:9px; border-radius:50%; }
+  .fw-card .s-col.from .s-dot{ background:var(--orange); }
+  .fw-card .s-col.to .s-dot{ background:var(--teal); box-shadow:0 0 0 4px rgba(26,158,138,0.16); animation:s-live 2s ease-in-out infinite; }
+  @keyframes s-live{ 0%,100%{opacity:0.55;} 50%{opacity:1;} }
+  .fw-card .s-note{ font-size:18px; line-height:1.5; color:var(--muted); padding:14px 18px; border-left:3px solid; background:rgba(26,45,61,0.02); }
+  .fw-card .s-col.from .s-note{ border-color:var(--orange); }
+  .fw-card .s-col.to .s-note{ border-color:var(--teal); }
+  .fw-card .s-note b{ color:var(--navy); font-weight:600; }
+  .fw-card .s-arrow{ display:flex; align-items:center; justify-content:center; padding:14px 0; }
+  .fw-card .s-spacer{ flex:1; }
+  .fw-card .s-band{ margin:0 56px; background:var(--navy); color:var(--cream); padding:32px 36px; }
+  .fw-card .s-msg{ font-size:23px; line-height:1.5; }
+  .fw-card .s-msg b{ color:#fff; font-weight:600; }
+  .fw-card .s-msg em{ font-style:normal; color:#5fd0bd; font-weight:600; }
+  .fw-card .s-tags{ display:flex; gap:18px; margin-top:18px; }
+  .fw-card .s-tag2{ font-family:'Barlow Condensed',sans-serif; font-size:15px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(245,243,238,0.55); }
+  .fw-card .s-tag2.main{ color:#5fd0bd; }
+  .fw-card .s-source{ padding:20px 56px 30px; font-size:13px; letter-spacing:0.02em; color:rgba(90,106,120,0.75); }
+  .fw-card .s-soon{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:24px; padding:56px; }
+  .fw-card .s-soon .s-dot-lg{ width:16px; height:16px; border-radius:50%; }
+  .fw-card .s-soon .tag-soon{ font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; font-size:16px; color:var(--teal); border:1px solid rgba(26,158,138,0.4); padding:6px 16px; }
+  .fw-card .s-soon h3{ font-family:'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:50px; line-height:1.0; color:var(--navy); max-width:16ch; }
+  .fw-card .s-soon p{ font-size:20px; color:var(--muted); font-weight:300; max-width:28ch; line-height:1.5; }
+
+  @media (max-width:820px){ .fw-nav{ display:none; } .fw-section{ padding:3rem 1.5rem 4rem; } }
+</style>
+</head>
+<body>
+
+  <section class="fw-section" id="framework">
+    <div class="fw-head">
+      <div class="fw-eyebrow">Framework</div>
+      <h2 class="fw-heading">Frameworks de <em>AI Governance</em></h2>
+      <p class="fw-sub">Uma seleção curada de modelos visuais para quem lidera a AI nas organizações.</p>
+    </div>
+
+    <div class="fw-carousel">
+      <button class="fw-nav fw-prev" id="fwPrev" aria-label="Slide anterior">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="fw-viewport">
+        <div class="fw-track" id="fwTrack">
+
+          <!-- SLIDE 1 -->
+          <div class="fw-slide">
+            <div class="fw-frame">
+              <div class="fw-card">
+                <div class="s-topbar">
+                  <span class="s-brand">Pedro Martins</span>
+                  <span class="s-tag">Framework · Da política à operação</span>
+                </div>
+                <div class="s-head">
+                  <div class="s-eyebrow">Advisory</div>
+                  <h3 class="s-title">AI Governance transita da definição das políticas para a <em>gestão operativa em ambiente de produção</em></h3>
+                  <p class="s-lede"><b>A maioria das organizações ainda não reparou.</b></p>
+                </div>
+                <div class="s-compare">
+                  <div class="s-col from">
+                    <span class="s-badge from">From Policy</span>
+                    <div class="s-sub">Governação antes do deployment</div>
+                    <div class="s-list">
+                      <div class="s-li"><span class="s-dot"></span>Políticas</div>
+                      <div class="s-li"><span class="s-dot"></span>Frameworks</div>
+                      <div class="s-li"><span class="s-dot"></span>Avaliações de risco</div>
+                      <div class="s-li"><span class="s-dot"></span>Documentado e arquivado</div>
+                    </div>
+                    <div class="s-note"><b>Funciona para chatbots.</b> Insuficiente para agentes de AI.</div>
+                  </div>
+                  <div class="s-arrow">
+                    <svg width="20" height="40" viewBox="0 0 20 40" fill="none"><line x1="10" y1="0" x2="10" y2="32" stroke="#1a9e8a" stroke-width="2"/><path d="M4 28 L10 38 L16 28" stroke="#1a9e8a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="s-col to">
+                    <span class="s-badge to">To Operations</span>
+                    <div class="s-sub">Governação enquanto a AI opera</div>
+                    <div class="s-list">
+                      <div class="s-li"><span class="s-dot"></span>Ver o que está ativo, em tempo real</div>
+                      <div class="s-li"><span class="s-dot"></span>Conhecer acessos a ferramentas, dados e workflows</div>
+                      <div class="s-li"><span class="s-dot"></span>Rastrear ações, razões e dados consumidos</div>
+                      <div class="s-li"><span class="s-dot"></span>Monitorizar outputs, custos e padrões de falha</div>
+                      <div class="s-li"><span class="s-dot"></span>Intervir durante a operação</div>
+                      <div class="s-li"><span class="s-dot"></span>Produzir evidência de conformidade em execução</div>
+                    </div>
+                    <div class="s-note"><b>Isto é infraestrutura de AI Governance.</b></div>
+                  </div>
+                </div>
+                <div class="s-spacer"></div>
+                <div class="s-band">
+                  <div class="s-msg"><b>O próximo patamar é o <em>controlo da AI</em></b> — colocar agentes em produção e manter o controlo através de registos, definição de responsabilidades e mantendo a confiança.</div>
+                  <div class="s-tags">
+                    <span class="s-tag2 main">#AIGovernance</span>
+                    <span class="s-tag2">#AgenticAI</span>
+                    <span class="s-tag2">#ComplianceByDesign</span>
+                  </div>
+                </div>
+                <div class="s-source">Adaptação Pedro Martins · conceito original de autoria não identificada (a confirmar)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 2 -->
+          <div class="fw-slide">
+            <div class="fw-frame">
+              <div class="fw-card">
+                <div class="s-topbar"><span class="s-brand">Pedro Martins</span><span class="s-tag">Framework · Governação operacional</span></div>
+                <div class="s-soon">
+                  <span class="s-dot-lg" style="background:var(--stage-3)"></span>
+                  <span class="tag-soon">Em breve</span>
+                  <h3>The Circle of AI Governance</h3>
+                  <p>Ciclo contínuo de governação assente em evidência.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 3 -->
+          <div class="fw-slide">
+            <div class="fw-frame">
+              <div class="fw-card">
+                <div class="s-topbar"><span class="s-brand">Pedro Martins</span><span class="s-tag">Framework · Regulação &amp; compliance</span></div>
+                <div class="s-soon">
+                  <span class="s-dot-lg" style="background:var(--stage-2)"></span>
+                  <span class="tag-soon">Em breve</span>
+                  <h3>EU AI Act — Compliance Process</h3>
+                  <p>O fluxo de conformidade do AI Act, passo a passo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="fw-nav fw-next" id="fwNext" aria-label="Slide seguinte">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="fw-dots" id="fwDots"></div>
+    <div class="fw-counter" id="fwCounter">1 / 3</div>
+  </section>
+
+  <script>
+  (function(){
+    var track=document.getElementById('fwTrack'); if(!track) return;
+    var slides=Array.prototype.slice.call(track.children);
+    var prev=document.getElementById('fwPrev'), next=document.getElementById('fwNext');
+    var dotsBox=document.getElementById('fwDots'), counter=document.getElementById('fwCounter');
+    var i=0;
+    slides.forEach(function(_,idx){ var b=document.createElement('button'); b.className='fw-dot'+(idx===0?' active':''); b.setAttribute('aria-label','Slide '+(idx+1)); b.addEventListener('click',function(){go(idx);}); dotsBox.appendChild(b); });
+    var dots=Array.prototype.slice.call(dotsBox.children);
+    function rescale(){ var vw=track.parentElement.clientWidth; var maxW=Math.min(vw*0.82,500); var maxH=window.innerHeight*0.82; var s=Math.min(maxW/1080,maxH/1920); document.documentElement.style.setProperty('--s', s.toFixed(4)); }
+    function go(n){ i=(n+slides.length)%slides.length; track.style.transform='translateX('+(-i*100)+'%)'; dots.forEach(function(d,k){ d.classList.toggle('active',k===i); }); if(counter) counter.textContent=(i+1)+' / '+slides.length; }
+    prev.addEventListener('click',function(){go(i-1);}); next.addEventListener('click',function(){go(i+1);});
+    window.addEventListener('resize',rescale);
+    document.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft')go(i-1); if(e.key==='ArrowRight')go(i+1); });
+    var x0=null; track.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true}); track.addEventListener('touchend',function(e){ if(x0===null)return; var dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>40){dx<0?go(i+1):go(i-1);} x0=null; });
+    rescale(); go(0);
+  })();
+  </script>
+
+</body>
+</html>

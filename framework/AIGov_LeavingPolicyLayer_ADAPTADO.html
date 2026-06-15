@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Governance — da definição de políticas à gestão operativa — Pedro Martins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+  :root{
+    --teal:#1a9e8a;
+    --teal-dark:#0d6e5f;
+    --navy:#1a2d3d;
+    --cream:#f5f3ee;
+    --muted:#5a6a78;
+    --line:rgba(26,45,61,0.10);
+    --orange:#D4844A;   /* legado / Embracing */
+  }
+
+  body{
+    font-family:'Barlow',sans-serif;
+    background:#e7e4dc;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:32px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Portrait canvas — proporção ~9:16 (igual à imagem hero) */
+  .slide{
+    width:1080px;height:1920px;
+    background:var(--cream);
+    border:1px solid var(--line);
+    box-shadow:0 24px 70px rgba(26,45,61,0.16);
+    color:var(--navy);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 56px;border-bottom:1px solid var(--line);
+  }
+  .brand{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.18em;text-transform:uppercase;color:var(--navy);}
+  .section-tag{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:14px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+
+  /* ── HEAD ── */
+  .head{padding:44px 56px 0;}
+  .eyebrow{display:inline-flex;align-items:center;gap:0.7rem;font-size:15px;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;color:var(--teal);margin-bottom:22px;}
+  .eyebrow::before{content:'';width:34px;height:2px;background:var(--teal);}
+  .title{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:52px;line-height:0.98;letter-spacing:-0.01em;color:var(--navy);}
+  .title em{font-style:normal;color:var(--teal);}
+  .lede{font-size:21px;color:var(--muted);font-weight:300;margin-top:22px;}
+  .lede b{color:var(--navy);font-weight:600;}
+
+  /* ── COMPARE (stacked) ── */
+  .compare{display:flex;flex-direction:column;align-items:stretch;padding:40px 56px 0;gap:0;}
+  .col{background:#fff;border:1px solid var(--line);border-top:4px solid;padding:30px 32px 26px;}
+  .col--from{border-top-color:var(--orange);}
+  .col--to{border-top-color:var(--teal);}
+
+  .badge{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.16em;text-transform:uppercase;padding:5px 14px;border:1px solid;margin-bottom:16px;}
+  .badge.from{color:var(--orange);border-color:rgba(212,132,74,0.4);background:rgba(212,132,74,0.07);}
+  .badge.to{color:var(--teal);border-color:rgba(26,158,138,0.4);background:rgba(26,158,138,0.06);}
+
+  .col-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;letter-spacing:0.02em;text-transform:uppercase;color:var(--navy);margin-bottom:20px;}
+
+  .list{display:flex;flex-direction:column;gap:13px;margin-bottom:20px;}
+  .li{display:flex;align-items:flex-start;gap:13px;font-size:19px;line-height:1.4;color:#37485a;}
+  .li .dot{flex-shrink:0;margin-top:7px;width:9px;height:9px;border-radius:50%;}
+  .col--from .dot{background:var(--orange);}
+  .col--to .dot{background:var(--teal);box-shadow:0 0 0 4px rgba(26,158,138,0.16);animation:live 2s ease-in-out infinite;}
+  @keyframes live{0%,100%{opacity:0.55;}50%{opacity:1;}}
+
+  .note{font-size:18px;line-height:1.5;color:var(--muted);padding:14px 18px;border-left:3px solid;background:rgba(26,45,61,0.02);}
+  .col--from .note{border-color:var(--orange);}
+  .col--to .note{border-color:var(--teal);}
+  .note b{color:var(--navy);font-weight:600;}
+
+  .arrow{display:flex;align-items:center;justify-content:center;padding:14px 0;}
+
+  /* ── SPACER ── */
+  .spacer{flex:1;}
+
+  /* ── REMATE ── */
+  .band{margin:0 56px 0;background:var(--navy);color:var(--cream);padding:32px 36px;}
+  .band-msg{font-size:23px;line-height:1.5;}
+  .band-msg b{color:#fff;font-weight:600;}
+  .band-msg em{font-style:normal;color:#5fd0bd;font-weight:600;}
+  .band-tags{display:flex;gap:18px;margin-top:18px;}
+  .band-tag{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,243,238,0.55);}
+  .band-tag.main{color:#5fd0bd;}
+
+  .source{padding:20px 56px 30px;font-size:13px;letter-spacing:0.02em;color:rgba(90,106,120,0.75);}
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="topbar">
+    <span class="brand">Pedro Martins</span>
+    <span class="section-tag">Framework · Da política à operação</span>
+  </div>
+
+  <div class="head">
+    <div class="eyebrow">Advisory</div>
+    <h1 class="title">AI Governance transita da definição das políticas para a <em>gestão operativa em ambiente de produção</em></h1>
+    <p class="lede"><b>A maioria das organizações ainda não reparou.</b></p>
+  </div>
+
+  <div class="compare">
+
+    <!-- FROM POLICY -->
+    <div class="col col--from">
+      <span class="badge from">From Policy</span>
+      <div class="col-sub">Governação antes do deployment</div>
+      <div class="list">
+        <div class="li"><span class="dot"></span>Políticas</div>
+        <div class="li"><span class="dot"></span>Frameworks</div>
+        <div class="li"><span class="dot"></span>Avaliações de risco</div>
+        <div class="li"><span class="dot"></span>Documentado e arquivado</div>
+      </div>
+      <div class="note"><b>Funciona para chatbots.</b> Insuficiente para agentes de AI.</div>
+    </div>
+
+    <!-- ARROW (down) -->
+    <div class="arrow">
+      <svg width="20" height="40" viewBox="0 0 20 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="0" x2="10" y2="32" stroke="#1a9e8a" stroke-width="2"/>
+        <path d="M4 28 L10 38 L16 28" stroke="#1a9e8a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- TO OPERATIONS -->
+    <div class="col col--to">
+      <span class="badge to">To Operations</span>
+      <div class="col-sub">Governação enquanto a AI opera</div>
+      <div class="list">
+        <div class="li"><span class="dot"></span>Ver o que está ativo, em tempo real</div>
+        <div class="li"><span class="dot"></span>Conhecer acessos a ferramentas, dados e workflows</div>
+        <div class="li"><span class="dot"></span>Rastrear ações, razões e dados consumidos</div>
+        <div class="li"><span class="dot"></span>Monitorizar outputs, custos e padrões de falha</div>
+        <div class="li"><span class="dot"></span>Intervir durante a operação</div>
+        <div class="li"><span class="dot"></span>Produzir evidência de conformidade em execução</div>
+      </div>
+      <div class="note"><b>Isto é infraestrutura de AI Governance.</b></div>
+    </div>
+
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="band">
+    <div class="band-msg">
+      <b>O próximo patamar é o <em>controlo da AI</em></b> — colocar agentes em produção e manter o controlo através de registos, definição de responsabilidades e mantendo a confiança.
+    </div>
+    <div class="band-tags">
+      <span class="band-tag main">#AIGovernance</span>
+      <span class="band-tag">#AgenticAI</span>
+      <span class="band-tag">#ComplianceByDesign</span>
+    </div>
+  </div>
+
+  <div class="source">Adaptação Pedro Martins · conceito original de autoria não identificada (a confirmar)</div>
+
+</div>
+</body>
+</html>
