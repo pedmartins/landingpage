@@ -17,3 +17,4 @@ venv/
 # Local content (not for deploy)
 lab/
 artigos/
+framework/
