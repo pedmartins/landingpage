@@ -73,7 +73,7 @@
     .hero {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 45fr 55fr;
+      grid-template-columns: 40fr 60fr;
       padding-top: 64px;
     }
 
@@ -336,8 +336,8 @@
     .fw-viewport{ overflow:hidden; }
     .fw-track{ display:flex; transition:transform .55s cubic-bezier(.4,0,.2,1); will-change:transform; }
     .fw-slide{ flex:0 0 100%; display:flex; justify-content:center; padding:0.5rem 0; }
-    .fw-frame{ width:calc(1080px * var(--s,0.45)); height:calc(1920px * var(--s,0.45)); position:relative; }
-    .fw-card{ position:absolute; top:0; left:0; width:1080px; height:1920px; transform:scale(var(--s,0.45)); transform-origin:top left; background:var(--cream); border:1px solid var(--line); box-shadow:0 24px 70px rgba(26,45,61,0.16); color:var(--navy); overflow:hidden; display:flex; flex-direction:column; }
+    .fw-frame{ position:relative; width:calc(1080px * var(--s,0.5)); height:calc(1200px * var(--s,0.5)); }
+    .fw-card{ position:absolute; top:0; left:0; width:1080px; height:auto; transform:scale(var(--s,0.45)); transform-origin:top left; background:var(--cream); border:1px solid var(--line); box-shadow:0 24px 70px rgba(26,45,61,0.16); color:var(--navy); overflow:hidden; display:flex; flex-direction:column; }
 
     .fw-nav{ position:absolute; top:50%; transform:translateY(-50%); width:50px; height:50px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,0.92); color:var(--navy); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; transition:all .2s; }
     .fw-nav:hover{ border-color:var(--teal); color:var(--teal); }
@@ -351,7 +351,7 @@
     .fw-card .s-topbar{ display:flex; align-items:center; justify-content:space-between; padding:26px 56px; border-bottom:1px solid var(--line); }
     .fw-card .s-brand{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:18px; letter-spacing:0.18em; text-transform:uppercase; color:var(--navy); }
     .fw-card .s-tag{ font-family:'Barlow Condensed',sans-serif; font-weight:400; font-size:14px; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
-    .fw-card .s-head{ padding:44px 56px 0; }
+    .fw-card .s-head{ padding:36px 56px 0; }
     .fw-card .s-eyebrow{ display:inline-flex; align-items:center; gap:0.7rem; font-size:15px; letter-spacing:0.2em; text-transform:uppercase; font-weight:500; color:var(--teal); margin-bottom:22px; }
     .fw-card .s-eyebrow::before{ content:''; width:34px; height:2px; background:var(--teal); }
     .fw-card .s-title{ font-family:'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:52px; line-height:0.98; letter-spacing:-0.01em; color:var(--navy); }
@@ -623,12 +623,20 @@ Da visão estratégica à excelência operacional — perspetivas e frameworks. 
     });
     var dots = Array.prototype.slice.call(dotsBox.children);
 
-    // escala o card fixo (1080×1920) para caber no ecrã
+    // escala dinâmica: mede a altura natural do slide mais alto e ajusta todos
     function rescale(){
-      var vw   = track.parentElement.clientWidth;
-      var maxW = Math.min(vw * 0.82, 500);
-      var maxH = window.innerHeight * 0.74;
-      var s    = Math.min(maxW / 1080, maxH / 1920);
+      var vp = track.parentElement;
+      var availW = Math.min(vp.clientWidth * 0.96, 640);
+      var availH = window.innerHeight * 0.80;
+      var cards  = track.querySelectorAll('.fw-card');
+      var frames = track.querySelectorAll('.fw-frame');
+      cards.forEach(function(c){ c.style.minHeight = '0px'; });
+      var maxNat = 0;
+      cards.forEach(function(c){ if (c.offsetHeight > maxNat) maxNat = c.offsetHeight; });
+      if (!maxNat) { maxNat = 1200; }
+      var s = Math.min(availW / 1080, availH / maxNat);
+      cards.forEach(function(c){ c.style.minHeight = maxNat + 'px'; });
+      frames.forEach(function(f){ f.style.width = (1080 * s) + 'px'; f.style.height = (maxNat * s) + 'px'; });
       document.documentElement.style.setProperty('--s', s.toFixed(4));
     }
 
@@ -661,6 +669,8 @@ Da visão estratégica à excelência operacional — perspetivas e frameworks. 
 
     rescale();
     go(0);
+    window.addEventListener('load', rescale);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(rescale); }
   })();
   </script>
 
