@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ article.title }} — Pedro Martins · AI Governance</title>
   <meta name="description" content="{{ article.excerpt }}">
+  <!-- SEO-META -->
+  {% set _canon = 'https://ai-gov.network/article/' ~ article.slug ~ ('?lang=en' if lang == 'en' else '') %}
+  <link rel="canonical" href="{{ _canon }}">
+  <link rel="alternate" hreflang="pt-PT" href="https://ai-gov.network/article/{{ article.slug }}">
+  <link rel="alternate" hreflang="en-GB" href="https://ai-gov.network/article/{{ article.slug }}?lang=en">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AI Governance — Pedro Martins">
+  <meta property="og:locale" content="{{ 'en_GB' if lang == 'en' else 'pt_PT' }}">
+  <meta property="og:title" content="{{ article.title }}">
+  <meta property="og:description" content="{{ article.excerpt }}">
+  <meta property="og:url" content="{{ _canon }}">
+  {% if article.featured_img %}<meta property="og:image" content="{{ article.featured_img }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ article.title }}">
+  <meta name="twitter:description" content="{{ article.excerpt }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <style>
@@ -367,7 +382,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>© 2026 Pedro Martins · AI Governance</p>
+    <p>© 2026 Pedro Martins · AI Governance · <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
     <a href="{{ '/' if lang == 'pt' else '/en' }}">{{ '← Voltar ao início' if lang == 'pt' else '← Back to home' }}</a>
   </footer>
 

@@ -1,9 +1,10 @@
 # app.py
 import os
+import time
 import html as html_lib
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from flask import Flask, render_template, request, abort, jsonify
+from flask import Flask, render_template, request, abort, jsonify, Response
 
 app = Flask(__name__)
 
@@ -587,6 +588,88 @@ def lab_api():
         "samples": samples,
         "results": results,
     })
+
+
+SITE_URL = os.environ.get("SITE_URL", "https://ai-gov.network").rstrip("/")
+
+# Imagem social por omissão (Open Graph) — usa a imagem em destaque do
+# artigo mais recente. Cacheada em processo para evitar chamadas ao WP a
+# cada pedido.
+_OG_CACHE = {"url": None, "ts": 0.0}
+
+
+def get_default_og_image():
+    now = time.time()
+    if _OG_CACHE["url"] and (now - _OG_CACHE["ts"]) < 3600:
+        return _OG_CACHE["url"]
+    try:
+        for p in get_wp_posts(per_page=3, category_slug="ai-gov"):
+            if p.get("featured_img"):
+                _OG_CACHE["url"] = p["featured_img"]
+                _OG_CACHE["ts"] = now
+                break
+    except Exception:
+        pass
+    return _OG_CACHE["url"]
+
+
+@app.context_processor
+def inject_og_image():
+    return {"og_image": get_default_og_image()}
+
+
+@app.route("/robots.txt")
+def robots():
+    """robots.txt da origem: permite todos os crawlers (incluindo motores de
+    IA) e indica o sitemap.
+    NOTA: se o domínio tiver a gestão de robots.txt da Cloudflare ativa, esta
+    versão é ignorada no edge — é preciso desativar essa funcionalidade no
+    painel Cloudflare para que este robots.txt passe a valer.
+    """
+    body = "\n".join([
+        "User-agent: *",
+        "Allow: /",
+        "",
+        f"Sitemap: {SITE_URL}/sitemap.xml",
+    ]) + "\n"
+    return Response(body, mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    """Sitemap dinâmico: rotas estáticas (PT/EN) + artigos do WordPress.
+    Resiliente — se a API do WP falhar, devolve na mesma as rotas estáticas.
+    """
+    static_paths = [
+        "/", "/en",
+        "/framework", "/en/framework",
+        "/publicacoes", "/en/publicacoes",
+        "/book", "/en/book",
+        "/lab",
+    ]
+    urls = list(static_paths)
+
+    try:
+        seen = set()
+        for tag in ("lang-pt", "lang-en"):
+            for p in get_wp_posts(per_page=50, category_slug="ai-gov", tag_slug=tag):
+                link = p.get("link", "")
+                if link and link not in seen:
+                    seen.add(link)
+                    urls.append(link)
+    except Exception:
+        pass
+
+    xml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for u in urls:
+        loc = (SITE_URL + u).replace("&", "&amp;")
+        xml.append(f"  <url><loc>{loc}</loc></url>")
+    xml.append("</urlset>")
+
+    return Response("\n".join(xml), mimetype="application/xml")
 
 
 if __name__ == "__main__":
