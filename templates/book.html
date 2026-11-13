@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_google_analytics.html' %}
   <title>Agendar Conversa — Pedro Martins</title>
   <!-- SEO-META -->
   <meta name="description" content="Agende uma conversa com Pedro Martins sobre AI Governance e como aplicar inteligência artificial de forma responsável na sua organização.">
@@ -69,7 +70,7 @@
       border-left: 1px solid var(--border); line-height: 1.6;
     }
     .nav-tagline strong { font-weight: 700; color: var(--navy); }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links { display: flex; gap: clamp(1rem, 2vw, 2.5rem); list-style: none; }
     .nav-links a {
       font-size: 0.82rem; letter-spacing: 0.06em;
       color: var(--muted); text-decoration: none; transition: color 0.2s;
@@ -148,6 +149,9 @@
       padding: 0.15rem 0.4rem; border-radius: 3px; color: var(--navy);
     }
 
+    @media (max-width: 1180px) {
+      .nav-tagline { display: none; }
+    }
     @media (max-width: 640px) {
       .nav-links { display: none; }
       .agendar { padding-top: calc(56px + 2.4rem); }
@@ -165,6 +169,7 @@
     </div>
     <ul class="nav-links">
       <li><a href="/framework">Framework</a></li>
+      <li><a href="/observatorio">Observatório</a></li>
       <li><a href="/publicacoes/ai-gov">Publicações</a></li>
       <li><a href="/book">Agendar</a></li>
       <li><a href="/en/book">EN</a></li>

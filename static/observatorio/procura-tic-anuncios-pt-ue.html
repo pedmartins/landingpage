@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Procura de especialistas TIC — Portugal vs. UE</title>
+<meta name="description" content="Peso dos especialistas TIC nos anúncios de emprego online, Portugal e UE-27, 2019–2026. Fonte: Eurostat (estatística experimental).">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f4f3f0;
+    --surface-1: #fcfcfb;
+    --border: #e2e0da;
+    --grid: #ebe9e4;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #77756f;
+    --series-1: #2a78d6; /* Portugal */
+    --series-2: #eb6834; /* UE-27 */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2d2b; --grid: #262624;
+      --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #9a988f;
+      --series-1: #3987e5; --series-2: #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2d2b; --grid: #262624;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #9a988f;
+    --series-1: #3987e5; --series-2: #d95926;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+  h1 { font-size: 26px; line-height: 1.25; margin: 0 0 8px; font-weight: 650; }
+  .lede { color: var(--text-secondary); margin: 0 0 24px; max-width: 70ch; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .tile .k { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+  .tile .v { font-size: 30px; font-weight: 650; font-variant-numeric: tabular-nums; line-height: 1.2; margin-top: 4px; }
+  .tile .s { font-size: 12px; color: var(--text-muted); }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 8px; }
+  .card-head h2 { font-size: 16px; margin: 0; font-weight: 600; }
+  .legend { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .toggle { font: inherit; font-size: 13px; color: var(--text-secondary); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .axis text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .baseline { stroke: var(--border); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .end-label { font-size: 12px; fill: var(--text-primary); font-weight: 600; }
+  .crosshair { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 3; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.12); min-width: 150px;
+    opacity: 0; transition: opacity .1s; }
+  .tip .t { font-weight: 600; margin-bottom: 4px; }
+  .tip .r { display: flex; justify-content: space-between; gap: 12px; align-items: center; color: var(--text-secondary); }
+  .tip .r b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--grid); text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-secondary); font-weight: 600; }
+  .table-wrap { max-height: 360px; overflow: auto; }
+  .notes { margin-top: 24px; font-size: 13px; color: var(--text-secondary); }
+  .notes h3 { font-size: 14px; color: var(--text-primary); margin: 16px 0 6px; }
+  .notes ul { padding-left: 18px; margin: 0; }
+  .notes li { margin-bottom: 4px; }
+  a { color: var(--series-1); }
+
+  .drill-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 16px; margin-bottom:4px; }
+  .crumbs { font-size:13px; color:var(--text-secondary); display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .crumbs button { font:inherit; background:none; border:0; padding:0; color:var(--series-1); cursor:pointer; text-decoration:underline; }
+  .crumbs .here { color:var(--text-primary); font-weight:600; }
+  .hint { font-size:12px; color:var(--text-muted); margin:0 0 12px; }
+  .rows { display:flex; flex-direction:column; gap:6px; }
+  .row { display:grid; grid-template-columns: minmax(130px, 34%) 1fr; gap:12px; align-items:center; width:100%;
+    font:inherit; color:inherit; text-align:left; background:none; border:1px solid transparent; border-radius:8px; padding:8px; }
+  button.row { cursor:pointer; }
+  button.row:hover, button.row:focus-visible { border-color:var(--border); background:var(--surface-0); outline:none; }
+  .row .lbl { font-size:13px; line-height:1.3; }
+  .row .lbl small { display:block; color:var(--text-muted); font-size:11px; }
+  .row .lbl .more { display:block; color:var(--series-1); font-size:11px; margin-top:2px; }
+  .bars { display:flex; flex-direction:column; gap:2px; }
+  .bar { display:grid; grid-template-columns:1fr 44px; align-items:center; gap:8px; font-size:12px; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
+  .bar .track { display:block; } .bar i { display:block; height:12px; border-radius:0 4px 4px 0; min-width:2px; }
+  .delta { font-size:11px; color:var(--text-muted); }
+  .detail { margin-top:12px; padding:12px; border-radius:8px; background:var(--surface-0); font-size:13px; color:var(--text-secondary); }
+  .detail b { color:var(--text-primary); }
+  section.card + section.card { margin-top:16px; }
+  .qsel { display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:13px; color:var(--text-secondary); margin:8px 0; }
+  .qsel input { flex:1; min-width:160px; accent-color: var(--series-1); }
+  .row.sel { border-color: var(--border); background: var(--surface-0); }
+  .detail svg { margin-top:4px; }
+  .readout { font-size:12px; color:var(--text-secondary); min-height:18px; font-variant-numeric:tabular-nums; }
+  .db { display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .db .track { position:relative; height:30px; margin:0 6px; }
+  .db .track::before { content:""; position:absolute; left:0; right:0; top:50%; border-top:1px solid var(--grid); }
+  .db .link { position:absolute; top:50%; height:2px; margin-top:-1px; background:var(--text-muted); opacity:.6; }
+  .db .dot { position:absolute; top:50%; width:12px; height:12px; margin:-6px 0 0 -6px; border-radius:50%; box-shadow:0 0 0 2px var(--surface-1); z-index:2; }
+  .db .tr { position:absolute; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; }
+  .row.sel .dot, button.row:hover .dot { box-shadow:0 0 0 2px var(--surface-0); }
+  .db .vals { display:flex; gap:12px; font-size:12px; font-variant-numeric:tabular-nums; color:var(--text-secondary); flex-wrap:wrap; margin:0 6px; }
+  .db .vals > span { display:inline-flex; align-items:center; gap:5px; }
+  .axisrow { padding-top:0; padding-bottom:0; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; gap: 4px; } .axisrow > div:first-child { display:none; } }
+  .db .ticks { position:relative; height:16px; margin:0 6px; font-size:11px; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+  .db .ticks span { position:absolute; transform:translateX(-50%); }
+  .explore { display:grid; grid-template-columns: minmax(220px, 300px) 1fr; gap:16px; align-items:start; }
+  @media (max-width: 680px) { .explore { grid-template-columns: 1fr; } }
+  .tree { list-style:none; margin:0; padding:4px; border:1px solid var(--border); border-radius:8px; }
+  .tree [role=treeitem] { display:grid; grid-template-columns:14px 1fr auto; gap:6px; align-items:center; padding:7px 8px; border-radius:6px; cursor:pointer; font-size:13px; line-height:1.3; outline:none; }
+  .tree [role=treeitem]:hover { background:var(--surface-0); }
+  .tree [role=treeitem]:focus-visible { box-shadow: inset 0 0 0 2px var(--series-1); }
+  .tree [aria-selected=true] { background:var(--surface-0); font-weight:600; box-shadow: inset 3px 0 0 var(--series-1); }
+  .tree .chev { color:var(--text-muted); font-size:11px; text-align:center; }
+  .tree small { color:var(--text-muted); font-weight:400; font-size:11px; }
+  .tree .pv { color:var(--text-secondary); font-variant-numeric:tabular-nums; font-size:12px; font-weight:400; }
+  .trend-title { font-weight:600; font-size:15px; }
+  .trend-sub { font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+  .trend-story { font-size:13px; color:var(--text-secondary); margin:8px 0 0; }
+  .hint { font-size:12px; color:var(--text-muted); margin:0 0 12px; }
+  .rs-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .yts { display:flex; gap:4px; }
+  .yt { font:inherit; font-size:12px; color:var(--text-secondary); background:none; border:1px solid var(--border); border-radius:6px; padding:3px 10px; cursor:pointer; }
+  .yt[aria-pressed=true] { background:var(--surface-0); color:var(--text-primary); font-weight:600; border-color:var(--text-muted); }
+  .rs { display:grid; grid-template-columns:minmax(140px,34%) 1fr; gap:12px; align-items:center; padding:6px 0; border-bottom:1px solid var(--grid); }
+  .rs .lbl { font-size:13px; }
+  @media (max-width:560px) { .rs { grid-template-columns:1fr; gap:4px; } }
+  #vagas .tiles { margin:12px 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Mercado de trabalho digital · Observatório ai-gov</p>
+  <h1>Portugal procura proporcionalmente o dobro de especialistas TIC que a UE</h1>
+  <p class="lede">Peso dos anúncios para especialistas em tecnologias de informação e comunicação no total de anúncios de emprego online, por trimestre. Desde 2021 a UE-27 desce de forma contínua; Portugal recuperou a partir de meados de 2024.</p>
+
+  <section class="tiles" aria-label="Indicadores principais, 2.º trimestre de 2026">
+    <div class="tile"><div class="k"><span class="swatch" style="background:var(--series-1)"></span>Portugal · 2026-T2</div><div class="v" id="t-pt"></div><div class="s" id="t-pt-s"></div></div>
+    <div class="tile"><div class="k"><span class="swatch" style="background:var(--series-2)"></span>UE-27 · 2026-T2</div><div class="v" id="t-ue"></div><div class="s" id="t-ue-s"></div></div>
+    <div class="tile"><div class="k">Rácio Portugal / UE-27</div><div class="v" id="t-ratio"></div><div class="s" id="t-ratio-s"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Especialistas TIC em % dos anúncios de emprego online</h2>
+      <div class="legend" aria-hidden="true">
+        <span><span class="swatch" style="background:var(--series-1)"></span>Portugal</span>
+        <span><span class="swatch" style="background:var(--series-2)"></span>UE-27</span>
+      </div>
+      <button class="toggle" id="toggle" aria-pressed="false">Ver tabela</button>
+    </div>
+    <div class="chart-wrap" id="chart-wrap">
+      <svg id="chart" role="img" aria-label="Gráfico de linhas: Portugal entre 10,7% e 20,3%, UE-27 entre 6,2% e 11,1%, de 2019-T4 a 2026-T2."></svg>
+      <div class="tip" id="tip" role="status" aria-live="polite"></div>
+    </div>
+    <div class="table-wrap" id="table-wrap" hidden>
+      <table><thead><tr><th>Trimestre</th><th>Portugal (%)</th><th>UE-27 (%)</th><th>Rácio PT/UE</th></tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+  </section>
+
+
+  <section class="card" id="drill" aria-labelledby="drill-title">
+    <div class="card-head">
+      <h2 id="drill-title">Explorar por profissão</h2>
+      <div class="legend" aria-hidden="true">
+        <span><span class="swatch" style="background:var(--series-1)"></span>Portugal</span>
+        <span><span class="swatch" style="background:var(--series-2)"></span>UE-27</span>
+      </div>
+    </div>
+    <p class="hint">Escolha um nível na árvore para ver a evolução. O valor à direita é o de Portugal em 2026-T2.</p>
+    <div class="explore">
+      <ul class="tree" id="tree" role="tree" aria-label="Âmbito dos dados" aria-multiselectable="false"></ul>
+      <div class="trend">
+        <div class="trend-title" id="trend-title"></div>
+        <div class="trend-sub" id="trend-sub"></div>
+        <div id="trend"></div>
+        <div class="readout" id="trend-read" aria-live="polite"></div>
+        <p class="trend-story" id="trend-story"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="vagas" aria-labelledby="vac-title">
+    <div class="card-head">
+      <h2 id="vac-title">Dificuldade de recrutamento</h2>
+      <div class="legend" aria-hidden="true">
+        <span><span class="swatch" style="background:var(--series-1)"></span>Portugal</span>
+        <span><span class="swatch" style="background:var(--series-2)"></span>UE-27</span>
+      </div>
+    </div>
+    <p class="hint">Das empresas que recrutaram ou tentaram recrutar especialistas TIC, quantas tiveram vagas difíceis de preencher. Empresas com 10 ou mais trabalhadores, <b>excluindo o setor financeiro e segurador</b>.</p>
+    <section class="tiles" aria-label="Vagas TIC difíceis de preencher, 2024">
+      <div class="tile"><div class="k"><span class="swatch" style="background:var(--series-1)"></span>Portugal · 2024</div><div class="v" id="v-pt"></div><div class="s" id="v-pt-s"></div></div>
+      <div class="tile"><div class="k"><span class="swatch" style="background:var(--series-2)"></span>UE-27 · 2024</div><div class="v" id="v-ue"></div><div class="s" id="v-ue-s"></div></div>
+    </section>
+    <div class="trend-title">Empresas com vagas TIC difíceis de preencher</div>
+    <div class="trend-sub">% das empresas que recrutaram ou tentaram recrutar. Linha tracejada: anos sem inquérito (2021, 2023).</div>
+    <div id="vac-chart"></div>
+    <div class="readout" id="vac-read" aria-live="polite"></div>
+    <div class="rs-head">
+      <div class="trend-title">Porquê? Motivos da dificuldade</div>
+      <div class="yts" id="rs-years" role="group" aria-label="Ano"></div>
+    </div>
+    <div class="trend-sub">% das empresas que recrutaram ou tentaram recrutar; uma empresa pode indicar vários motivos.</div>
+    <div id="rs-rows"></div>
+  </section>
+
+  <section class="notes">
+    <h3>Como ler</h3>
+    <ul>
+      <li>É um <strong>peso relativo</strong>, não um número de vagas. Um valor mais alto pode refletir mais procura de TIC ou menos anúncios online noutras profissões.</li>
+      <li>O rácio Portugal/UE-27 compara pesos relativos: passou de 1,5× (2019-T4) para 2,2× (2026-T2), sobretudo porque o peso na UE caiu.</li>
+    </ul>
+    <h3>Fonte e limitações</h3>
+    <ul>
+      <li>Eurostat, <em>Labour market demand for ICT specialists</em> (<code>isoc_sk_oja1</code>), dados de anúncios online da Web Intelligence Hub. Última atualização: 26/08/2026.</li>
+      <li><strong>Estatística experimental:</strong> os anúncios online não são uma amostra representativa de todo o recrutamento (há setores que recrutam sobretudo fora da internet, e anúncios repetidos entre plataformas).</li>
+      <li>Composição por profissão (2019-T4 a 2026-T2): Eurostat <code>isoc_sk_oja2</code>, classificação ISCO-08; percentagens de cada categoria no total de anúncios TIC (somam 100%, salvo arredondamentos).</li>
+      <li>Dificuldade de recrutamento: Eurostat <code>isoc_ske_itrcrn2</code>, a partir do inquérito à utilização de TIC nas empresas (em Portugal, realizado pelo INE). Empresas com 10 ou mais trabalhadores, excluindo o setor financeiro (NACE K). Anual até 2020, bienal desde então; 2012 omitido por baixa fiabilidade em Portugal.</li>
+      <li>Tratamento: LinkWith, a partir dos valores publicados, sem ajustamentos.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function () {
+  const data = [
+    ["2019-Q4",15.6,10.7],["2020-Q1",15.5,10.7],["2020-Q2",17.8,10.8],["2020-Q3",18.3,10.7],["2020-Q4",19.2,10.9],
+    ["2021-Q1",20.3,11.1],["2021-Q2",19.3,10.8],["2021-Q3",18.1,10.7],["2021-Q4",17.2,10.3],["2022-Q1",16.6,10.2],
+    ["2022-Q2",15.4,10.1],["2022-Q3",15.6,10.1],["2022-Q4",15.9,9.9],["2023-Q1",14.7,9.4],["2023-Q2",13.2,8.9],
+    ["2023-Q3",12.7,8.5],["2023-Q4",11.6,8.1],["2024-Q1",11.2,7.7],["2024-Q2",11.3,7.6],["2024-Q3",10.7,7.4],
+    ["2024-Q4",11.6,7.1],["2025-Q1",12.1,7.0],["2025-Q2",12.2,6.8],["2025-Q3",12.9,6.7],["2025-Q4",13.2,6.6],
+    ["2026-Q1",13.4,6.5],["2026-Q2",13.5,6.2]
+  ];
+  const fmt = v => v.toLocaleString("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const q = s => s.replace("-Q", "-T");
+  const series = [
+    { name: "Portugal", idx: 1, color: "var(--series-1)" },
+    { name: "UE-27", idx: 2, color: "var(--series-2)" }
+  ];
+
+  // Tiles
+  const last = data[data.length - 1], first = data[0], yAgo = data[data.length - 5];
+  const ratio = r => r[1] / r[2];
+  const delta = (a, b) => (a - b >= 0 ? "+" : "−") + fmt(Math.abs(a - b)) + " p.p.";
+  document.getElementById("t-pt").textContent = fmt(last[1]) + "%";
+  document.getElementById("t-pt-s").textContent = delta(last[1], yAgo[1]) + " face a 2025-T2";
+  document.getElementById("t-ue").textContent = fmt(last[2]) + "%";
+  document.getElementById("t-ue-s").textContent = delta(last[2], yAgo[2]) + " face a 2025-T2";
+  document.getElementById("t-ratio").textContent = ratio(last).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) + "×";
+  document.getElementById("t-ratio-s").textContent = "era " + ratio(first).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) + "× em 2019-T4";
+
+  // Table
+  document.getElementById("tbody").innerHTML = data.slice().reverse().map(r =>
+    `<tr><td>${q(r[0])}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td>${ratio(r).toLocaleString("pt-PT",{minimumFractionDigits:2,maximumFractionDigits:2})}×</td></tr>`).join("");
+  const toggle = document.getElementById("toggle");
+  toggle.addEventListener("click", () => {
+    const showTable = toggle.getAttribute("aria-pressed") !== "true";
+    toggle.setAttribute("aria-pressed", String(showTable));
+    toggle.textContent = showTable ? "Ver gráfico" : "Ver tabela";
+    document.getElementById("chart-wrap").hidden = showTable;
+    document.getElementById("table-wrap").hidden = !showTable;
+  });
+
+  // Chart
+  const svg = document.getElementById("chart"), wrap = document.getElementById("chart-wrap"), tip = document.getElementById("tip");
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
+
+  function draw() {
+    svg.innerHTML = "";
+    const W = Math.max(320, wrap.clientWidth || 900), H = W < 560 ? 260 : 340;
+    const m = { t: 12, r: W < 560 ? 92 : 96, b: 28, l: 36 };
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const iw = W - m.l - m.r, ih = H - m.t - m.b, yMax = 22;
+    const x = i => m.l + (i / (data.length - 1)) * iw;
+    const y = v => m.t + ih - (v / yMax) * ih;
+
+    const axis = el("g", { class: "axis" });
+    for (let v = 0; v <= 20; v += 5) {
+      el("line", { class: v === 0 ? "baseline" : "gridline", x1: m.l, x2: m.l + iw, y1: y(v), y2: y(v) }, axis);
+      const t = el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, axis); t.textContent = v + "%";
+    }
+    data.forEach((r, i) => {
+      if (r[0].endsWith("Q1")) {
+        const step = W < 560 ? 2 : 1, yr = +r[0].slice(0, 4);
+        if (yr % step) return;
+        const t = el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, axis); t.textContent = String(yr);
+      }
+    });
+
+    series.forEach(s => {
+      el("path", { class: "line", stroke: s.color, d: data.map((r, i) => (i ? "L" : "M") + x(i).toFixed(1) + "," + y(r[s.idx]).toFixed(1)).join("") });
+      const li = data.length - 1;
+      el("circle", { cx: x(li), cy: y(data[li][s.idx]), r: 4, fill: s.color, stroke: "var(--surface-1)", "stroke-width": 2 });
+      const t = el("text", { class: "end-label", x: x(li) + 10, y: y(data[li][s.idx]) + 4 }); t.textContent = s.name + " " + fmt(data[li][s.idx]) + "%";
+    });
+
+    const cross = el("line", { class: "crosshair", y1: m.t, y2: m.t + ih, opacity: 0 });
+    const dots = series.map(s => el("circle", { r: 5, fill: s.color, stroke: "var(--surface-1)", "stroke-width": 2, opacity: 0 }));
+    const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent", tabindex: 0, "aria-label": "Explorar valores por trimestre; use as setas" });
+    let cur = -1;
+    function show(i) {
+      cur = Math.max(0, Math.min(data.length - 1, i));
+      const r = data[cur], cx = x(cur);
+      cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("opacity", 1);
+      dots.forEach((d, k) => { d.setAttribute("cx", cx); d.setAttribute("cy", y(r[series[k].idx])); d.setAttribute("opacity", 1); });
+      tip.innerHTML = `<div class="t">${q(r[0])}</div>` + series.map(s =>
+        `<div class="r"><span><span class="swatch" style="background:${s.color}"></span> ${s.name}</span><b>${fmt(r[s.idx])}%</b></div>`).join("") +
+        `<div class="r"><span>Rácio</span><b>${ratio(r).toLocaleString("pt-PT",{maximumFractionDigits:2})}×</b></div>`;
+      const scale = wrap.clientWidth / W, px = cx * scale, tw = tip.offsetWidth || 160;
+      tip.style.left = (px + 12 + tw > wrap.clientWidth ? px - tw - 12 : px + 12) + "px";
+      tip.style.top = (m.t * scale) + "px";
+      tip.style.opacity = 1;
+    }
+    function hide() { cross.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); tip.style.opacity = 0; }
+    hit.addEventListener("pointermove", e => {
+      const b = svg.getBoundingClientRect(), sx = (e.clientX - b.left) * (W / b.width);
+      show(Math.round(((sx - m.l) / iw) * (data.length - 1)));
+    });
+    hit.addEventListener("pointerleave", hide);
+    hit.addEventListener("focus", () => show(cur < 0 ? data.length - 1 : cur));
+    hit.addEventListener("blur", hide);
+    hit.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") { show(cur - 1); e.preventDefault(); }
+      if (e.key === "ArrowRight") { show(cur + 1); e.preventDefault(); }
+    });
+  }
+  draw();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 120); });
+})();
+</script>
+
+<script>
+(function () {
+  // Fontes: Eurostat isoc_sk_oja1 (raiz: % dos anúncios online que são para especialistas TIC)
+  // e isoc_sk_oja2 (grupos/categorias: % do total de anúncios TIC, ISCO-08). 2019-T4 a 2026-T2.
+  const S = {"OC133":{"ue":[3.6,3.6,3.4,3.3,3.1,2.8,2.9,3.0,3.1,3.3,3.4,3.6,3.8,3.7,3.7,3.7,3.7,3.8,3.8,3.6,3.5,3.4,3.4,3.5,3.4,3.5,3.5],"pt":[2.0,2.0,1.7,1.4,1.3,1.2,1.2,1.3,1.3,1.3,1.4,1.4,1.5,1.5,1.5,1.5,1.5,1.4,1.4,1.5,1.7,1.8,1.6,1.6,1.7,1.6,1.6]},"OC251":{"ue":[60.4,60.6,60.9,60.6,60.3,60.0,59.3,58.7,58.4,58.8,59.3,60.2,60.8,60.5,59.7,59.2,58.5,57.9,57.9,57.7,57.2,57.0,56.2,55.2,54.6,53.9,53.0],"pt":[61.2,61.2,63.2,64.6,66.4,65.6,64.1,61.0,58.9,58.4,56.4,58.1,58.7,57.6,55.3,54.0,51.4,50.7,51.2,50.5,54.5,56.5,56.8,57.0,57.6,56.8,56.0]},"OC252":{"ue":[9.9,9.9,10.0,10.5,11.3,12.3,12.9,13.6,14.1,14.1,13.4,12.2,10.8,9.9,10.0,10.0,10.2,10.3,10.2,10.0,9.7,9.5,9.7,10.1,10.5,10.5,10.3],"pt":[8.0,8.2,9.0,9.2,9.4,9.1,8.9,8.8,8.7,8.5,8.0,7.4,7.6,8.0,8.1,8.5,8.4,8.6,9.1,9.3,9.7,10.2,10.7,11.4,11.2,11.6,11.5]},"OC351":{"ue":[10.6,10.7,10.5,10.2,9.9,9.5,9.4,9.3,9.1,8.9,9.0,9.4,9.7,10.3,10.6,10.5,10.6,10.6,10.4,10.4,10.5,10.6,10.6,10.5,10.3,10.2,10.3],"pt":[19.5,19.5,17.7,16.7,15.3,16.4,17.5,20.6,22.9,23.5,26.2,25.2,24.0,24.5,26.6,27.4,30.3,30.9,29.9,29.5,24.1,21.6,21.0,20.2,19.6,18.9,18.8]},"OC352":{"ue":[1.1,0.8,1.0,1.1,1.0,0.8,0.8,0.8,0.8,0.7,0.8,0.9,0.9,1.1,1.1,1.1,1.2,1.5,1.7,2.3,2.8,3.0,3.1,3.0,2.9,2.9,3.2],"pt":[1.2,1.1,1.0,1.0,1.0,0.9,0.8,0.8,0.7,0.8,0.9,0.8,1.0,1.2,1.3,1.4,1.4,1.4,1.2,1.4,1.4,1.2,1.3,1.3,1.1,1.1,1.1]},"OC742":{"ue":[6.0,6.2,6.2,6.4,6.5,6.5,6.2,5.9,5.5,5.2,5.2,5.1,5.1,5.5,5.9,6.1,6.5,6.6,6.7,6.9,7.2,7.5,7.9,8.5,9.1,9.5,9.8],"pt":[0.9,0.8,0.7,0.7,0.6,0.5,0.6,0.6,0.5,0.5,0.5,0.5,0.6,0.7,0.7,0.8,0.8,0.8,1.0,1.4,1.7,1.9,2.0,1.9,2.1,2.5,3.0]},"OTH_ICT":{"ue":[8.5,8.3,8.0,7.9,7.9,8.1,8.5,8.8,9.0,8.9,8.8,8.7,8.7,8.9,9.1,9.2,9.3,9.4,9.3,9.1,9.1,9.1,9.1,9.2,9.2,9.5,9.8],"pt":[7.1,7.2,6.6,6.4,6.1,6.2,6.9,7.0,7.0,7.0,6.7,6.6,6.6,6.5,6.5,6.4,6.3,6.2,6.3,6.5,6.9,6.7,6.7,6.6,6.7,7.5,8.0]}};
+  const ROOT = {
+    pt: [15.6,15.5,17.8,18.3,19.2,20.3,19.3,18.1,17.2,16.6,15.4,15.6,15.9,14.7,13.2,12.7,11.6,11.2,11.3,10.7,11.6,12.1,12.2,12.9,13.2,13.4,13.5],
+    ue: [10.7,10.7,10.8,10.7,10.9,11.1,10.8,10.7,10.3,10.2,10.1,10.1,9.9,9.4,8.9,8.5,8.1,7.7,7.6,7.4,7.1,7.0,6.8,6.7,6.6,6.5,6.2]
+  };
+  const Q = []; for (let y = 2019, q = 4; Q.length < 27; q++) { if (q > 4) { q = 1; y++; } Q.push(y + "-T" + q); }
+  const sumSeries = keys => ["pt", "ue"].reduce((o, k) => (o[k] = Q.map((_, i) => +keys.reduce((a, c) => a + S[c][k][i], 0).toFixed(1)), o), {});
+  const leaf = (k, name, code) => ({ id: k, name, code, ...S[k], unit: "share" });
+  const grp = (id, name, kids) => ({ id, name, children: kids, ...sumSeries(kids.map(k => k.id)), unit: "share" });
+  const tree = { id: "root", name: "Todos os especialistas TIC", ...ROOT, unit: "total", children: [
+    grp("gestao", "Gestão", [leaf("OC133", "Diretores de serviços de TIC", "133")]),
+    grp("prof", "Profissionais de TIC", [leaf("OC251", "Programadores e analistas de software", "251"), leaf("OC252", "Especialistas em bases de dados e redes", "252")]),
+    grp("tec", "Técnicos de TIC", [leaf("OC351", "Técnicos de operações e suporte", "351"), leaf("OC352", "Técnicos de telecomunicações", "352"), leaf("OC742", "Instaladores e reparadores de eletrónica", "742")]),
+    leaf("OTH_ICT", "Outras profissões TIC", null)
+  ] };
+  const f = v => v.toLocaleString("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const treeEl = document.getElementById("tree"), chartEl = document.getElementById("trend"),
+        titleEl = document.getElementById("trend-title"), subEl = document.getElementById("trend-sub"),
+        readEl = document.getElementById("trend-read"), storyEl = document.getElementById("trend-story");
+  const open = new Set(["root", "tec"]);
+  let selected = tree, focusId = "root";
+
+  // Árvore (padrão ARIA tree, seleção única)
+  function flat() { const out = []; (function walk(n, lvl, parent) { out.push({ n, lvl, parent });
+    if (n.children && open.has(n.id)) n.children.forEach(c => walk(c, lvl + 1, n)); })(tree, 1, null); return out; }
+  function renderTree() {
+    treeEl.innerHTML = "";
+    flat().forEach(({ n, lvl }) => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "treeitem"); li.id = "ti-" + n.id; li.dataset.id = n.id;
+      li.setAttribute("aria-level", lvl); li.setAttribute("aria-selected", String(n === selected));
+      if (n.children) li.setAttribute("aria-expanded", String(open.has(n.id)));
+      li.tabIndex = n.id === focusId ? 0 : -1;
+      li.style.paddingLeft = (8 + (lvl - 1) * 18) + "px";
+      const last = n.pt[n.pt.length - 1];
+      li.innerHTML = '<span class="chev" aria-hidden="true">' + (n.children ? (open.has(n.id) ? "▾" : "▸") : "") + '</span>' +
+        '<span class="nm">' + n.name + (n.code ? ' <small>' + n.code + '</small>' : '') + '</span>' +
+        '<span class="pv">' + f(last) + '%</span>';
+      li.addEventListener("click", e => {
+        if (n.children && e.target.closest(".chev")) { toggle(n); return; }
+        select(n);
+      });
+      treeEl.appendChild(li);
+    });
+  }
+  function toggle(n) { open.has(n.id) ? open.delete(n.id) : open.add(n.id); focusId = n.id; renderTree(); document.getElementById("ti-" + n.id).focus(); }
+  function select(n) { selected = n; focusId = n.id; renderTree(); renderChart(); document.getElementById("ti-" + n.id).focus(); }
+  treeEl.addEventListener("keydown", e => {
+    const items = flat(), i = items.findIndex(x => x.n.id === focusId); if (i < 0) return;
+    const cur = items[i].n, go = j => { if (j >= 0 && j < items.length) { focusId = items[j].n.id; renderTree(); document.getElementById("ti-" + focusId).focus(); } };
+    if (e.key === "ArrowDown") go(i + 1);
+    else if (e.key === "ArrowUp") go(i - 1);
+    else if (e.key === "ArrowRight") { if (cur.children && !open.has(cur.id)) toggle(cur); else if (cur.children) go(i + 1); }
+    else if (e.key === "ArrowLeft") { if (cur.children && open.has(cur.id)) toggle(cur); else if (items[i].parent) go(items.findIndex(x => x.n === items[i].parent)); }
+    else if (e.key === "Enter" || e.key === " ") select(cur);
+    else if (e.key === "Home") go(0); else if (e.key === "End") go(items.length - 1);
+    else return;
+    e.preventDefault();
+  });
+
+  // Gráfico de tendência
+  function renderChart() {
+    const n = selected, pt = n.pt, ue = n.ue, L = Q.length - 1;
+    titleEl.textContent = n.name;
+    subEl.textContent = n.unit === "total" ? "% dos anúncios de emprego online que são para especialistas TIC" : "% do total de anúncios para especialistas TIC";
+    const W = Math.max(300, chartEl.clientWidth || 600), H = W < 520 ? 220 : 260, m = { t: 12, r: 78, b: 24, l: 36 };
+    const top = Math.max(...pt, ...ue), st = [1, 2, 5, 10, 20, 25].find(c => top / c <= 4) || 25, yMax = Math.ceil(top * 1.02 / st) * st;
+    const iw = W - m.l - m.r, ih = H - m.t - m.b, x = i => m.l + i / L * iw, y = v => m.t + ih - v / yMax * ih;
+    let g = "";
+    for (let v = 0; v <= yMax; v += st) g += '<line class="' + (v ? "gridline" : "baseline") + '" x1="' + m.l + '" x2="' + (m.l + iw) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (m.l - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '%</text>';
+    Q.forEach((q, i) => { if (q.endsWith("T1") && (W > 520 || +q.slice(0, 4) % 2 === 0)) g += '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + q.slice(0, 4) + '</text>'; });
+    const path = (a, c) => '<path class="line" stroke="' + c + '" d="' + a.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1)).join("") + '"/>';
+    let yp = y(pt[L]) + 4, yu = y(ue[L]) + 4; if (Math.abs(yp - yu) < 14) { const mid = (yp + yu) / 2, s = yp <= yu ? -1 : 1; yp = mid + 7 * s; yu = mid - 7 * s; }
+    chartEl.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + n.name + ': Portugal de ' + f(pt[0]) + '% para ' + f(pt[L]) + '%, UE-27 de ' + f(ue[0]) + '% para ' + f(ue[L]) + '%, ' + Q[0] + ' a ' + Q[L] + '">' +
+      '<g class="axis">' + g + '</g>' + path(ue, "var(--series-2)") + path(pt, "var(--series-1)") +
+      '<circle cx="' + x(L) + '" cy="' + y(ue[L]) + '" r="4" fill="var(--series-2)" stroke="var(--surface-1)" stroke-width="2"/>' +
+      '<circle cx="' + x(L) + '" cy="' + y(pt[L]) + '" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>' +
+      '<text class="end-label" x="' + (x(L) + 9) + '" y="' + yp + '">PT ' + f(pt[L]) + '%</text>' +
+      '<text class="end-label" x="' + (x(L) + 9) + '" y="' + yu + '">UE ' + f(ue[L]) + '%</text>' +
+      '<line class="crosshair" id="tx" y1="' + m.t + '" y2="' + (m.t + ih) + '" opacity="0"/>' +
+      '<circle id="tdp" r="5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2" opacity="0"/>' +
+      '<circle id="tdu" r="5" fill="var(--series-2)" stroke="var(--surface-1)" stroke-width="2" opacity="0"/>' +
+      '<rect class="hit" x="' + m.l + '" y="' + m.t + '" width="' + iw + '" height="' + ih + '" fill="transparent"/></svg>';
+    const svg = chartEl.querySelector("svg"), cx = svg.querySelector("#tx"), dp = svg.querySelector("#tdp"), du = svg.querySelector("#tdu");
+    const read = i => '<b>' + Q[i] + '</b> · <span class="swatch" style="background:var(--series-1)"></span> Portugal ' + f(pt[i]) + '% · <span class="swatch" style="background:var(--series-2)"></span> UE-27 ' + f(ue[i]) + '%';
+    readEl.innerHTML = read(L);
+    svg.querySelector(".hit").addEventListener("pointermove", e => {
+      const b = svg.getBoundingClientRect(), i = Math.max(0, Math.min(L, Math.round(((e.clientX - b.left) * W / b.width - m.l) / iw * L)));
+      [cx].forEach(el => { el.setAttribute("x1", x(i)); el.setAttribute("x2", x(i)); el.setAttribute("opacity", 1); });
+      dp.setAttribute("cx", x(i)); dp.setAttribute("cy", y(pt[i])); dp.setAttribute("opacity", 1);
+      du.setAttribute("cx", x(i)); du.setAttribute("cy", y(ue[i])); du.setAttribute("opacity", 1);
+      readEl.innerHTML = read(i);
+    });
+    svg.querySelector(".hit").addEventListener("pointerleave", () => { [cx, dp, du].forEach(el => el.setAttribute("opacity", 0)); readEl.innerHTML = read(L); });
+    const mx = pt.indexOf(Math.max(...pt)), mn = pt.indexOf(Math.min(...pt)), r = pt[L] / ue[L];
+    storyEl.textContent = "Portugal: " + f(pt[0]) + "% em " + Q[0] + " → " + f(pt[L]) + "% em " + Q[L] + " (máximo " + f(pt[mx]) + "% em " + Q[mx] + ", mínimo " + f(pt[mn]) + "% em " + Q[mn] +
+      "). UE-27: " + f(ue[0]) + "% → " + f(ue[L]) + "%. No último trimestre, Portugal está a " + r.toLocaleString("pt-PT", { maximumFractionDigits: 1 }) + "× a média europeia.";
+  }
+  renderTree(); renderChart();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderChart, 150); });
+})();
+</script>
+<script>
+(function () {
+  // Eurostat isoc_ske_itrcrn2 — empresas com 10+ trabalhadores, excl. setor financeiro (NACE K); % das empresas que recrutaram ou tentaram recrutar especialistas TIC.
+  const D = {"E_ITSPDLA":{"pt":{"2020":32.4,"2022":50.4,"2024":33.7},"ue":{"2020":42.3,"2022":51.3,"2024":43.2}},"E_ITSPDLET":{"pt":{"2020":29.7,"2022":34.8,"2024":30.5},"ue":{"2020":38.3,"2022":43.5,"2024":41.7}},"E_ITSPDLWE":{"pt":{"2020":31.8,"2022":34.9,"2024":34.9},"ue":{"2020":36.9,"2022":42.6,"2024":40.9}},"E_ITSPDSAL":{"pt":{"2020":31.6,"2022":56.4,"2024":41.4},"ue":{"2020":35.8,"2022":42.3,"2024":41.9}},"E_ITSPVAC2":{"pt":{"2014":16.2,"2015":20.6,"2016":32.5,"2017":31.1,"2018":34.6,"2019":46.6,"2020":44.5,"2022":61.4,"2024":50.5},"ue":{"2014":37.2,"2015":38.4,"2016":42.8,"2017":47.7,"2018":53.7,"2019":57.9,"2020":55.3,"2022":62.9,"2024":57.5}}};
+  const f = v => v.toLocaleString("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const vac = D.E_ITSPVAC2, years = Object.keys(vac.pt).map(Number).sort((a, b) => a - b);
+  // Cartões
+  const yl = years[years.length - 1];
+  document.getElementById("v-pt").textContent = f(vac.pt[yl]) + "%";
+  document.getElementById("v-pt-s").textContent = "era " + f(vac.pt[years[0]]) + "% em " + years[0];
+  document.getElementById("v-ue").textContent = f(vac.ue[yl]) + "%";
+  document.getElementById("v-ue-s").textContent = "era " + f(vac.ue[years[0]]) + "% em " + years[0];
+
+  // Gráfico de linhas com eixo temporal real (anos em falta ficam como intervalo)
+  const el = document.getElementById("vac-chart"), read = document.getElementById("vac-read");
+  function draw() {
+    const W = Math.max(300, el.clientWidth || 700), H = W < 520 ? 220 : 260, m = { t: 12, r: 78, b: 24, l: 36 };
+    const x0 = years[0], x1 = yl, iw = W - m.l - m.r, ih = H - m.t - m.b, yMax = 80;
+    const x = yr => m.l + (yr - x0) / (x1 - x0) * iw, y = v => m.t + ih - v / yMax * ih;
+    let g = "";
+    for (let v = 0; v <= yMax; v += 20) g += '<line class="' + (v ? "gridline" : "baseline") + '" x1="' + m.l + '" x2="' + (m.l + iw) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (m.l - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '%</text>';
+    for (let yr = x0; yr <= x1; yr++) if (W > 520 || yr % 2 === 0) g += '<text x="' + x(yr) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + '</text>';
+    // Segmentos: contínuo entre anos consecutivos, tracejado onde falta o ano
+    const line = (k, c) => years.slice(1).map((yr, i) => { const a = years[i];
+      return '<line x1="' + x(a) + '" y1="' + y(vac[k][a]) + '" x2="' + x(yr) + '" y2="' + y(vac[k][yr]) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"' + (yr - a > 1 ? ' stroke-dasharray="4 4"' : '') + '/>'; }).join("") +
+      years.map(yr => '<circle cx="' + x(yr) + '" cy="' + y(vac[k][yr]) + '" r="3" fill="' + c + '" stroke="var(--surface-1)" stroke-width="1.5"/>').join("");
+    let yp = y(vac.pt[yl]) + 4, yu = y(vac.ue[yl]) + 4; if (Math.abs(yp - yu) < 14) { const mid = (yp + yu) / 2, s = yp <= yu ? -1 : 1; yp = mid + 7 * s; yu = mid - 7 * s; }
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Empresas com vagas TIC difíceis de preencher: Portugal de ' + f(vac.pt[x0]) + '% em ' + x0 + ' para ' + f(vac.pt[yl]) + '% em ' + yl + '; UE-27 de ' + f(vac.ue[x0]) + '% para ' + f(vac.ue[yl]) + '%.">' +
+      '<g class="axis">' + g + '</g>' + line("ue", "var(--series-2)") + line("pt", "var(--series-1)") +
+      '<text class="end-label" x="' + (x(yl) + 9) + '" y="' + yp + '">PT ' + f(vac.pt[yl]) + '%</text>' +
+      '<text class="end-label" x="' + (x(yl) + 9) + '" y="' + yu + '">UE ' + f(vac.ue[yl]) + '%</text>' +
+      '<line class="crosshair" id="vx" y1="' + m.t + '" y2="' + (m.t + ih) + '" opacity="0"/>' +
+      '<rect class="hit" x="' + m.l + '" y="' + m.t + '" width="' + iw + '" height="' + ih + '" fill="transparent"/></svg>';
+    const svg = el.querySelector("svg"), vx = svg.querySelector("#vx");
+    const show = yr => read.innerHTML = '<b>' + yr + '</b> · <span class="swatch" style="background:var(--series-1)"></span> Portugal ' + f(vac.pt[yr]) + '% · <span class="swatch" style="background:var(--series-2)"></span> UE-27 ' + f(vac.ue[yr]) + '%';
+    show(yl);
+    svg.querySelector(".hit").addEventListener("pointermove", e => {
+      const b = svg.getBoundingClientRect(), xv = x0 + ((e.clientX - b.left) * W / b.width - m.l) / iw * (x1 - x0);
+      const yr = years.reduce((p, c) => Math.abs(c - xv) < Math.abs(p - xv) ? c : p);
+      vx.setAttribute("x1", x(yr)); vx.setAttribute("x2", x(yr)); vx.setAttribute("opacity", 1); show(yr); });
+    svg.querySelector(".hit").addEventListener("pointerleave", () => { vx.setAttribute("opacity", 0); show(yl); });
+  }
+
+  // Motivos, por ano
+  const reasons = [["E_ITSPDSAL", "Expectativas salariais demasiado altas"], ["E_ITSPDLWE", "Falta de experiência profissional"],
+                   ["E_ITSPDLA", "Falta de candidatos"], ["E_ITSPDLET", "Formação ou qualificação inadequada"]];
+  const rYears = Object.keys(D.E_ITSPDSAL.pt).sort();
+  const tabs = document.getElementById("rs-years"), box = document.getElementById("rs-rows");
+  let ry = rYears[rYears.length - 1];
+  function drawReasons() {
+    tabs.innerHTML = rYears.map(y => '<button type="button" class="yt" aria-pressed="' + (y === ry) + '">' + y + '</button>').join("");
+    [...tabs.children].forEach(b => b.addEventListener("click", () => { ry = b.textContent; drawReasons(); }));
+    const rows = reasons.map(([k, n]) => ({ n, pt: D[k].pt[ry], ue: D[k].ue[ry] })).sort((a, b) => b.pt - a.pt);
+    box.innerHTML = rows.map(r => '<div class="rs"><div class="lbl">' + r.n + '</div><div class="bars">' +
+      '<div class="bar"><span class="track"><i style="width:' + (r.pt / 70 * 100) + '%;background:var(--series-1)"></i></span>' + f(r.pt) + '%</div>' +
+      '<div class="bar"><span class="track"><i style="width:' + (r.ue / 70 * 100) + '%;background:var(--series-2)"></i></span>' + f(r.ue) + '%</div></div></div>').join("");
+  }
+  draw(); drawReasons();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 150); });
+})();
+</script>
+
+</body>
+</html>

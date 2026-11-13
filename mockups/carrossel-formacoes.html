@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock-up — Carrossel de Formações</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --cream: #f5f3ee;
+      --paper: #fffefa;
+      --navy: #1a2d3d;
+      --teal: #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --teal-pale: #dff0ec;
+      --orange: #d4844a;
+      --muted: #5a6a78;
+      --line: rgba(26, 45, 61, 0.12);
+      --shadow: 0 18px 48px rgba(26, 45, 61, 0.11);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--navy);
+      background: var(--cream);
+      font-family: "Barlow", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    .mockup-note {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.45rem 1rem;
+      color: #fff;
+      background: var(--navy);
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .mockup-note::before {
+      width: 7px;
+      height: 7px;
+      content: "";
+      border-radius: 50%;
+      background: #5fd0bd;
+      box-shadow: 0 0 0 4px rgba(95, 208, 189, 0.15);
+    }
+
+    .site-nav {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 0 4vw;
+      border-bottom: 1px solid rgba(26, 45, 61, 0.08);
+      background: rgba(245, 243, 238, 0.95);
+    }
+
+    .brand {
+      color: var(--navy);
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .site-nav ul {
+      display: flex;
+      gap: clamp(1rem, 2vw, 2.4rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .site-nav li {
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    .context-strip {
+      min-height: 230px;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 3.5rem 4vw;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .context-strip > *,
+    .section-head > * { min-width: 0; }
+
+    .context-strip h1 {
+      margin: 0;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(3rem, 7vw, 6.4rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 0.82;
+      text-transform: uppercase;
+    }
+
+    .context-strip h1 em {
+      display: block;
+      color: var(--teal);
+      font-style: normal;
+    }
+
+    .context-copy {
+      max-width: 52ch;
+      padding-left: 2rem;
+      border-left: 1px solid rgba(26, 158, 138, 0.28);
+      color: var(--muted);
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    .training-section {
+      position: relative;
+      padding: clamp(4rem, 7vw, 7rem) 4vw clamp(4.5rem, 8vw, 7.5rem);
+      overflow: hidden;
+    }
+
+    .training-section::before {
+      position: absolute;
+      top: -180px;
+      right: -160px;
+      width: 480px;
+      height: 480px;
+      content: "";
+      border: 1px solid rgba(26, 158, 138, 0.13);
+      border-radius: 50%;
+      box-shadow: 0 0 0 64px rgba(26, 158, 138, 0.025), 0 0 0 128px rgba(26, 158, 138, 0.018);
+      pointer-events: none;
+    }
+
+    .section-head {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 2.4rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.7rem;
+      color: var(--teal-dark);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 28px;
+      height: 2px;
+      content: "";
+      background: var(--teal);
+    }
+
+    .section-head h2 {
+      max-width: 720px;
+      margin: 0;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 em { color: var(--teal); font-style: normal; }
+
+    .section-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .carousel-btn {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--navy);
+      background: rgba(255, 254, 250, 0.82);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s, opacity 0.2s;
+    }
+
+    .carousel-btn:hover:not(:disabled),
+    .carousel-btn:focus-visible {
+      border-color: var(--teal);
+      color: var(--teal-dark);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .carousel-btn:disabled { cursor: default; opacity: 0.28; }
+
+    .counter {
+      min-width: 4rem;
+      color: var(--muted);
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .carousel-viewport {
+      position: relative;
+      z-index: 1;
+      margin-right: -4vw;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+    }
+
+    .carousel-viewport::-webkit-scrollbar { display: none; }
+
+    .training-track {
+      display: grid;
+      grid-auto-columns: minmax(300px, calc((100vw - 8vw - 2.5rem) / 3));
+      grid-auto-flow: column;
+      gap: 1.25rem;
+      padding: 0.3rem 4vw 1.6rem 0;
+    }
+
+    .training-card {
+      min-height: 510px;
+      display: flex;
+      flex-direction: column;
+      scroll-snap-align: start;
+      border: 1px solid rgba(26, 45, 61, 0.1);
+      border-top: 4px solid var(--teal);
+      background: var(--paper);
+      box-shadow: 0 8px 22px rgba(26, 45, 61, 0.045);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+
+    .training-card:nth-child(2) { border-top-color: var(--orange); }
+    .training-card:nth-child(3) { border-top-color: #28a7bd; }
+    .training-card:nth-child(4) { border-top-color: #6d8e4e; }
+
+    .training-card:hover {
+      border-color: rgba(26, 158, 138, 0.35);
+      box-shadow: var(--shadow);
+      transform: translateY(-5px);
+    }
+
+    .card-top {
+      min-height: 156px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.55rem 1.6rem 1.4rem;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(223, 240, 236, 0.72), rgba(255, 254, 250, 0.25));
+    }
+
+    .training-card:nth-child(2) .card-top {
+      background: linear-gradient(145deg, rgba(245, 226, 211, 0.72), rgba(255, 254, 250, 0.25));
+    }
+
+    .training-card:nth-child(3) .card-top {
+      background: linear-gradient(145deg, rgba(218, 239, 243, 0.8), rgba(255, 254, 250, 0.25));
+    }
+
+    .training-card:nth-child(4) .card-top {
+      background: linear-gradient(145deg, rgba(228, 236, 218, 0.8), rgba(255, 254, 250, 0.25));
+    }
+
+    .status {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--teal-dark);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .status::before {
+      width: 7px;
+      height: 7px;
+      content: "";
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .course-number {
+      align-self: flex-end;
+      color: rgba(26, 45, 61, 0.14);
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 3.8rem;
+      font-weight: 800;
+      line-height: 0.72;
+    }
+
+    .card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 1.65rem 1.6rem 1.55rem;
+    }
+
+    .audience {
+      margin-bottom: 0.6rem;
+      color: var(--teal-dark);
+      font-size: 0.69rem;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .card-body h3 {
+      margin: 0 0 0.85rem;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(1.65rem, 2.2vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .description {
+      margin: 0 0 1.35rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.58;
+    }
+
+    .metadata {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: auto 0 1.4rem;
+      padding: 1rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .meta-label {
+      display: block;
+      margin-bottom: 0.18rem;
+      color: var(--muted);
+      font-size: 0.62rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .meta-value { font-size: 0.83rem; font-weight: 500; }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: var(--navy);
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .card-link span:last-child {
+      color: var(--teal);
+      font-size: 1.15rem;
+      transition: transform 0.2s;
+    }
+
+    .training-card:hover .card-link span:last-child { transform: translateX(4px); }
+
+    .section-foot {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-top: 1.3rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .section-foot strong { color: var(--navy); font-weight: 500; }
+
+    .all-link {
+      flex-shrink: 0;
+      color: var(--teal-dark);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .next-section {
+      padding: 3.5rem 4vw 5rem;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 254, 250, 0.45);
+    }
+
+    .next-section span {
+      color: var(--teal);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .next-section h2 {
+      margin: 0.4rem 0 0;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 900px) {
+      .context-strip { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .training-track { grid-auto-columns: minmax(300px, calc((100vw - 8vw - 1.25rem) / 2)); }
+    }
+
+    @media (max-width: 680px) {
+      .mockup-note { font-size: 0.67rem; }
+      .site-nav { min-height: 58px; padding: 0 1.25rem; }
+      .site-nav ul { display: none; }
+      .context-strip {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 3rem 1.25rem;
+      }
+      .context-copy { padding-left: 1.25rem; }
+      .training-section { padding: 4rem 1.25rem 4.5rem; }
+      .training-section::before { opacity: 0.65; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .section-head h2 {
+        max-width: 100%;
+        font-size: clamp(2.25rem, 11vw, 3rem);
+        overflow-wrap: anywhere;
+      }
+      .context-copy {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+      .section-actions { width: 100%; max-width: 100%; justify-content: flex-end; }
+      .carousel-viewport { margin-right: -1.25rem; }
+      .training-track {
+        grid-auto-columns: minmax(280px, 86vw);
+        gap: 0.9rem;
+        padding-right: 1.25rem;
+      }
+      .training-card { min-height: 500px; }
+      .section-foot { flex-direction: column; gap: 1rem; }
+      .next-section { padding: 3.5rem 1.25rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .carousel-viewport { scroll-behavior: auto; }
+      .training-card, .carousel-btn, .card-link span:last-child { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-note">Mock-up visual · conteúdos e datas meramente ilustrativos</div>
+
+  <nav class="site-nav" aria-label="Navegação demonstrativa">
+    <a class="brand" href="#">Pedro Martins</a>
+    <ul aria-hidden="true">
+      <li>Framework</li>
+      <li>Serviços</li>
+      <li>Observatório</li>
+      <li>Publicações</li>
+      <li>Contacto</li>
+    </ul>
+  </nav>
+
+  <header class="context-strip">
+    <h1>AI <em>Governance</em></h1>
+    <p class="context-copy">
+      A secção seguinte ilustra como uma oferta de formação pode surgir entre o hero
+      da landing page e as publicações, sem competir com o carrossel editorial existente.
+    </p>
+  </header>
+
+  <main>
+    <section class="training-section" aria-labelledby="training-title">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Capacitação Executiva</div>
+          <h2 id="training-title">Formações em <em>AI Governance</em></h2>
+        </div>
+
+        <div class="section-actions" aria-label="Controlos do carrossel">
+          <button class="carousel-btn" id="trainingPrev" type="button" aria-label="Formação anterior">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="counter" id="trainingCounter" aria-live="polite">1 / 4</span>
+          <button class="carousel-btn" id="trainingNext" type="button" aria-label="Formação seguinte">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="carousel-viewport" id="trainingViewport" tabindex="0" aria-label="Lista de formações">
+        <div class="training-track">
+          <article class="training-card">
+            <div class="card-top">
+              <span class="status">Inscrições abertas</span>
+              <span class="course-number" aria-hidden="true">01</span>
+            </div>
+            <div class="card-body">
+              <div class="audience">Executivos &amp; Direção</div>
+              <h3>AI Governance para Executivos</h3>
+              <p class="description">Da ambição estratégica ao modelo de decisão: responsabilidades, prioridades e mecanismos de supervisão.</p>
+              <div class="metadata">
+                <div><span class="meta-label">Duração</span><span class="meta-value">6 horas</span></div>
+                <div><span class="meta-label">Formato</span><span class="meta-value">Online</span></div>
+                <div><span class="meta-label">Próxima edição</span><span class="meta-value">Por confirmar</span></div>
+                <div><span class="meta-label">Idioma</span><span class="meta-value">Português</span></div>
+              </div>
+              <a class="card-link" href="#" onclick="return false"><span>Conhecer programa</span><span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article class="training-card">
+            <div class="card-top">
+              <span class="status">Próxima edição</span>
+              <span class="course-number" aria-hidden="true">02</span>
+            </div>
+            <div class="card-body">
+              <div class="audience">Risco, Legal &amp; Compliance</div>
+              <h3>EU AI Act na Prática</h3>
+              <p class="description">Classificar sistemas, reconhecer obrigações e transformar requisitos regulatórios num plano operacional.</p>
+              <div class="metadata">
+                <div><span class="meta-label">Duração</span><span class="meta-value">3 horas</span></div>
+                <div><span class="meta-label">Formato</span><span class="meta-value">Híbrido</span></div>
+                <div><span class="meta-label">Próxima edição</span><span class="meta-value">Por confirmar</span></div>
+                <div><span class="meta-label">Idioma</span><span class="meta-value">Português</span></div>
+              </div>
+              <a class="card-link" href="#" onclick="return false"><span>Ver formação</span><span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article class="training-card">
+            <div class="card-top">
+              <span class="status">Sob consulta</span>
+              <span class="course-number" aria-hidden="true">03</span>
+            </div>
+            <div class="card-body">
+              <div class="audience">Tecnologia &amp; Data</div>
+              <h3>Responsible AI: Risco, Controlo e Evidência</h3>
+              <p class="description">Um workshop aplicado para ligar risco de AI, controlos internos, documentação e evidência auditável.</p>
+              <div class="metadata">
+                <div><span class="meta-label">Duração</span><span class="meta-value">1 dia</span></div>
+                <div><span class="meta-label">Formato</span><span class="meta-value">Presencial</span></div>
+                <div><span class="meta-label">Data</span><span class="meta-value">Por confirmar</span></div>
+                <div><span class="meta-label">Modelo</span><span class="meta-value">In-company</span></div>
+              </div>
+              <a class="card-link" href="#" onclick="return false"><span>Pedir informação</span><span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article class="training-card">
+            <div class="card-top">
+              <span class="status">Programa dedicado</span>
+              <span class="course-number" aria-hidden="true">04</span>
+            </div>
+            <div class="card-body">
+              <div class="audience">Conselhos de Administração</div>
+              <h3>Supervisão de AI ao Nível do Board</h3>
+              <p class="description">Questões críticas, informação de gestão e decisões que apoiam uma supervisão informada da adoção de AI.</p>
+              <div class="metadata">
+                <div><span class="meta-label">Duração</span><span class="meta-value">4 horas</span></div>
+                <div><span class="meta-label">Formato</span><span class="meta-value">Presencial</span></div>
+                <div><span class="meta-label">Data</span><span class="meta-value">Por confirmar</span></div>
+                <div><span class="meta-label">Modelo</span><span class="meta-value">À medida</span></div>
+              </div>
+              <a class="card-link" href="#" onclick="return false"><span>Pedir proposta</span><span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="section-foot">
+        <p><strong>Desenhadas para aplicação imediata.</strong> Os programas podem ser ajustados ao contexto, maturidade e responsabilidades de cada organização.</p>
+        <a class="all-link" href="#" onclick="return false">Ver todas as formações →</a>
+      </div>
+    </section>
+
+    <section class="next-section" aria-label="Contexto da secção seguinte">
+      <span>Perspetiva &amp; Análise</span>
+      <h2>Últimas Publicações</h2>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var viewport = document.getElementById("trainingViewport");
+      var cards = Array.prototype.slice.call(viewport.querySelectorAll(".training-card"));
+      var prev = document.getElementById("trainingPrev");
+      var next = document.getElementById("trainingNext");
+      var counter = document.getElementById("trainingCounter");
+      var current = 0;
+
+      function nearestCard() {
+        var left = viewport.scrollLeft;
+        var best = 0;
+        var distance = Infinity;
+        cards.forEach(function (card, index) {
+          var delta = Math.abs(card.offsetLeft - left - viewport.offsetLeft);
+          if (delta < distance) {
+            best = index;
+            distance = delta;
+          }
+        });
+        return best;
+      }
+
+      function update() {
+        current = nearestCard();
+        counter.textContent = (current + 1) + " / " + cards.length;
+        prev.disabled = current === 0;
+        next.disabled = current === cards.length - 1;
+      }
+
+      function goTo(index) {
+        current = Math.max(0, Math.min(index, cards.length - 1));
+        viewport.scrollTo({ left: cards[current].offsetLeft - viewport.offsetLeft, behavior: "smooth" });
+        window.setTimeout(update, 350);
+      }
+
+      prev.addEventListener("click", function () { goTo(current - 1); });
+      next.addEventListener("click", function () { goTo(current + 1); });
+      viewport.addEventListener("scroll", function () { window.requestAnimationFrame(update); }, { passive: true });
+      viewport.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowLeft") { event.preventDefault(); goTo(current - 1); }
+        if (event.key === "ArrowRight") { event.preventDefault(); goTo(current + 1); }
+      });
+      window.addEventListener("resize", update);
+      update();
+    })();
+  </script>
+</body>
+</html>

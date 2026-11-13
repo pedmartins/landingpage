@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_google_analytics.html' %}
   <title>{{ article.title }} — Pedro Martins · AI Governance</title>
   <meta name="description" content="{{ article.excerpt }}">
   <!-- SEO-META -->
@@ -72,7 +73,7 @@
       letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--navy); text-decoration: none;
     }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links { display: flex; gap: clamp(1rem, 2vw, 2.5rem); list-style: none; align-items: center; }
     .nav-links a {
       font-size: 0.82rem; letter-spacing: 0.06em;
       color: var(--muted); text-decoration: none;
@@ -285,6 +286,9 @@
     footer a:hover { text-decoration: underline; }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1180px) {
+      .nav-tagline { display: none; }
+    }
     @media (max-width: 820px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
@@ -306,6 +310,7 @@
     </div>
     <ul class="nav-links">
       <li><a href="{{ '/framework' if lang == 'pt' else '/en/framework' }}">{{ 'Framework' }}</a></li>
+      {% if lang == 'pt' %}<li><a href="/observatorio">Observatório</a></li>{% endif %}
       <li><a href="{{ '/publicacoes' if lang == 'pt' else '/en/publicacoes' }}">{{ 'Publicações' if lang == 'pt' else 'Publications' }}</a></li>
       <li>
         <div class="lang-switch">

@@ -1,0 +1,27 @@
+{# Ajustar "base.html" e o nome do bloco ao layout do ai-gov.network #}
+{% extends "base.html" %}
+{% block title %}Formação certificada PECB{% endblock %}
+{% block content %}
+<section class="formacao-lista">
+  <h1>Formação certificada PECB</h1>
+  <div class="formacao-grid">
+  {% for c in cursos %}
+    <a class="formacao-card" href="{{ url_for('formacao.detalhe', slug=c.slug) }}">
+      {% if c.image %}<img src="{{ c.image.src }}" alt="{{ c.image.alt }}" width="600" height="600" loading="lazy">{% endif %}
+      <span class="formacao-nivel">{{ c.standard }} · {{ c.level }}</span>
+      <h3>{{ c.name }}</h3>
+      {% if c.editions %}<span class="formacao-data">Próxima edição: {{ c.editions[0].start }}</span>
+      {% else %}<span class="formacao-data">Datas sob consulta</span>{% endif %}
+    </a>
+  {% endfor %}
+  </div>
+</section>
+<style>
+  .formacao-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+  .formacao-card{display:flex;flex-direction:column;gap:8px;color:var(--navy);text-decoration:none;border:1px solid var(--line);background:#fff;padding:0 0 16px}
+  .formacao-card img{width:100%;height:auto;aspect-ratio:1}
+  .formacao-card>*:not(img){padding:0 16px}
+  .formacao-nivel{font-family:"Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-dark);font-size:.85rem}
+  .formacao-data{color:var(--muted);font-size:.9rem}
+</style>
+{% endblock %}

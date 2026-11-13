@@ -5,6 +5,7 @@ import html as html_lib
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Flask, render_template, request, abort, jsonify, Response
+from wc_catalog import get_catalog as get_training_catalog, is_configured as training_catalog_configured
 
 app = Flask(__name__)
 
@@ -81,6 +82,64 @@ HBR_SCENARIOS = [
 
 
 import re
+
+_PT_MONTHS = {
+    1: "jan", 2: "fev", 3: "mar", 4: "abr", 5: "mai", 6: "jun",
+    7: "jul", 8: "ago", 9: "set", 10: "out", 11: "nov", 12: "dez",
+}
+
+
+def _plain_first_paragraph(value):
+    """Extrai texto simples do primeiro parágrafo HTML do WooCommerce."""
+    match = re.search(r"<p[^>]*>(.*?)</p>", value or "", flags=re.I | re.S)
+    source = match.group(1) if match else (value or "")
+    return html_lib.unescape(re.sub(r"<[^>]+>", "", source)).strip()
+
+
+def _pt_date(value):
+    try:
+        year, month, day = (int(part) for part in value.split("-"))
+        return f"{day} {_PT_MONTHS[month]} {year}"
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return "Por confirmar"
+
+
+def get_home_trainings():
+    """Formações com sessão futura, preparadas para o carrossel da homepage."""
+    if not training_catalog_configured():
+        return []
+    try:
+        courses = get_training_catalog()
+    except Exception:
+        app.logger.exception("Não foi possível carregar as formações")
+        return []
+
+    trainings = []
+    for course in courses:
+        if not course["editions"]:
+            continue
+        edition = course["editions"][0]
+        standard = course.get("standard") or ""
+        is_iso_42001 = "42001" in standard or "42001" in course.get("sku", "")
+        button_text = (edition.get("button_text") or "Inscrever").split(" / ", 1)[0]
+        trainings.append({
+            "name": course["name"],
+            "audience": (course.get("categories") or ["Formação certificada PECB"])[-1],
+            "description": _plain_first_paragraph(course.get("short_description", "")),
+            "standard": standard or "Não indicado",
+            "level": course.get("level") or "Não indicado",
+            "session_label": (
+                "Última sessão disponível em 2026"
+                if is_iso_42001
+                else _pt_date(edition.get("start"))
+            ),
+            "duration": course.get("duration") or "Não indicado",
+            "format": (edition.get("format") or ["Não indicado"])[0],
+            "language": course.get("language") or "Não indicado",
+            "url": edition.get("url") or (course.get("enquiry") or {}).get("url") or "#",
+            "button_text": button_text,
+        })
+    return trainings
 
 def parse_choice(text):
     """Extrai a opção recomendada (A/B) a partir do texto do modelo.
@@ -317,7 +376,7 @@ def get_wp_posts(per_page=12, category_slug=None, tag_slug=None):
 @app.route("/")
 def home():
     posts = get_wp_posts(per_page=3, category_slug="ai-gov", tag_slug="lang-pt")
-    return render_template("index.html", posts=posts)
+    return render_template("index.html", posts=posts, trainings=get_home_trainings())
 
 
 @app.route("/en")
@@ -329,6 +388,11 @@ def home_en():
 @app.route("/framework")
 def framework():
     return render_template("conhecer_framework.html")
+
+
+@app.route("/observatorio")
+def observatorio():
+    return render_template("observatorio.html")
 
 
 @app.route("/en/framework")
@@ -643,6 +707,7 @@ def sitemap():
     static_paths = [
         "/", "/en",
         "/framework", "/en/framework",
+        "/observatorio",
         "/publicacoes", "/en/publicacoes",
         "/book", "/en/book",
         "/lab",

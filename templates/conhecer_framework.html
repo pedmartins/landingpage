@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_google_analytics.html' %}
   <title>Conhecer o Framework — AI Governance</title>
   <!-- SEO-META -->
   <meta name="description" content="Conheça a framework de AI Governance de Pedro Martins — uma abordagem estruturada para governar a inteligência artificial para lá da camada de política.">
@@ -76,7 +77,7 @@
       letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--navy); text-decoration: none;
     }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links { display: flex; gap: clamp(1rem, 2vw, 2.5rem); list-style: none; }
     .nav-links a {
       font-size: 0.82rem; letter-spacing: 0.06em;
       color: var(--muted); text-decoration: none;
@@ -344,6 +345,9 @@
     .framework-footer a:hover { border-color: var(--teal); }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1180px) {
+      .nav-tagline { display: none; }
+    }
     @media (max-width: 820px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
@@ -377,6 +381,7 @@
     <ul class="nav-links">
       <li><a href="/" class="active">Framework</a></li>
       <li><a href="#">Serviços</a></li>
+      <li><a href="/observatorio">Observatório</a></li>
       <li><a href="/publicacoes/ai-gov">Publicações</a></li>
       <li><a href="mailto:info@ai-gov.network">Contacto</a></li>
       <li><a href="/en/framework">EN</a></li>
