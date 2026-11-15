@@ -409,6 +409,11 @@
       margin-bottom: .6rem; color: var(--teal-dark); font-size: .69rem;
       font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
     }
+    .training-title a { color: inherit; text-decoration: none; }
+    .training-title a:hover { color: var(--teal); }
+    .training-detail-link { display: inline-block; margin: 0.2rem 0 0.8rem; font-size: 0.82rem; letter-spacing: 0.04em;
+      color: var(--teal-dark); text-decoration: underline; text-underline-offset: 3px; }
+    .training-detail-link:hover { color: var(--teal); }
     .training-title {
       margin: 0 0 .85rem; font-family: 'Barlow Condensed', sans-serif;
       font-size: clamp(1.65rem, 2.2vw, 2rem); font-weight: 700;
@@ -690,7 +695,7 @@ Da visão estratégica à excelência operacional — perspetivas e frameworks. 
           </div>
           <div class="training-card-body">
             <div class="training-audience">{{ training.audience }}</div>
-            <h3 class="training-title">{{ training.name }}</h3>
+            <h3 class="training-title"><a href="{{ training.detail_url }}">{{ training.name }}</a></h3>
             <p class="training-desc">{{ training.description }}</p>
             <div class="training-meta">
               <div><span class="training-meta-label">Duração</span><span class="training-meta-value">{{ training.duration }}</span></div>
@@ -698,6 +703,7 @@ Da visão estratégica à excelência operacional — perspetivas e frameworks. 
               <div><span class="training-meta-label">Norma</span><span class="training-meta-value">{{ training.standard }}</span></div>
               <div><span class="training-meta-label">Nível</span><span class="training-meta-value">{{ training.level }}</span></div>
             </div>
+            <a class="training-detail-link" href="{{ training.detail_url }}">Ver detalhe da formação</a>
             <a class="training-link" href="{{ training.url }}" target="_blank" rel="noopener noreferrer">
               <span>{{ training.button_text }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>

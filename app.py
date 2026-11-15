@@ -6,6 +6,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Flask, render_template, request, abort, jsonify, Response
 from wc_catalog import get_catalog as get_training_catalog, is_configured as training_catalog_configured
+from wc_catalog import get_course as get_training_course
 
 app = Flask(__name__)
 
@@ -134,8 +135,85 @@ def get_home_trainings():
             "url": (edition.get("url") or course.get("enrol_url")
                     or (course.get("enquiry") or {}).get("url") or "#"),
             "button_text": button_text,
+            "detail_url": f"/formacao/{course['slug']}",
         })
     return trainings
+
+
+_EN_MONTHS = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+              7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
+
+
+def _date_range(start, end, lang):
+    """'7–11 dez 2026' / '7–11 Dec 2026' (ou só a data de início)."""
+    months = _PT_MONTHS if lang == "pt" else _EN_MONTHS
+    try:
+        y1, m1, d1 = (int(x) for x in start.split("-"))
+        if not end:
+            return f"{d1} {months[m1]} {y1}"
+        y2, m2, d2 = (int(x) for x in end.split("-"))
+        if (y1, m1) == (y2, m2):
+            return f"{d1}–{d2} {months[m1]} {y1}"
+        return f"{d1} {months[m1]} – {d2} {months[m2]} {y2}"
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return "Por confirmar" if lang == "pt" else "To be confirmed"
+
+
+def _clean_training_html(value):
+    """Remove o título repetido e a lista estática de edições (as datas vêm dos dados)."""
+    value = re.sub(r"^\s*<h3>.*?</h3>", "", value or "", count=1, flags=re.S)
+    value = re.sub(r"<p><strong>(Próximas edições|Upcoming sessions):</strong></p>\s*<ul>.*?</ul>",
+                   "", value, flags=re.S)
+    return value.strip()
+
+
+@app.route("/formacao/<slug>")
+def formacao(slug):
+    """Detalhe de uma formação: lido do WooCommerce (cache de 15 min em wc_catalog)."""
+    lang = request.args.get("lang", "pt")
+    if lang not in ("pt", "en"):
+        lang = "pt"
+    if not training_catalog_configured():
+        abort(404)
+    try:
+        course = get_training_course(slug)
+    except Exception:
+        app.logger.exception("Não foi possível carregar a formação %s", slug)
+        abort(503)
+    if course is None:
+        abort(404)
+
+    en = course.get("en") or {}
+    use_en = lang == "en"
+    en_attrs = en.get("attributes", {}) if use_en else {}
+
+    def _first(value):
+        return value[0] if isinstance(value, list) and value else value
+    pick = lambda key: (en.get(key) if use_en and en.get(key) else course.get(key, ""))
+    sessions = [{
+        "label": _date_range(e.get("start"), e.get("end"), lang),
+        "format": _first(en_attrs.get("Format")) or (e.get("format") or [""])[0],
+        "url": e.get("url") or course.get("enrol_url") or "#",
+        "button_text": ((e.get("button_text_en") if use_en else "") or
+                        ("Enrol" if use_en else (e.get("button_text") or "Inscrever").split(" / ", 1)[0])),
+    } for e in course["editions"]]
+    view = {
+        "slug": course["slug"],
+        "name": pick("name"),
+        "short_description": _plain_first_paragraph(pick("short_description")),
+        "description": _clean_training_html(pick("description")),
+        "image": course.get("image"),
+        "category": (en.get("category") if use_en and en.get("category")
+                     else (course.get("categories") or [""])[-1]),
+        "standard": en_attrs.get("Standard / Regulation") or course.get("standard") or "",
+        "level": en_attrs.get("Level") or course.get("level") or "",
+        "duration": en_attrs.get("Duration") or course.get("duration") or "",
+        "languages": en_attrs.get("Language") or course.get("languages") or [],
+        "sessions": sessions,
+        "enquiry_url": ((course.get("enquiry") or {}).get("url")
+                        or (course.get("enrol_url") + "#contact" if course.get("enrol_url") else "")),
+    }
+    return render_template("formacao.html", course=view, lang=lang)
 
 def parse_choice(text):
     """Extrai a opção recomendada (A/B) a partir do texto do modelo.
@@ -709,6 +787,12 @@ def sitemap():
         "/lab",
     ]
     urls = list(static_paths)
+
+    try:
+        if training_catalog_configured():
+            urls += [f"/formacao/{c['slug']}" for c in get_training_catalog()]
+    except Exception:
+        pass
 
     try:
         seen = set()

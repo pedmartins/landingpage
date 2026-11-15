@@ -7,6 +7,7 @@ credenciais WC_CK/WC_CS são lidas exclusivamente no servidor.
 from __future__ import annotations
 
 import datetime as dt
+import json
 import logging
 import os
 import threading
@@ -135,6 +136,29 @@ def _meta(product: dict, key: str) -> str:
     return ""
 
 
+def _english(product: dict) -> dict:
+    """Versão inglesa guardada em meta (lw_*_en). Campos em falta ficam vazios (fallback PT no template)."""
+    try:
+        attrs = json.loads(_meta(product, "lw_attributes_en") or "{}")
+    except ValueError:
+        attrs = {}
+    return {
+        "name": _meta(product, "lw_name_en"),
+        "short_description": _meta(product, "lw_short_description_en"),
+        "description": _meta(product, "lw_description_en"),
+        "button_text": _meta(product, "lw_button_text_en"),
+        "category": _meta(product, "lw_category_en"),
+        "attributes": attrs if isinstance(attrs, dict) else {},
+    }
+
+
+def _image(product: dict) -> dict | None:
+    image = (product.get("images") or [None])[0]
+    if not image:
+        return None
+    return {"src": image.get("src", ""), "alt": image.get("alt") or product.get("name", "")}
+
+
 def _iso_date(values: list[str]) -> str | None:
     try:
         return dt.date.fromisoformat(values[0]).isoformat()
@@ -174,6 +198,7 @@ def normalize(
                 "start": _iso_date(attrs.get("Data de início", [])),
                 "end": _iso_date(attrs.get("Data de fim", [])),
                 "format": attrs.get("Formato", []),
+                "button_text_en": _meta(child, "lw_button_text_en"),
             }
             if (child.get("sku") or "").endswith("-CONSULTA"):
                 enquiry = edition
@@ -196,6 +221,7 @@ def normalize(
                 "start": own_start,
                 "end": _iso_date(attrs.get("Data de fim", [])),
                 "format": attrs.get("Formato", [])[:1],
+                "button_text_en": "",
             })
 
         courses.append(
@@ -205,6 +231,9 @@ def normalize(
                 "sku": parent.get("sku") or "",
                 "name": parent.get("name", ""),
                 "short_description": parent.get("short_description", ""),
+                "description": parent.get("description", ""),
+                "image": _image(parent),
+                "en": _english(parent),
                 "categories": [
                     category["name"] for category in parent.get("categories", [])
                 ],
@@ -212,6 +241,7 @@ def normalize(
                 "level": (attrs.get("Nível") or [None])[0],
                 "duration": (attrs.get("Duração") or [None])[0],
                 "language": (attrs.get("Língua") or [None])[0],
+                "languages": attrs.get("Língua", []),
                 "editions": sorted(editions, key=lambda item: item["start"]),
                 "enquiry": enquiry,
                 "enrol_url": enrol_url,
@@ -253,3 +283,8 @@ def get_catalog(force: bool = False) -> list[dict]:
             if _cache["data"] is None:
                 raise
         return _cache["data"]
+
+
+def get_course(slug: str) -> dict | None:
+    """Curso publicado pelo slug (a partir do catálogo em cache)."""
+    return next((course for course in get_catalog() if course["slug"] == slug), None)
