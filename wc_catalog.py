@@ -25,13 +25,36 @@ WC_CK = os.environ.get("WC_CK", "")
 WC_CS = os.environ.get("WC_CS", "")
 SKU_PREFIX = os.environ.get("WC_SKU_PREFIX", "LW-PECB-")
 CACHE_TTL = int(os.environ.get("WC_CACHE_TTL", "900"))
-TIMEOUT = 15
+TIMEOUT = 10
+# O WordPress no Railway pode estar a arrancar (ou a acordar) e responder 502/503/504:
+# repetimos o pedido algumas vezes antes de desistir.
+RETRY_STATUS = {502, 503, 504}
+RETRY_DELAYS = (2, 5)  # segundos entre tentativas (3 tentativas no total)
+# Depois de uma falha sem dados em cache, não voltamos a tentar em cada visita.
+FAIL_COOLDOWN = int(os.environ.get("WC_FAIL_COOLDOWN", "60"))
 
 _FIELDS = (
     "id,name,slug,type,status,sku,menu_order,catalog_visibility,"
     "short_description,description,external_url,button_text,images,"
     "categories,tags,attributes,grouped_products,meta_data,date_modified_gmt"
 )
+
+
+def _get_with_retry(session: requests.Session, url: str, params: dict) -> requests.Response:
+    """GET com novas tentativas para erros transitórios (WordPress a arrancar)."""
+    for attempt, delay in enumerate((*RETRY_DELAYS, None), start=1):
+        try:
+            response = session.get(url, params=params, timeout=TIMEOUT)
+            if response.status_code not in RETRY_STATUS or delay is None:
+                return response
+            log.warning("WooCommerce respondeu %s (tentativa %s); nova tentativa em %ss",
+                        response.status_code, attempt, delay)
+        except (requests.ConnectionError, requests.Timeout):
+            if delay is None:
+                raise
+            log.warning("WooCommerce sem resposta (tentativa %s); nova tentativa em %ss", attempt, delay)
+        time.sleep(delay)
+    raise RuntimeError("inalcançável")
 
 
 def _get_all(path: str, params: dict) -> list[dict]:
@@ -47,15 +70,15 @@ def _get_all(path: str, params: dict) -> list[dict]:
     with requests.Session() as session:
         session.auth = (WC_CK, WC_CS)
         while True:
-            response = session.get(
+            response = _get_with_retry(
+                session,
                 f"{WC_URL}/wp-json/wc/v3/{path}",
-                params={
+                {
                     **requested,
                     "per_page": 100,
                     "page": page,
                     "_fields": _FIELDS,
                 },
-                timeout=TIMEOUT,
             )
             response.raise_for_status()
             products.extend(response.json())
@@ -76,6 +99,7 @@ def _fetch_raw() -> tuple[list[dict], list[dict]]:
             },
         )
         if (product.get("sku") or "").startswith(SKU_PREFIX)
+        and not (product.get("sku") or "").endswith("-CONSULTA")
     ]
 
     child_ids = sorted(
@@ -102,6 +126,13 @@ def _attributes(product: dict) -> dict[str, list[str]]:
         for attribute in product.get("attributes", [])
         if attribute.get("visible", True)
     }
+
+
+def _meta(product: dict, key: str) -> str:
+    for item in product.get("meta_data", []):
+        if item.get("key") == key:
+            return str(item.get("value") or "")
+    return ""
 
 
 def _iso_date(values: list[str]) -> str | None:
@@ -150,6 +181,23 @@ def normalize(
                 editions.append(edition)
 
         attrs = _attributes(parent)
+        enrol_url = _meta(parent, "lw_enrol_url") or (enquiry or {}).get("url") or ""
+
+        # Datas no próprio curso (uma sessão por curso, sem produto de edição).
+        own_start = _iso_date(attrs.get("Data de início", []))
+        if own_start and own_start >= today.isoformat() and not any(
+            item["start"] == own_start for item in editions
+        ):
+            editions.append({
+                "id": parent["id"],
+                "name": parent.get("name", ""),
+                "url": enrol_url,
+                "button_text": _meta(parent, "lw_button_text") or "Inscrever",
+                "start": own_start,
+                "end": _iso_date(attrs.get("Data de fim", [])),
+                "format": attrs.get("Formato", [])[:1],
+            })
+
         courses.append(
             {
                 "id": parent["id"],
@@ -166,13 +214,14 @@ def normalize(
                 "language": (attrs.get("Língua") or [None])[0],
                 "editions": sorted(editions, key=lambda item: item["start"]),
                 "enquiry": enquiry,
+                "enrol_url": enrol_url,
             }
         )
     return courses
 
 
 _cache_lock = threading.Lock()
-_cache: dict = {"at": 0.0, "data": None}
+_cache: dict = {"at": 0.0, "data": None, "failed_at": 0.0}
 
 
 def is_configured() -> bool:
@@ -188,11 +237,18 @@ def get_catalog(force: bool = False) -> list[dict]:
         )
         if fresh and not force:
             return _cache["data"]
+        cooling = time.time() - _cache["failed_at"] < FAIL_COOLDOWN
+        if cooling and not force:
+            if _cache["data"] is None:
+                raise RuntimeError("Catálogo indisponível (a aguardar nova tentativa)")
+            return _cache["data"]
 
         try:
             _cache["data"] = normalize(*_fetch_raw())
             _cache["at"] = time.time()
+            _cache["failed_at"] = 0.0
         except Exception:
+            _cache["failed_at"] = time.time()
             log.exception("Falha a ler o catálogo de formação no WooCommerce")
             if _cache["data"] is None:
                 raise

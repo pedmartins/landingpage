@@ -120,7 +120,6 @@ def get_home_trainings():
             continue
         edition = course["editions"][0]
         standard = course.get("standard") or ""
-        is_iso_42001 = "42001" in standard or "42001" in course.get("sku", "")
         button_text = (edition.get("button_text") or "Inscrever").split(" / ", 1)[0]
         trainings.append({
             "name": course["name"],
@@ -128,15 +127,12 @@ def get_home_trainings():
             "description": _plain_first_paragraph(course.get("short_description", "")),
             "standard": standard or "Não indicado",
             "level": course.get("level") or "Não indicado",
-            "session_label": (
-                "Última sessão disponível em 2026"
-                if is_iso_42001
-                else _pt_date(edition.get("start"))
-            ),
+            "session_label": _pt_date(edition.get("start")),
             "duration": course.get("duration") or "Não indicado",
             "format": (edition.get("format") or ["Não indicado"])[0],
             "language": course.get("language") or "Não indicado",
-            "url": edition.get("url") or (course.get("enquiry") or {}).get("url") or "#",
+            "url": (edition.get("url") or course.get("enrol_url")
+                    or (course.get("enquiry") or {}).get("url") or "#"),
             "button_text": button_text,
         })
     return trainings
