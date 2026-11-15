@@ -105,8 +105,8 @@ def _pt_date(value):
         return "Por confirmar"
 
 
-def get_home_trainings():
-    """Formações com sessão futura, preparadas para o carrossel da homepage."""
+def get_home_trainings(lang="pt"):
+    """Formações com sessão futura, preparadas para o carrossel da homepage (PT ou EN)."""
     if not training_catalog_configured():
         return []
     try:
@@ -120,6 +120,9 @@ def get_home_trainings():
         if not course["editions"]:
             continue
         edition = course["editions"][0]
+        if lang == "en":
+            trainings.append(_home_training_en(course, edition))
+            continue
         standard = course.get("standard") or ""
         button_text = (edition.get("button_text") or "Inscrever").split(" / ", 1)[0]
         trainings.append({
@@ -138,6 +141,29 @@ def get_home_trainings():
             "detail_url": f"/formacao/{course['slug']}",
         })
     return trainings
+
+
+def _home_training_en(course, edition):
+    """Cartão do carrossel em inglês (meta lw_*_en; o que faltar cai para PT)."""
+    en = course.get("en") or {}
+    attrs = en.get("attributes") or {}
+    first = lambda v: v[0] if isinstance(v, list) and v else v
+    na = "Not specified"
+    return {
+        "name": en.get("name") or course["name"],
+        "audience": en.get("category") or (course.get("categories") or ["PECB certified training"])[-1],
+        "description": _plain_first_paragraph(en.get("short_description") or course.get("short_description", "")),
+        "standard": attrs.get("Standard / Regulation") or course.get("standard") or na,
+        "level": attrs.get("Level") or course.get("level") or na,
+        "session_label": _date_range(edition.get("start"), None, "en"),
+        "duration": attrs.get("Duration") or course.get("duration") or na,
+        "format": first(attrs.get("Format")) or (edition.get("format") or [na])[0],
+        "language": " / ".join(attrs.get("Language") or []) or course.get("language") or na,
+        "url": (edition.get("url") or course.get("enrol_url")
+                or (course.get("enquiry") or {}).get("url") or "#"),
+        "button_text": edition.get("button_text_en") or "Enrol",
+        "detail_url": f"/formacao/{course['slug']}?lang=en",
+    }
 
 
 _EN_MONTHS = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
@@ -456,7 +482,7 @@ def home():
 @app.route("/en")
 def home_en():
     posts = get_wp_posts(per_page=3, category_slug="ai-gov", tag_slug="lang-en")
-    return render_template("index_en.html", posts=posts)
+    return render_template("index_en.html", posts=posts, trainings=get_home_trainings("en"))
 
 
 @app.route("/framework")
