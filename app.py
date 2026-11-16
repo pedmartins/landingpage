@@ -131,7 +131,7 @@ def get_home_trainings(lang="pt"):
             "description": _plain_first_paragraph(course.get("short_description", "")),
             "standard": standard or "Não indicado",
             "level": course.get("level") or "Não indicado",
-            "session_label": _pt_date(edition.get("start")),
+            "session_label": _session_label(edition, "pt"),
             "duration": course.get("duration") or "Não indicado",
             "format": (edition.get("format") or ["Não indicado"])[0],
             "language": course.get("language") or "Não indicado",
@@ -155,7 +155,7 @@ def _home_training_en(course, edition):
         "description": _plain_first_paragraph(en.get("short_description") or course.get("short_description", "")),
         "standard": attrs.get("Standard / Regulation") or course.get("standard") or na,
         "level": attrs.get("Level") or course.get("level") or na,
-        "session_label": _date_range(edition.get("start"), None, "en"),
+        "session_label": _session_label(edition, "en"),
         "duration": attrs.get("Duration") or course.get("duration") or na,
         "format": first(attrs.get("Format")) or (edition.get("format") or [na])[0],
         "language": " / ".join(attrs.get("Language") or []) or course.get("language") or na,
@@ -168,6 +168,19 @@ def _home_training_en(course, edition):
 
 _EN_MONTHS = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
               7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
+
+
+def _session_label(edition, lang):
+    """Rótulo do cartão: intervalo quando há fim, mês quando a data é só YYYY-MM."""
+    edition = edition or {}
+    start = edition.get("start")
+    if not start:
+        return "Por confirmar" if lang == "pt" else "To be confirmed"
+    if edition.get("start_precision") == "month":
+        year, month, _day = (int(part) for part in start.split("-"))
+        names = _PT_MONTHS if lang == "pt" else _EN_MONTHS
+        return f"{names[month]} {year}"
+    return _date_range(start, edition.get("end"), lang)
 
 
 def _date_range(start, end, lang):
@@ -217,7 +230,7 @@ def formacao(slug):
         return value[0] if isinstance(value, list) and value else value
     pick = lambda key: (en.get(key) if use_en and en.get(key) else course.get(key, ""))
     sessions = [{
-        "label": _date_range(e.get("start"), e.get("end"), lang),
+        "label": _session_label(e, lang),
         "format": _first(en_attrs.get("Format")) or (e.get("format") or [""])[0],
         "url": e.get("url") or course.get("enrol_url") or "#",
         "button_text": ((e.get("button_text_en") if use_en else "") or

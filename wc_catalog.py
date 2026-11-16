@@ -10,8 +10,10 @@ import datetime as dt
 import json
 import logging
 import os
+import re
 import threading
 import time
+import unicodedata
 
 import requests
 
@@ -121,12 +123,30 @@ def _fetch_raw() -> tuple[list[dict], list[dict]]:
     return parents, children
 
 
-def _attributes(product: dict) -> dict[str, list[str]]:
-    return {
-        attribute["name"]: attribute.get("options", [])
-        for attribute in product.get("attributes", [])
-        if attribute.get("visible", True)
-    }
+def _option_values(attribute: dict) -> list[str]:
+    options = attribute.get("options")
+    if options is None:
+        options = [
+            term.get("name")
+            for term in attribute.get("terms") or []
+            if isinstance(term, dict) and term.get("name")
+        ]
+    if isinstance(options, str):
+        options = [options]
+    return [str(item).strip() for item in options or [] if item is not None and str(item).strip()]
+
+
+def _attributes(product: dict, *, visible_only: bool = True) -> dict[str, list[str]]:
+    """Atributos do produto. As datas podem estar ocultas na ficha, por isso
+    a leitura de edições pede visible_only=False."""
+    values: dict[str, list[str]] = {}
+    for attribute in product.get("attributes", []):
+        if visible_only and not attribute.get("visible", True):
+            continue
+        name = (attribute.get("name") or "").strip()
+        if name:
+            values[name] = _option_values(attribute)
+    return values
 
 
 def _meta(product: dict, key: str) -> str:
@@ -159,11 +179,134 @@ def _image(product: dict) -> dict | None:
     return {"src": image.get("src", ""), "alt": image.get("alt") or product.get("name", "")}
 
 
-def _iso_date(values: list[str]) -> str | None:
-    try:
-        return dt.date.fromisoformat(values[0]).isoformat()
-    except (IndexError, TypeError, ValueError):
+def _fold(text: str) -> str:
+    normalized = unicodedata.normalize("NFD", text or "")
+    stripped = "".join(char for char in normalized if not unicodedata.combining(char))
+    return stripped.casefold().strip().rstrip(".")
+
+
+def _text(value) -> str:
+    if isinstance(value, (list, tuple)):
+        return str(value[0]).strip() if value else ""
+    return str(value or "").strip()
+
+
+def _parse_day(value) -> str | None:
+    """YYYY-MM-DD, mesmo dentro de outro texto, ou YYYYMMDD."""
+    text = _text(value)
+    compact = re.fullmatch(r"(20\d{2})(\d{2})(\d{2})", text)
+    if compact:
+        text = f"{compact.group(1)}-{compact.group(2)}-{compact.group(3)}"
+    match = re.search(r"(20\d{2}-\d{2}-\d{2})", text)
+    if not match:
         return None
+    try:
+        return dt.date.fromisoformat(match.group(1)).isoformat()
+    except ValueError:
+        return None
+
+
+def _parse_month(value) -> str | None:
+    """YYYY-MM (mês de início) → primeiro dia desse mês, só para ordenar e filtrar."""
+    match = re.fullmatch(r"(20\d{2})-(\d{2})", _text(value))
+    if not match:
+        return None
+    year, month = int(match.group(1)), int(match.group(2))
+    if not 1 <= month <= 12:
+        return None
+    return dt.date(year, month, 1).isoformat()
+
+
+def _lookup(attrs: dict[str, list[str]], *names: str) -> list[str]:
+    folded = {_fold(key): value for key, value in attrs.items()}
+    for name in names:
+        found = folded.get(_fold(name))
+        if found:
+            return found
+    return []
+
+
+def _sku_day(sku: str) -> str | None:
+    found = re.findall(r"20\d{2}-\d{2}-\d{2}", sku or "")
+    return _parse_day(found[-1]) if found else None
+
+
+_MONTHS = {
+    "jan": 1, "janeiro": 1, "feb": 2, "fev": 2, "fevereiro": 2,
+    "mar": 3, "marco": 3, "abr": 4, "abril": 4, "apr": 4,
+    "mai": 5, "maio": 5, "may": 5, "jun": 6, "junho": 6,
+    "jul": 7, "julho": 7, "ago": 8, "agosto": 8, "aug": 8,
+    "set": 9, "setembro": 9, "sep": 9, "out": 10, "outubro": 10, "oct": 10,
+    "nov": 11, "novembro": 11, "dez": 12, "dezembro": 12, "dec": 12,
+}
+_RANGE = re.compile(
+    r"(\d{1,2})\s*[–—-]\s*(\d{1,2})\s+([A-Za-zÀ-ÿ]+)\.?\s+(20\d{2})"
+)
+
+
+def _end_from_name(product: dict, start: str | None) -> str | None:
+    """'7–11 dez 2026' no nome da edição, quando não há 'Data de fim'."""
+    if not start:
+        return None
+    year_s, month_s, day_s = (int(part) for part in start.split("-"))
+    text = " ".join(str(product.get(key) or "") for key in ("name", "short_description"))
+    for match in _RANGE.finditer(text):
+        day_1, day_2, month_name, year = match.groups()
+        month = _MONTHS.get(_fold(month_name))
+        if month != month_s or int(year) != year_s or int(day_1) != day_s:
+            continue
+        try:
+            return dt.date(int(year), month, int(day_2)).isoformat()
+        except ValueError:
+            return None
+    return None
+
+
+def _resolve_start(product: dict, attrs: dict[str, list[str]]) -> tuple[str | None, str | None]:
+    """Data de início da edição. Ordem: atributo (visível ou não), meta ACF,
+    data no SKU, e por fim 'Mês de início' (YYYY-MM)."""
+    for name in ("Data de início", "Data inicio", "Start date"):
+        day = _parse_day(_lookup(attrs, name))
+        if day:
+            return day, "day"
+    for key in ("data_inicio", "data_de_inicio"):
+        day = _parse_day(_meta(product, key))
+        if day:
+            return day, "day"
+    day = _sku_day(product.get("sku") or "")
+    if day:
+        return day, "day"
+    month_value = _lookup(attrs, "Mês de início", "Mes de início")
+    day = _parse_day(month_value)
+    if day:
+        return day, "day"
+    month = _parse_month(month_value)
+    if month:
+        return month, "month"
+    return None, None
+
+
+def _resolve_end(product: dict, attrs: dict[str, list[str]], start: str | None) -> str | None:
+    for name in ("Data de fim", "Data fim", "End date"):
+        day = _parse_day(_lookup(attrs, name))
+        if day:
+            return day
+    for key in ("data_fim", "data_de_fim"):
+        day = _parse_day(_meta(product, key))
+        if day:
+            return day
+    return _end_from_name(product, start)
+
+
+def _is_upcoming(start: str | None, precision: str | None, today: dt.date) -> bool:
+    """Sem data conta como edição por agendar. Um mês (YYYY-MM) conta enquanto
+    esse mês não tiver terminado. Uma data completa anterior a hoje fica de fora."""
+    if not start:
+        return True
+    if precision == "month":
+        year, month, _day = (int(part) for part in start.split("-"))
+        return (year, month) >= (today.year, today.month)
+    return start >= today.isoformat()
 
 
 def normalize(
@@ -189,29 +332,35 @@ def normalize(
             if not child:
                 continue
 
-            attrs = _attributes(child)
+            visible = _attributes(child)
+            all_attrs = _attributes(child, visible_only=False)
+            start, precision = _resolve_start(child, all_attrs)
             edition = {
                 "id": child["id"],
                 "name": child.get("name", ""),
                 "url": child.get("external_url") or "",
                 "button_text": child.get("button_text") or "Inscrever",
-                "start": _iso_date(attrs.get("Data de início", [])),
-                "end": _iso_date(attrs.get("Data de fim", [])),
-                "format": attrs.get("Formato", []),
+                "start": start,
+                "end": _resolve_end(child, all_attrs, start),
+                "start_precision": precision,
+                "format": visible.get("Formato") or all_attrs.get("Formato", []),
                 "button_text_en": _meta(child, "lw_button_text_en"),
             }
             if (child.get("sku") or "").endswith("-CONSULTA"):
                 enquiry = edition
-            elif edition["start"] and edition["start"] >= today.isoformat():
+            elif _is_upcoming(start, precision, today):
                 editions.append(edition)
 
         attrs = _attributes(parent)
         enrol_url = _meta(parent, "lw_enrol_url") or (enquiry or {}).get("url") or ""
 
         # Datas no próprio curso (uma sessão por curso, sem produto de edição).
-        own_start = _iso_date(attrs.get("Data de início", []))
-        if own_start and own_start >= today.isoformat() and not any(
-            item["start"] == own_start for item in editions
+        parent_attrs = _attributes(parent, visible_only=False)
+        own_start, own_precision = _resolve_start(parent, parent_attrs)
+        if (
+            own_start
+            and _is_upcoming(own_start, own_precision, today)
+            and not any(item["start"] == own_start for item in editions)
         ):
             editions.append({
                 "id": parent["id"],
@@ -219,7 +368,8 @@ def normalize(
                 "url": enrol_url,
                 "button_text": _meta(parent, "lw_button_text") or "Inscrever",
                 "start": own_start,
-                "end": _iso_date(attrs.get("Data de fim", [])),
+                "end": _resolve_end(parent, parent_attrs, own_start),
+                "start_precision": own_precision,
                 "format": attrs.get("Formato", [])[:1],
                 "button_text_en": "",
             })
@@ -242,7 +392,10 @@ def normalize(
                 "duration": (attrs.get("Duração") or [None])[0],
                 "language": (attrs.get("Língua") or [None])[0],
                 "languages": attrs.get("Língua", []),
-                "editions": sorted(editions, key=lambda item: item["start"]),
+                "editions": sorted(
+                    editions,
+                    key=lambda item: (item.get("start") is None, item.get("start") or ""),
+                ),
                 "enquiry": enquiry,
                 "enrol_url": enrol_url,
             }

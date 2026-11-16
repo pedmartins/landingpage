@@ -85,7 +85,6 @@
 
     /* ── HERO GRID ── */
     .hero {
-      min-height: 100vh;
       display: grid;
       grid-template-columns: 40fr 60fr;
       padding-top: 64px;
@@ -437,12 +436,6 @@
     }
     .training-link svg { color: var(--teal); transition: transform .2s; }
     .training-card:hover .training-link svg { transform: translateX(4px); }
-    .training-foot {
-      position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 2rem;
-      padding-top: 1.25rem; border-top: 1px solid var(--line);
-      color: var(--muted); font-size: .8rem; line-height: 1.5;
-    }
-    .training-foot strong { color: var(--navy); font-weight: 500; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1180px) {
@@ -476,7 +469,6 @@
       .training-viewport { margin-right: -1.5rem; }
       .training-track { grid-auto-columns: minmax(280px, 86vw); gap: .9rem; padding-right: 1.5rem; }
       .training-card { min-height: 480px; }
-      .training-foot { flex-direction: column; gap: .75rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -713,10 +705,6 @@
         {% endfor %}
 
       </div>
-    </div>
-
-    <div class="training-foot">
-      <p><strong>Application-focused programmes.</strong> Content, duration and format can be tailored to each organisation’s context.</p>
     </div>
   </section>
   {% endif %}
