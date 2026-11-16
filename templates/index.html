@@ -83,9 +83,10 @@
     }
     .nav-links a:hover { color: var(--teal); }
 
-    /* ── HERO GRID ── */
+    /* ── HERO GRID ──
+       Height follows the columns. A 100vh floor leaves a blank band under
+       the carousel on tall viewports, once slide scale is width-capped. */
     .hero {
-      min-height: 100vh;
       display: grid;
       grid-template-columns: 40fr 60fr;
       padding-top: 64px;
