@@ -639,6 +639,16 @@ def article(slug):
     return render_template("article.html", article=art, lang=lang)
 
 
+@app.route("/politica-de-privacidade")
+def politica_privacidade():
+    return render_template("privacy.html", lang="pt")
+
+
+@app.route("/en/privacy-policy")
+def privacy_policy_en():
+    return render_template("privacy.html", lang="en")
+
+
 @app.route("/book")
 def book():
     return render_template("book.html", zoho_url=ZOHO_BOOKINGS_URL)
@@ -824,6 +834,7 @@ def sitemap():
         "/publicacoes", "/en/publicacoes",
         "/book", "/en/book",
         "/lab",
+        "/politica-de-privacidade", "/en/privacy-policy",
     ]
     urls = list(static_paths)
 

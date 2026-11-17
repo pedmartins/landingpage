@@ -318,31 +318,15 @@
       flex-shrink: 0;
     }
 
-    /* ── FOOTER NOTE ── */
-    .framework-footer {
-      padding: 2rem 4vw;
-      border-top: 1px solid rgba(26,45,61,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .framework-footer p {
+    /* ── SOURCE NOTE ── */
+    .framework-source {
+      margin: 0;
+      padding: 1.25rem 4vw 0.25rem;
       font-size: 0.78rem;
+      line-height: 1.5;
       color: var(--muted);
       font-weight: 300;
     }
-    .framework-footer a {
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--teal);
-      text-decoration: none;
-      border-bottom: 1.5px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .framework-footer a:hover { border-color: var(--teal); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1180px) {
@@ -583,14 +567,11 @@
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="framework-footer">
-      <p>Fonte: Regulamento (UE) 2024/1689 — Artificial Intelligence Act, em vigor desde agosto de 2024.</p>
-      <p>Contacto: <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-      <a href="/">← Voltar ao início</a>
-    </div>
+    <p class="framework-source">Fonte: Regulamento (UE) 2024/1689 — Artificial Intelligence Act, em vigor desde agosto de 2024.</p>
 
   </div>
+
+  {% include '_legal_footer.html' %}
 
   <script>
     const layers = ['minimal', 'limited', 'high', 'unacceptable'];

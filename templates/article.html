@@ -385,11 +385,7 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Pedro Martins · AI Governance · <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-    <a href="{{ '/' if lang == 'pt' else '/en' }}">{{ '← Voltar ao início' if lang == 'pt' else '← Back to home' }}</a>
-  </footer>
+  {% include '_legal_footer.html' %}
 
 </body>
 </html>

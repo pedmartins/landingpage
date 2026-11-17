@@ -879,11 +879,7 @@
   })();
   </script>
 
-  <!-- FOOTER -->
-  <footer style="border-top:1px solid var(--line); padding:1.5rem 4vw; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:var(--navy);">
-    <p>© 2026 Pedro Martins · AI Governance · <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-    <a href="https://www.linkedin.com/in/pedro-alves-martins-431336/" style="color:var(--navy);">LinkedIn ↗</a>
-  </footer>
+  {% with footer_lang='en' %}{% include '_legal_footer.html' %}{% endwith %}
 
 </body>
 </html>

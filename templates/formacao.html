@@ -235,9 +235,6 @@
     <p class="partner-note">{% if pt %}A inscrição é feita no site da CISODPO, parceiro oficial PECB que ministra a formação.{% else %}Enrolment is completed on the website of CISODPO, the official PECB partner delivering the course.{% endif %}</p>
   </main>
 
-  <footer>
-    <p>© 2026 Pedro Martins · AI Governance · <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-    <a href="{{ '/' if pt else '/en' }}">{{ '← Voltar ao início' if pt else '← Back to home' }}</a>
-  </footer>
+  {% include '_legal_footer.html' %}
 </body>
 </html>

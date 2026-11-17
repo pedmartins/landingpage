@@ -1,0 +1,45 @@
+{% set _flang = footer_lang if footer_lang is defined else (lang if lang is defined else 'pt') %}
+<style>
+  footer.site-legal {
+    display: block;
+    margin: 0;
+    padding: 1.15rem 1.75rem 1.4rem;
+    border-top: 1px solid rgba(26, 45, 61, 0.10);
+    background: transparent;
+    text-align: center;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+    color: #5a6a78;
+  }
+  footer.site-legal p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: #5a6a78;
+  }
+  footer.site-legal a {
+    color: #5a6a78;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  footer.site-legal a:hover { color: #1a2d3d; }
+</style>
+<footer class="site-legal">
+  <p>
+    {% if _flang == 'en' %}
+    ai-gov.network is a brand of LINKWITH UNIPESSOAL, LDA · NIPC 517054124 · <a href="/en/privacy-policy">Privacy Policy</a>
+    {% else %}
+    ai-gov.network é uma marca da LINKWITH UNIPESSOAL, LDA · NIPC 517054124 · <a href="/politica-de-privacidade">Política de Privacidade</a>
+    {% endif %}
+  </p>
+</footer>
