@@ -20,6 +20,9 @@ def test_privacy_pages_and_sitemap():
     assert "www.cnpd.pt" in body
     assert "Prestação dos nossos serviços de consultoria de dados" in body
     assert "Envio de informação sobre formação e eventos" in body
+    assert "WhatsApp" in body
+    assert "Meta" in body and "Make" in body and "Grok Bot" in body and "Cursor" in body
+    assert "respostas automáticas" in body
     assert "TODO" not in body
     assert "morada" not in body.lower()
     assert "AI-GOV.NETWORK é uma marca da LINKWITH UNIPESSOAL, LDA" in body
@@ -36,6 +39,9 @@ def test_privacy_pages_and_sitemap():
     assert "Improvement of our services and user experience" in en_body
     assert "Statistical and website performance analysis" in en_body
     assert "17 November 2026" in en_body
+    assert "WhatsApp" in en_body
+    assert "Meta" in en_body and "Make" in en_body and "Grok Bot" in en_body and "Cursor" in en_body
+    assert "automatic replies" in en_body
     assert "TODO" not in en_body
     assert "postal address" not in en_body.lower()
     assert 'href="/en/terms"' in en_body
