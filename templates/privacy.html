@@ -143,16 +143,6 @@
     .policy li { margin-bottom: 0.45rem; }
     .policy a { color: var(--teal-dark); }
     .policy a:hover { color: var(--teal); }
-    .todo {
-      margin: 0.4rem 0 1.1rem;
-      padding: 0.8rem 1rem;
-      border-left: 3px solid #D4844A;
-      background: rgba(212, 132, 74, 0.1);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      font-weight: 400;
-    }
-    .todo strong { font-weight: 600; letter-spacing: 0.04em; }
 
     @media (max-width: 1180px) {
       .nav-tagline { display: none; }
@@ -187,224 +177,186 @@
 
   <main class="policy">
     {% if lang == 'en' %}
-    <div class="eyebrow">ai-gov.network</div>
+    <div class="eyebrow">AI-GOV.NETWORK</div>
     <h1>Privacy <em>Policy</em></h1>
     <p class="updated">Last updated: 17 November 2026.</p>
 
-    <p>This policy explains how personal data is processed when you use the website ai-gov.network. It is written for Regulation (EU) 2016/679 (GDPR) and for Portuguese Law No. 58/2019 of 8 August, which implements the GDPR in Portugal. It describes only what this website’s code actually does.</p>
+    <h2>1. Introduction</h2>
+    <p>AI-GOV.NETWORK (“we”, “our”) is a brand of LINKWITH UNIPESSOAL, LDA. We protect your privacy and your personal data. This policy explains how we collect, use, store and protect personal information, in line with the General Data Protection Regulation (EU) 2016/679 and Portuguese Law No. 58/2019 of 8 August.</p>
 
-    <h2>1. Controller</h2>
-    <p>The controller is <strong>LINKWITH UNIPESSOAL, LDA</strong>, NIPC 517054124. This website is operated under the brand <strong>ai-gov.network</strong>.</p>
-    <p>Privacy contact: <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-    <p class="todo"><strong>TODO:</strong> add the registered office (postal address) of LINKWITH UNIPESSOAL, LDA. It is not published on this website or in the repository, so it is not filled in here.</p>
-    <p>This website does not name a data protection officer. Requests to exercise your rights go to the controller, at the email above.</p>
+    <h2>2. Data controller</h2>
+    <p>The controller is <strong>LINKWITH UNIPESSOAL, LDA</strong>, NIPC 517054124, operating this website under the brand AI-GOV.NETWORK.</p>
+    <p>For questions about data protection, contact us at <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>.</p>
 
-    <h2>2. Data this website actually handles</h2>
-    <p>There is no user account, no contact form and no newsletter. This website does not collect payment data. Training enrolment, and any payment, take place on another website, as described below.</p>
-
-    <h3>2.1 Technical data from a visit</h3>
-    <p>When your browser requests a page, the server handles the technical data needed to deliver it and to keep the service secure: IP address, date and time, the address requested, and the browser’s user agent. The site is a Flask application. It does not keep a database of visitors. These are the operational logs of the hosting service.</p>
-
-    <h3>2.2 Email</h3>
-    <p>If you write to <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>, the controller receives your email address, the content of the message, and anything you include in it. The website code does not show which provider hosts that mailbox, so this policy does not name one.</p>
-
-    <h3>2.3 Booking a session</h3>
-    <p>The pages <a href="/book">/book</a> and <a href="/en/book">/en/book</a> can embed a scheduling calendar. The code identifies that calendar as Zoho Bookings (environment variable <em>ZOHO_BOOKINGS_URL</em>; the example in the code is a zohobookings.eu address). The embed script is loaded from bookings.nimbuspop.com, and the calendar is shown only when that address is configured. The details you enter there — the slot you choose and whatever fields that provider’s form asks for — are processed by that provider. This application does not store them.</p>
-
-    <h3>2.4 Training enrolment</h3>
-    <p>Training pages show a catalogue read, on the server, from a WooCommerce shop. The enrolment button opens an external address supplied by that catalogue. The page states that enrolment is completed on the website of CISODPO, the official PECB partner delivering the course. Data you submit there, including identification, contact details and any payment, is processed by that organisation under its own policy. It is not received by ai-gov.network.</p>
-
-    <h3>2.5 Confirmation Bias Lab</h3>
-    <p>On <a href="/lab">/lab</a>, the text you type (the scenario and the two options) is sent to this website’s server and forwarded to Cloudflare Workers AI so the models can answer. The application code does not save that text after it returns the result. Do not include personal data in that text. If you do, it is processed only to produce the answer you asked for.</p>
-
-    <h3>2.6 Audience measurement</h3>
-    <p>Pages include Google Tag Manager, container GTM-5DZF35QV, through the shared template. That script can send Google technical data about the visit. The tags inside the container are not in this repository, so this policy does not list cookies or purposes that the code does not show.</p>
-    <p>The homepage, the framework pages, publications, articles, training pages, the lab and this policy also load the Cloudflare Web Analytics beacon, which measures visits in aggregate. That beacon is not included on the booking pages or on the observatory page. The observatory chart is a document embedded in /observatorio and does not add an analytics script of its own; the parent page loads Google Tag Manager.</p>
-
-    <h3>2.7 Fonts</h3>
-    <p>Pages load typefaces from Google Fonts (fonts.googleapis.com). Your browser sends Google your IP address and the page address in order to fetch the font files.</p>
-
-    <h3>2.8 Images</h3>
-    <p>When image hosting on Cloudflare R2 is configured (<em>R2_BASE_URL</em>), the browser requests those images from Cloudflare. Otherwise, article images use the address returned by WordPress. Either request reveals your IP address to the service that delivers the file. Articles and the training catalogue are read server to server. That call does not send the contents of a visitor form.</p>
-
-    <h2>3. Purposes and legal bases</h2>
+    <h2>3. Personal data we collect</h2>
+    <p>We may collect the following categories of personal data:</p>
     <ul>
-      <li><strong>Running and securing the website.</strong> Technical logs. Legitimate interest in delivering the pages and protecting the service (Article 6(1)(f) GDPR). The interest is limited to operational logs.</li>
-      <li><strong>Replying to email you send.</strong> Your address and the message. Steps taken at your request before a contract, when you ask for contact or a service (Article 6(1)(b)). Legitimate interest in answering, in other cases (Article 6(1)(f)).</li>
-      <li><strong>Scheduling a session.</strong> The data the calendar asks for. Steps taken at your request before a contract (Article 6(1)(b)), carried out by the booking provider.</li>
-      <li><strong>Measuring aggregate use.</strong> Technical data processed by Cloudflare Web Analytics and, depending on the tags, by Google Tag Manager. Legitimate interest in understanding which pages are used (Article 6(1)(f)), for measurement that does not use cookies. If a Google Tag Manager tag sets non-essential cookies, that operation needs consent (Article 6(1)(a) GDPR and Portuguese Law No. 41/2004). This website’s code does not show a cookie-consent banner. See Cookies below.</li>
-      <li><strong>Producing the lab answer.</strong> The text you submit. Your request, when you run the analysis (Article 6(1)(b)).</li>
-      <li><strong>Showing the site’s typefaces.</strong> IP address and page address, processed by Google Fonts. Legitimate interest in the visual presentation of the site (Article 6(1)(f)).</li>
+      <li>Identification and contact data you give us, such as your name, role, organisation and email address</li>
+      <li>Communication data: the content of messages you send us</li>
+      <li>Booking data: the date and time you choose, and the details you provide when you book a session</li>
+      <li>Usage and technical data: IP address, browser type, device, and how you use the website</li>
+    </ul>
+    <p>This website does not take payment and has no user account. If you enrol in a training, you complete that enrolment on the website of the partner shown on the training page, under that partner’s own terms and privacy policy.</p>
+
+    <h2>4. Purposes of processing</h2>
+    <p>We process your personal data for the following purposes:</p>
+    <ul>
+      <li>Provision of our data consulting services</li>
+      <li>Management of consultation bookings and related communications</li>
+      <li>Sending information about training and events (with your consent)</li>
+      <li>Compliance with legal and regulatory obligations</li>
+      <li>Improvement of our services and user experience</li>
+      <li>Statistical and website performance analysis</li>
     </ul>
 
-    <h2>4. How long data is kept</h2>
+    <h2>5. Legal basis for processing</h2>
+    <p>The processing of your personal data is based on the following legal grounds:</p>
     <ul>
-      <li><strong>Email.</strong> For as long as needed to handle the request and, where one applies, for the period of a legal duty attached to that correspondence. The code does not set a number of months or years.</li>
-      <li><strong>Hosting logs.</strong> For the period the hosting provider keeps them for operation and security. That period is not defined in this repository.</li>
-      <li><strong>Lab text.</strong> Not stored by this application after the response is returned.</li>
-      <li><strong>Booking and enrolment data.</strong> Not stored on this website. Retention is that of Zoho Bookings and of the shop where you enrol.</li>
-      <li><strong>Audience measurement.</strong> According to the settings of Cloudflare Web Analytics and of the Google Tag Manager container. This repository does not set those periods.</li>
+      <li><strong>Contract performance:</strong> when necessary to provide our services, or to take steps you ask for before a contract, such as booking a session or replying to your message</li>
+      <li><strong>Consent:</strong> for information about training and events</li>
+      <li><strong>Legitimate interest:</strong> for the improvement of our services, the security of the website, and statistical and website performance analysis</li>
+      <li><strong>Legal obligation:</strong> for compliance with applicable legal requirements</li>
     </ul>
 
-    <h2>5. Sharing with processors</h2>
-    <p>The following are the services this website’s code actually uses to operate. Personal data is not sold.</p>
+    <h2>6. Retention</h2>
+    <p>We keep personal data only for as long as necessary for the purposes for which it was collected, or for as long as the law requires.</p>
     <ul>
-      <li><strong>Railway</strong> — hosting of this application, as referred to in the code and used to publish the site. It processes technical access logs.</li>
-      <li><strong>Google</strong> — Google Tag Manager (GTM-5DZF35QV) and Google Fonts.</li>
-      <li><strong>Cloudflare</strong> — Cloudflare Web Analytics; Cloudflare Workers AI for the lab; Cloudflare R2 when image hosting is configured.</li>
-      <li><strong>Zoho Bookings</strong> — the scheduling calendar on the booking pages, loaded through the script at bookings.nimbuspop.com when <em>ZOHO_BOOKINGS_URL</em> is set. The repository does not contain the contract that would classify this provider, so this policy does not go beyond what the embed does: the booking is taken in that service, and this website does not receive or store what you type there.</li>
+      <li>Data related to our services and to bookings: for the duration of the relationship and afterwards for the period required by law</li>
+      <li>Information about training and events: until you withdraw your consent</li>
+      <li>Usage and technical data: for a limited period needed for security, statistics and improvement of the website</li>
     </ul>
-    <p>CISODPO is not a processor of this website. The training page says enrolment is completed on the website of that official PECB partner, and the button opens the external address from the WooCommerce catalogue. Data entered there is processed by that organisation, as its own controller.</p>
-    <p>A link to a LinkedIn profile does not, by itself, send this website a form. If you follow the link, LinkedIn’s own policy applies. LinkedIn is not embedded.</p>
-    <p>The code does not show advertising sharing of our own, other than whatever the Google Tag Manager container might do. That configuration is not in the repository, so it is not described here as if it were known.</p>
-
-    <h2>6. International transfers</h2>
-    <p>Google and Cloudflare are organisations that process data outside the European Economic Area, including in the United States. Railway hosts the application; the server region is not set in this repository, so processing may take place outside the EEA. The calendar example in the code points at a zohobookings.eu address. The live address is an environment variable, so the location of booking data depends on that configuration.</p>
-    <p>Where data is transferred outside the EEA, the transfer rests on the safeguards those providers publish, in general the European Commission’s standard contractual clauses. The processor contracts are not in this repository.</p>
 
     <h2>7. Your rights</h2>
-    <p>Under Articles 15 to 21 of the GDPR you may ask for:</p>
+    <p>Under the GDPR, you have the following rights regarding your personal data:</p>
     <ul>
-      <li>access to the data;</li>
-      <li>rectification;</li>
-      <li>erasure;</li>
-      <li>restriction of processing;</li>
-      <li>portability, where processing is based on consent or a contract and is carried out by automated means;</li>
-      <li>objection, in particular where the legal basis is legitimate interest.</li>
+      <li><strong>Access:</strong> obtain confirmation and access to your data</li>
+      <li><strong>Rectification:</strong> correct inaccurate or incomplete data</li>
+      <li><strong>Erasure:</strong> request deletion of your data</li>
+      <li><strong>Restriction:</strong> restrict the processing of your data</li>
+      <li><strong>Portability:</strong> receive your data in a structured format, where the processing is based on consent or a contract and is carried out by automated means</li>
+      <li><strong>Objection:</strong> object to processing based on legitimate interest, including for direct marketing</li>
+      <li><strong>Withdraw consent:</strong> at any time, without affecting the lawfulness of processing before the withdrawal</li>
     </ul>
-    <p>Where processing is based on consent, you may withdraw it at any time. Withdrawal does not affect the lawfulness of processing before the withdrawal.</p>
-    <p>Send requests to <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>. We may ask for information to confirm that the request comes from the person the data is about. The time limit for a reply is one month, which can be extended under Article 12 of the GDPR.</p>
-    <p>You may lodge a complaint with the Portuguese data protection authority, the Comissão Nacional de Proteção de Dados (CNPD), at <a href="https://www.cnpd.pt">www.cnpd.pt</a>.</p>
-    <p>The lab does not produce a decision with legal or similarly significant effects about you. It is a demonstration you start yourself.</p>
+    <p>To exercise any of these rights, contact us at <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>. We may ask for information to confirm that the request comes from you. We reply within one month, which can be extended under Article 12 of the GDPR.</p>
 
-    <h2>8. Cookies</h2>
-    <p>This website’s own code does not set cookies. It does not use a Flask session and it does not use the browser’s local storage for tracking.</p>
-    <p>Third parties may set cookies:</p>
+    <h2>8. Data sharing</h2>
+    <p>We may share your personal data with:</p>
     <ul>
-      <li>Google Tag Manager may set cookies, depending on the tags in container GTM-5DZF35QV. Those tags are not in the repository. This policy does not describe cookies it cannot see.</li>
-      <li>The Zoho Bookings calendar, when it is loaded, may set cookies of the booking provider.</li>
-      <li>The Cloudflare Web Analytics beacon included on the pages is built to measure visits without a cookie. The site does not add an identifier of its own to that script.</li>
+      <li>Service providers acting on our behalf, for hosting, scheduling, email and audience measurement. They may use the data only for the purposes we set and must protect it</li>
+      <li>Regulatory or judicial authorities, when legally required</li>
+      <li>The training partner shown on the training page, only when you choose to continue your enrolment on that partner’s website</li>
     </ul>
-    <p>The code does not include a consent banner. Cookies that are strictly necessary to provide the service can be used without consent. Non-essential cookies, if they are switched on by the Google Tag Manager container or by the calendar, require consent beforehand. Until the container configuration is confirmed, this policy does not claim that only necessary cookies are used.</p>
+    <p>We do not sell personal data.</p>
 
-    <h2>9. Security</h2>
-    <p>The public site is published at https://ai-gov.network. There are no user accounts on this website. Access to messages received at the contact email belongs to the controller. This policy does not describe certifications or controls that are not in the code.</p>
+    <h2>9. International transfers</h2>
+    <p>When we transfer data outside the European Economic Area, we ensure that adequate safeguards are in place, such as an adequacy decision of the European Commission or standard contractual clauses approved by the Commission.</p>
 
-    <h2>10. Changes</h2>
-    <p>This policy can be updated when the website starts processing data differently. The date at the top of this page is the date of the last update. The version in force is the one published at this address.</p>
+    <h2>10. Security</h2>
+    <p>We apply technical and organisational measures appropriate to the risk, to protect personal data against unauthorised access, loss, destruction or alteration. The website is published over HTTPS.</p>
 
-    <h2>11. Contact</h2>
-    <p><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+    <h2>11. Cookies</h2>
+    <p>The website uses cookies and similar technologies so that it can work and so that we can measure visits in aggregate. You can block or delete cookies in your browser. Cookies that are strictly necessary for the site to function do not require consent. Statistical measurement is carried out on the legitimate-interest basis described above.</p>
+
+    <h2>12. Complaints</h2>
+    <p>If you believe that the processing of your personal data violates the GDPR, you may lodge a complaint with the Comissão Nacional de Proteção de Dados (CNPD), at <a href="https://www.cnpd.pt">www.cnpd.pt</a>.</p>
+
+    <h2>13. Changes</h2>
+    <p>We may update this policy. The date at the top of this page is the date of the last update. The version in force is the one published here.</p>
+
+    <h2>14. Contact</h2>
+    <p>LINKWITH UNIPESSOAL, LDA<br>NIPC 517054124<br><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+    <p>How you may use the website and our services is set out in our <a href="/en/terms">Terms</a>.</p>
 
     {% else %}
-    <div class="eyebrow">ai-gov.network</div>
+    <div class="eyebrow">AI-GOV.NETWORK</div>
     <h1>Política de <em>Privacidade</em></h1>
     <p class="updated">Última atualização: 17 de novembro de 2026.</p>
 
-    <p>Esta política explica como são tratados os dados pessoais de quem utiliza o sítio ai-gov.network. Aplica-se o Regulamento (UE) 2016/679 (RGPD) e a Lei n.º 58/2019, de 8 de agosto, que assegura a execução do RGPD na ordem jurídica portuguesa. Descreve apenas o que o código deste sítio faz de facto.</p>
+    <h2>1. Introdução</h2>
+    <p>AI-GOV.NETWORK («nós») é uma marca da LINKWITH UNIPESSOAL, LDA. Protegemos a sua privacidade e os seus dados pessoais. Esta política explica como recolhemos, utilizamos, conservamos e protegemos dados pessoais, em conformidade com o Regulamento (UE) 2016/679 (RGPD) e com a Lei n.º 58/2019, de 8 de agosto.</p>
 
-    <h2>1. Responsável pelo tratamento</h2>
-    <p>O responsável pelo tratamento é a <strong>LINKWITH UNIPESSOAL, LDA</strong>, NIPC 517054124. Este sítio é operado sob a marca <strong>ai-gov.network</strong>.</p>
-    <p>Contacto para assuntos de privacidade: <a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
-    <p class="todo"><strong>TODO:</strong> indicar a sede (morada postal) da LINKWITH UNIPESSOAL, LDA. Não está publicada neste sítio nem no repositório, por isso não é preenchida aqui.</p>
-    <p>Neste sítio não é indicado um encarregado de proteção de dados. Os pedidos de exercício de direitos dirigem-se ao responsável, pelo email acima.</p>
+    <h2>2. Responsável pelo tratamento</h2>
+    <p>O responsável pelo tratamento é a <strong>LINKWITH UNIPESSOAL, LDA</strong>, NIPC 517054124, que opera este sítio sob a marca AI-GOV.NETWORK.</p>
+    <p>Para questões de proteção de dados, contacte-nos em <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>.</p>
 
-    <h2>2. Dados que este sítio trata de facto</h2>
-    <p>Não há área de conta, não há formulário de contacto e não há newsletter. Este sítio não recolhe dados de pagamento. A inscrição em formações, e o pagamento quando existe, ocorrem noutro sítio, como se explica abaixo.</p>
-
-    <h3>2.1 Dados técnicos da visita</h3>
-    <p>Quando o navegador pede uma página, o servidor trata os dados técnicos necessários para a entregar e para a segurança do serviço: endereço IP, data e hora, endereço pedido e o agente do navegador (user agent). O sítio é uma aplicação Flask. Não tem uma base de dados de visitantes. Estes são os registos de operação do alojamento.</p>
-
-    <h3>2.2 Correio eletrónico</h3>
-    <p>Se escrever para <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>, o responsável recebe o endereço de email, o conteúdo da mensagem e o que nela incluir. O código do sítio não mostra qual o prestador da caixa de correio, pelo que esta política não o nomeia.</p>
-
-    <h3>2.3 Agendamento</h3>
-    <p>As páginas <a href="/book">/book</a> e <a href="/en/book">/en/book</a> podem incorporar um calendário de marcações. O código identifica esse calendário como Zoho Bookings (variável de ambiente <em>ZOHO_BOOKINGS_URL</em>; o exemplo no código é um endereço em zohobookings.eu). O script de incorporação é carregado de bookings.nimbuspop.com, e o calendário só é apresentado quando esse endereço está configurado. Os dados que aí introduzir — o horário escolhido e os campos que o formulário desse prestador pedir — são tratados por esse prestador. Esta aplicação não os guarda.</p>
-
-    <h3>2.4 Inscrição em formações</h3>
-    <p>As páginas de formação mostram o catálogo lido, no servidor, de uma loja WooCommerce. O botão de inscrição abre um endereço externo fornecido por esse catálogo. O texto da página indica que a inscrição é feita no sítio da CISODPO, parceiro oficial PECB que ministra a formação. Os dados que aí submeter, incluindo identificação, contacto e pagamento, são tratados por essa organização, segundo a política dela. Não são recebidos pelo ai-gov.network.</p>
-
-    <h3>2.5 Laboratório (Confirmation Bias Lab)</h3>
-    <p>Em <a href="/lab">/lab</a>, o texto que escrever (o cenário e as duas opções) é enviado ao servidor deste sítio e reencaminhado para a Cloudflare Workers AI, para os modelos responderem. O código da aplicação não guarda esse texto depois de devolver o resultado. Não inclua dados pessoais nesse texto. Se os incluir, são tratados apenas para produzir a resposta pedida.</p>
-
-    <h3>2.6 Medição de audiência</h3>
-    <p>As páginas incluem o Google Tag Manager, contentor GTM-5DZF35QV, através do modelo comum. Esse script pode transmitir à Google dados técnicos da visita. As etiquetas dentro do contentor não estão neste repositório, pelo que esta política não enumera cookies ou finalidades que o código não mostra.</p>
-    <p>A página inicial, as páginas do framework, as publicações, os artigos, as formações, o laboratório e esta política carregam também o beacon da Cloudflare Web Analytics, que mede visitas de forma agregada. Esse beacon não está nas páginas de agendamento nem na página do observatório. O gráfico do observatório é um documento incorporado em /observatorio e não acrescenta um script de audiência próprio; a página que o contém carrega o Google Tag Manager.</p>
-
-    <h3>2.7 Tipos de letra</h3>
-    <p>As páginas carregam tipos de letra a partir da Google Fonts (fonts.googleapis.com). O navegador envia à Google o endereço IP e o endereço da página, para obter os ficheiros.</p>
-
-    <h3>2.8 Imagens</h3>
-    <p>Quando o alojamento de imagens na Cloudflare R2 está configurado (<em>R2_BASE_URL</em>), o navegador pede essas imagens à Cloudflare. Caso contrário, as imagens dos artigos usam o endereço devolvido pelo WordPress. Em qualquer dos casos, o pedido revela o endereço IP ao serviço que entrega o ficheiro. Os artigos e o catálogo de formações são lidos de servidor para servidor. Essa chamada não envia o conteúdo de um formulário do visitante.</p>
-
-    <h2>3. Finalidades e fundamentos jurídicos</h2>
+    <h2>3. Dados pessoais que recolhemos</h2>
+    <p>Podemos recolher as seguintes categorias de dados pessoais:</p>
     <ul>
-      <li><strong>Operar e proteger o sítio.</strong> Registos técnicos. Interesse legítimo em entregar as páginas e proteger o serviço (artigo 6.º, n.º 1, alínea f), do RGPD). O interesse limita-se a registos de operação.</li>
-      <li><strong>Responder ao email que envia.</strong> O endereço e a mensagem. Diligências pré-contratuais a pedido do titular, quando pede um contacto ou um serviço (artigo 6.º, n.º 1, alínea b)). Interesse legítimo em responder, nos restantes casos (alínea f)).</li>
-      <li><strong>Marcar uma sessão.</strong> Os dados que o calendário pedir. Diligências pré-contratuais a pedido do titular (alínea b)), realizadas pelo prestador do calendário.</li>
-      <li><strong>Medir a utilização agregada.</strong> Dados técnicos tratados pela Cloudflare Web Analytics e, conforme as etiquetas, pelo Google Tag Manager. Interesse legítimo em perceber que páginas são usadas (alínea f)), na medição que não usa cookies. Se uma etiqueta do Google Tag Manager colocar cookies não essenciais, essa operação depende de consentimento (artigo 6.º, n.º 1, alínea a), do RGPD e Lei n.º 41/2004). O código deste sítio não mostra um aviso de consentimento de cookies. Ver a secção Cookies.</li>
-      <li><strong>Produzir a resposta do laboratório.</strong> O texto introduzido. O pedido do titular, ao executar a análise (alínea b)).</li>
-      <li><strong>Mostrar os tipos de letra do sítio.</strong> Endereço IP e endereço da página, tratados pela Google Fonts. Interesse legítimo na apresentação gráfica do sítio (alínea f)).</li>
+      <li>Dados de identificação e de contacto que nos fornece, como o nome, a função, a organização e o endereço de email</li>
+      <li>Dados de comunicação: o conteúdo das mensagens que nos envia</li>
+      <li>Dados de marcação: o dia e a hora que escolhe, e os elementos que indica ao agendar uma sessão</li>
+      <li>Dados de utilização e dados técnicos: endereço IP, tipo de navegador, dispositivo e a forma como utiliza o sítio</li>
+    </ul>
+    <p>Este sítio não processa pagamentos e não tem área de conta. Se se inscrever numa formação, conclui a inscrição no sítio do parceiro indicado na página da formação, nos termos e na política de privacidade desse parceiro.</p>
+
+    <h2>4. Finalidades do tratamento</h2>
+    <p>Tratamos os seus dados pessoais para as seguintes finalidades:</p>
+    <ul>
+      <li>Prestação dos nossos serviços de consultoria de dados</li>
+      <li>Gestão das marcações de consultas e das comunicações relacionadas</li>
+      <li>Envio de informação sobre formação e eventos (com o seu consentimento)</li>
+      <li>Cumprimento de obrigações legais e regulamentares</li>
+      <li>Melhoria dos nossos serviços e da experiência de utilização</li>
+      <li>Análise estatística e de desempenho do sítio</li>
     </ul>
 
-    <h2>4. Prazos de conservação</h2>
+    <h2>5. Fundamento jurídico</h2>
+    <p>O tratamento dos seus dados pessoais assenta nos seguintes fundamentos:</p>
     <ul>
-      <li><strong>Email.</strong> Pelo tempo necessário para tratar o pedido e, quando exista, pelo prazo de uma obrigação legal aplicável a essa correspondência. O código não fixa um número de meses ou de anos.</li>
-      <li><strong>Registos do alojamento.</strong> Pelo período em que o prestador de alojamento os conserva para operação e segurança. Esse prazo não está definido neste repositório.</li>
-      <li><strong>Texto do laboratório.</strong> Não é guardado por esta aplicação após a resposta.</li>
-      <li><strong>Dados de marcação e de inscrição.</strong> Não são guardados neste sítio. O prazo é o do Zoho Bookings e o da loja onde a inscrição é feita.</li>
-      <li><strong>Medição de audiência.</strong> Segundo a configuração da Cloudflare Web Analytics e do contentor Google Tag Manager. Este repositório não fixa esses prazos.</li>
+      <li><strong>Execução de contrato:</strong> quando é necessário para prestar os nossos serviços, ou para diligências que nos pede antes de um contrato, como marcar uma sessão ou responder à sua mensagem</li>
+      <li><strong>Consentimento:</strong> para informação sobre formação e eventos</li>
+      <li><strong>Interesse legítimo:</strong> para a melhoria dos serviços, a segurança do sítio e a análise estatística e de desempenho</li>
+      <li><strong>Obrigação legal:</strong> para cumprimento dos requisitos legais aplicáveis</li>
     </ul>
 
-    <h2>5. Partilha com subcontratantes</h2>
-    <p>Indicam-se os serviços que o código deste sítio utiliza de facto para funcionar. Os dados pessoais não são vendidos.</p>
+    <h2>6. Prazo de conservação</h2>
+    <p>Conservamos os dados pessoais apenas pelo tempo necessário às finalidades para as quais foram recolhidos, ou pelo tempo que a lei exigir.</p>
     <ul>
-      <li><strong>Railway</strong> — alojamento desta aplicação, referido no código e usado na publicação do sítio. Trata os registos técnicos de acesso.</li>
-      <li><strong>Google</strong> — Google Tag Manager (GTM-5DZF35QV) e Google Fonts.</li>
-      <li><strong>Cloudflare</strong> — Cloudflare Web Analytics; Cloudflare Workers AI no laboratório; Cloudflare R2 quando o alojamento de imagens está configurado.</li>
-      <li><strong>Zoho Bookings</strong> — o calendário de marcações nas páginas de agendamento, carregado pelo script em bookings.nimbuspop.com quando <em>ZOHO_BOOKINGS_URL</em> está definida. O repositório não contém o contrato que qualificaria este prestador, pelo que esta política não vai além do que a incorporação faz: a marcação é feita nesse serviço, e este sítio não recebe nem guarda o que aí for escrito.</li>
+      <li>Dados relativos aos serviços e às marcações: durante a relação e, depois, pelo período exigido por lei</li>
+      <li>Informação sobre formação e eventos: até retirar o consentimento</li>
+      <li>Dados de utilização e dados técnicos: por um período limitado, o necessário à segurança, às estatísticas e à melhoria do sítio</li>
     </ul>
-    <p>A CISODPO não é subcontratante deste sítio. A página de formação indica que a inscrição se conclui no sítio desse parceiro oficial PECB, e o botão abre o endereço externo do catálogo WooCommerce. Os dados aí introduzidos são tratados por essa organização, como responsável autónomo.</p>
-    <p>Uma ligação para um perfil no LinkedIn não envia, por si, um formulário a este sítio. Se seguir a ligação, aplica-se a política do LinkedIn. O LinkedIn não está incorporado.</p>
-    <p>O código não mostra partilha publicitária própria, para além do que o contentor Google Tag Manager possa fazer. Essa configuração não está no repositório, por isso não é descrita aqui como se fosse conhecida.</p>
 
-    <h2>6. Transferências internacionais</h2>
-    <p>A Google e a Cloudflare são organizações que tratam dados fora do Espaço Económico Europeu, incluindo nos Estados Unidos. A Railway aloja a aplicação; a região do servidor não está definida neste repositório, pelo que o tratamento pode ocorrer fora do EEE. O exemplo de calendário no código aponta para um endereço zohobookings.eu. O endereço em uso é uma variável de ambiente, pelo que a localização dos dados de marcação depende dessa configuração.</p>
-    <p>Quando há transferência para fora do EEE, esta assenta nos mecanismos que esses prestadores publicam, em regra as cláusulas contratuais-tipo da Comissão Europeia. Os contratos de subcontratação não estão neste repositório.</p>
-
-    <h2>7. Direitos dos titulares</h2>
-    <p>Nos termos dos artigos 15.º a 21.º do RGPD, pode pedir:</p>
+    <h2>7. Os seus direitos</h2>
+    <p>Nos termos do RGPD, tem os seguintes direitos sobre os seus dados pessoais:</p>
     <ul>
-      <li>acesso aos dados;</li>
-      <li>retificação;</li>
-      <li>apagamento;</li>
-      <li>limitação do tratamento;</li>
-      <li>portabilidade, quando o tratamento assenta no consentimento ou num contrato e é realizado por meios automatizados;</li>
-      <li>oposição, em particular quando o fundamento é o interesse legítimo.</li>
+      <li><strong>Acesso:</strong> obter confirmação e acesso aos seus dados</li>
+      <li><strong>Retificação:</strong> corrigir dados inexatos ou incompletos</li>
+      <li><strong>Apagamento:</strong> pedir a eliminação dos seus dados</li>
+      <li><strong>Limitação:</strong> limitar o tratamento dos seus dados</li>
+      <li><strong>Portabilidade:</strong> receber os seus dados num formato estruturado, quando o tratamento assenta no consentimento ou num contrato e é realizado por meios automatizados</li>
+      <li><strong>Oposição:</strong> opor-se ao tratamento baseado em interesse legítimo, incluindo para marketing direto</li>
+      <li><strong>Retirar o consentimento:</strong> a qualquer momento, sem afetar a licitude do tratamento anterior</li>
     </ul>
-    <p>Quando o tratamento se basear em consentimento, pode retirá-lo a qualquer momento. A retirada não compromete a licitude do tratamento efetuado antes dela.</p>
-    <p>Os pedidos enviam-se para <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>. Podemos pedir informação para confirmar que o pedido vem da pessoa a quem os dados dizem respeito. O prazo de resposta é de um mês, prorrogável nos termos do artigo 12.º do RGPD.</p>
-    <p>Tem o direito de apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD), em <a href="https://www.cnpd.pt">www.cnpd.pt</a>.</p>
-    <p>O laboratório não produz uma decisão com efeitos jurídicos, ou equiparáveis, sobre si. É uma demonstração que a própria pessoa aciona.</p>
+    <p>Para exercer qualquer destes direitos, contacte-nos em <a href="mailto:info@ai-gov.network">info@ai-gov.network</a>. Podemos pedir informação para confirmar que o pedido vem de si. Respondemos no prazo de um mês, prorrogável nos termos do artigo 12.º do RGPD.</p>
 
-    <h2>8. Cookies</h2>
-    <p>O código deste sítio não grava cookies. Não usa sessão Flask nem o armazenamento local do navegador para rastreio.</p>
-    <p>Terceiros podem colocar cookies:</p>
+    <h2>8. Partilha de dados</h2>
+    <p>Podemos partilhar os seus dados pessoais com:</p>
     <ul>
-      <li>O Google Tag Manager pode colocar cookies, conforme as etiquetas do contentor GTM-5DZF35QV. Essas etiquetas não estão no repositório. Esta política não descreve cookies que não consegue ver.</li>
-      <li>O calendário Zoho Bookings, quando é carregado, pode colocar cookies do prestador do agendamento.</li>
-      <li>O beacon da Cloudflare Web Analytics incluído nas páginas está feito para medir visitas sem cookie. O sítio não acrescenta um identificador próprio a esse script.</li>
+      <li>Prestadores de serviços que atuam por nossa conta, para alojamento, agendamento, correio eletrónico e medição de audiência. Só podem usar os dados para as finalidades que definimos e têm de os proteger</li>
+      <li>Autoridades reguladoras ou judiciais, quando a lei o exigir</li>
+      <li>O parceiro de formação indicado na página da formação, apenas quando escolhe continuar a inscrição no sítio desse parceiro</li>
     </ul>
-    <p>O código não inclui uma faixa de consentimento. Os cookies estritamente necessários à prestação do serviço podem ser usados sem consentimento. Cookies não essenciais, se forem ativados pelo contentor Google Tag Manager ou pelo calendário, exigem consentimento prévio. Até a configuração do contentor ser confirmada, esta política não afirma que só são usados cookies necessários.</p>
+    <p>Não vendemos dados pessoais.</p>
 
-    <h2>9. Segurança</h2>
-    <p>O sítio público está publicado em https://ai-gov.network. Não há contas de utilizador neste sítio. O acesso às mensagens recebidas no email de contacto é do responsável. Esta política não descreve certificações ou controlos que não estejam no código.</p>
+    <h2>9. Transferências internacionais</h2>
+    <p>Quando transferimos dados para fora do Espaço Económico Europeu, asseguramos garantias adequadas, como uma decisão de adequação da Comissão Europeia ou cláusulas contratuais-tipo aprovadas pela Comissão.</p>
 
-    <h2>10. Alterações</h2>
-    <p>Esta política pode ser atualizada quando o sítio passar a tratar dados de forma diferente. A data no início desta página é a data da última atualização. A versão em vigor é a que está publicada neste endereço.</p>
+    <h2>10. Segurança</h2>
+    <p>Aplicamos medidas técnicas e organizativas adequadas ao risco, para proteger os dados pessoais contra o acesso não autorizado, a perda, a destruição ou a alteração. O sítio é publicado em HTTPS.</p>
 
-    <h2>11. Contacto</h2>
-    <p><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+    <h2>11. Cookies</h2>
+    <p>O sítio utiliza cookies e tecnologias semelhantes para funcionar e para medir visitas de forma agregada. Pode bloquear ou apagar cookies no seu navegador. Os cookies estritamente necessários ao funcionamento do sítio não dependem de consentimento. A medição estatística assenta no interesse legítimo descrito acima.</p>
+
+    <h2>12. Reclamações</h2>
+    <p>Se considerar que o tratamento dos seus dados pessoais viola o RGPD, pode apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD), em <a href="https://www.cnpd.pt">www.cnpd.pt</a>.</p>
+
+    <h2>13. Alterações</h2>
+    <p>Podemos atualizar esta política. A data no início desta página é a data da última atualização. A versão em vigor é a que está aqui publicada.</p>
+
+    <h2>14. Contacto</h2>
+    <p>LINKWITH UNIPESSOAL, LDA<br>NIPC 517054124<br><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+    <p>As condições de utilização estão nos nossos <a href="/termos">Termos</a>.</p>
     {% endif %}
   </main>
 

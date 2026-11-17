@@ -649,6 +649,16 @@ def privacy_policy_en():
     return render_template("privacy.html", lang="en")
 
 
+@app.route("/termos")
+def termos():
+    return render_template("terms.html", lang="pt")
+
+
+@app.route("/en/terms")
+def terms_en():
+    return render_template("terms.html", lang="en")
+
+
 @app.route("/book")
 def book():
     return render_template("book.html", zoho_url=ZOHO_BOOKINGS_URL)
@@ -835,6 +845,7 @@ def sitemap():
         "/book", "/en/book",
         "/lab",
         "/politica-de-privacidade", "/en/privacy-policy",
+        "/termos", "/en/terms",
     ]
     urls = list(static_paths)
 

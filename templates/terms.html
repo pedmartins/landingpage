@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="{{ 'en' if lang == 'en' else 'pt' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_google_analytics.html' %}
+  {% if lang == 'en' %}
+  <title>Terms — Pedro Martins · AI Governance</title>
+  <meta name="description" content="Terms of use of ai-gov.network, a brand of LINKWITH UNIPESSOAL, LDA.">
+  {% set _canon = 'https://ai-gov.network/en/terms' %}
+  {% else %}
+  <title>Termos — Pedro Martins · AI Governance</title>
+  <meta name="description" content="Termos de utilização de ai-gov.network, marca da LINKWITH UNIPESSOAL, LDA.">
+  {% set _canon = 'https://ai-gov.network/termos' %}
+  {% endif %}
+  <link rel="canonical" href="{{ _canon }}">
+  <link rel="alternate" hreflang="pt-PT" href="https://ai-gov.network/termos">
+  <link rel="alternate" hreflang="en-GB" href="https://ai-gov.network/en/terms">
+  <link rel="alternate" hreflang="x-default" href="https://ai-gov.network/termos">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Governance — Pedro Martins">
+  <meta property="og:locale" content="{{ 'en_GB' if lang == 'en' else 'pt_PT' }}">
+  <meta property="og:title" content="{{ 'Terms' if lang == 'en' else 'Termos' }} — ai-gov.network">
+  <meta property="og:description" content="{{ 'Terms of use of ai-gov.network.' if lang == 'en' else 'Termos de utilização de ai-gov.network.' }}">
+  <meta property="og:url" content="{{ _canon }}">
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:      #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --navy:      #1a2d3d;
+      --cream:     #f5f3ee;
+      --muted:     #5a6a78;
+      --card-bg:   #ffffff;
+      --border:    rgba(26,45,61,0.08);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245, 243, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.76rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+      display: inline;
+      margin-left: 1.2rem;
+      padding-left: 1.2rem;
+      border-left: 1px solid var(--border);
+      line-height: 1.6;
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    .nav-brand { display: flex; align-items: center; flex-wrap: wrap; row-gap: 0.28rem; }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: clamp(1rem, 2vw, 2.5rem); list-style: none; align-items: center; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--teal); }
+
+    .policy {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 7.5rem 1.5rem 4.5rem;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; font-weight: 500;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .eyebrow::before {
+      content: ''; width: 28px; height: 2px; background: var(--teal);
+    }
+    .policy h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      text-transform: uppercase;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      color: var(--navy);
+    }
+    .policy h1 em { font-style: normal; color: var(--teal); }
+    .updated {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .policy h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin: 2.4rem 0 0.75rem;
+    }
+    .policy h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin: 1.4rem 0 0.4rem;
+    }
+    .policy p, .policy li {
+      font-size: 1.02rem;
+      line-height: 1.75;
+      font-weight: 300;
+      color: var(--navy);
+    }
+    .policy p { margin: 0 0 0.9rem; }
+    .policy ul { margin: 0.2rem 0 1rem 1.25rem; }
+    .policy li { margin-bottom: 0.45rem; }
+    .policy a { color: var(--teal-dark); }
+    .policy a:hover { color: var(--teal); }
+
+    @media (max-width: 1180px) {
+      .nav-tagline { display: none; }
+    }
+    @media (max-width: 820px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .policy { padding: 6.2rem 1.35rem 3.5rem; }
+    }
+  </style>
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9dbd0b155b28463494355b6113e8efcd"}'></script>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">
+      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">Pedro Martins</a>
+      <span class="nav-tagline">{% if lang == 'en' %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% else %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% endif %}</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ '/en/framework' if lang == 'en' else '/framework' }}">Framework</a></li>
+      {% if lang != 'en' %}<li><a href="/observatorio">Observatório</a></li>{% endif %}
+      <li><a href="{{ '/en/publicacoes' if lang == 'en' else '/publicacoes' }}">{{ 'Publications' if lang == 'en' else 'Publicações' }}</a></li>
+      <li><a href="mailto:info@ai-gov.network">{{ 'Contact' if lang == 'en' else 'Contacto' }}</a></li>
+      {% if lang == 'en' %}
+      <li><a href="/termos">PT</a></li>
+      {% else %}
+      <li><a href="/en/terms">EN</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <main class="policy">
+    {% if lang == 'en' %}
+    <div class="eyebrow">AI-GOV.NETWORK</div>
+    <h1>Terms of <em>Use</em></h1>
+    <p class="updated">Last updated: 17 November 2026.</p>
+
+    <h2>1. Acceptance</h2>
+    <p>By accessing and using the website and services of AI-GOV.NETWORK, a brand of LINKWITH UNIPESSOAL, LDA (“we”, “our”), you agree to these terms. If you do not agree, do not use the website or the services.</p>
+
+    <h2>2. Services</h2>
+    <p>We provide data and AI governance consulting. This includes:</p>
+    <ul>
+      <li>Advisory and consultation sessions</li>
+      <li>Frameworks, publications and the observatory, as information</li>
+      <li>Information about training. When you enrol, you do so on the website of the partner shown on the training page, and that partner’s terms apply</li>
+      <li>A demonstration lab</li>
+    </ul>
+    <p>Published materials and the lab are general information. They are not advice prepared for your organisation and they do not replace a contracted engagement.</p>
+
+    <h2>3. Your obligations</h2>
+    <p>When you use the website or our services, you agree to:</p>
+    <ul>
+      <li>Provide accurate information when you contact us or book a session</li>
+      <li>Use the website lawfully and not attempt to disrupt it</li>
+      <li>Follow any separate agreement that covers a service you contract with us</li>
+    </ul>
+
+    <h2>4. Confidentiality</h2>
+    <p>We keep confidential the information you share with us for a consultation or a contracted service. This duty continues after the relationship ends.</p>
+    <p>You agree to keep confidential our methodologies, frameworks and materials that are not published on the website, unless we agree otherwise in writing.</p>
+
+    <h2>5. Intellectual property</h2>
+    <p>Content, frameworks, texts and other materials on the website remain our property, or that of their authors, unless otherwise agreed in writing. You may read them for your own information. You may not copy them for commercial use without our permission.</p>
+    <p>Deliverables under a service agreement are licensed as that agreement states.</p>
+
+    <h2>6. Limitation of liability</h2>
+    <p>We provide consulting and information. Decisions on how you apply them are yours.</p>
+    <p>When a service is contracted, our liability is limited to the value of that service. To the extent Portuguese law allows, we are not liable for indirect or consequential damage, or for loss of profits. Nothing in these terms excludes liability that the law does not allow us to exclude.</p>
+
+    <h2>7. Data protection</h2>
+    <p>Personal data is processed as described in our <a href="/en/privacy-policy">Privacy Policy</a>, under the GDPR. Where a service requires it, we can enter into a data processing agreement.</p>
+
+    <h2>8. Duration and termination</h2>
+    <p>You may use the website while it is available. A contracted service lasts for the period set out in its agreement and ends as that agreement provides.</p>
+
+    <h2>9. Law and jurisdiction</h2>
+    <p>These terms are governed by Portuguese law. Disputes arising from them are submitted to the courts of Portugal.</p>
+
+    <h2>10. Changes</h2>
+    <p>We may update these terms. Changes apply when they are published on this page. If you continue to use the website after that, you accept the updated terms.</p>
+
+    <h2>11. Contact</h2>
+    <p>LINKWITH UNIPESSOAL, LDA<br>NIPC 517054124<br><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+
+    {% else %}
+    <div class="eyebrow">AI-GOV.NETWORK</div>
+    <h1>Termos de <em>Utilização</em></h1>
+    <p class="updated">Última atualização: 17 de novembro de 2026.</p>
+
+    <h2>1. Aceitação</h2>
+    <p>Ao aceder e utilizar o sítio e os serviços de AI-GOV.NETWORK, marca da LINKWITH UNIPESSOAL, LDA («nós»), aceita estes termos. Se não concordar, não utilize o sítio nem os serviços.</p>
+
+    <h2>2. Serviços</h2>
+    <p>Prestamos consultoria de dados e de governação de inteligência artificial. Isto inclui:</p>
+    <ul>
+      <li>Sessões de aconselhamento e de consulta</li>
+      <li>Frameworks, publicações e o observatório, enquanto informação</li>
+      <li>Informação sobre formação. Quando se inscreve, fá-lo no sítio do parceiro indicado na página da formação, e aplicam-se os termos desse parceiro</li>
+      <li>Um laboratório de demonstração</li>
+    </ul>
+    <p>Os materiais publicados e o laboratório são informação geral. Não são aconselhamento preparado para a sua organização e não substituem um serviço contratado.</p>
+
+    <h2>3. As suas obrigações</h2>
+    <p>Ao utilizar o sítio ou os nossos serviços, compromete-se a:</p>
+    <ul>
+      <li>Prestar informação exata quando nos contacta ou marca uma sessão</li>
+      <li>Utilizar o sítio de forma lícita e não tentar perturbá-lo</li>
+      <li>Cumprir o acordo próprio que cubra um serviço que contrate connosco</li>
+    </ul>
+
+    <h2>4. Confidencialidade</h2>
+    <p>Mantemos confidenciais as informações que partilha connosco para uma consulta ou para um serviço contratado. Este dever mantém-se depois de a relação terminar.</p>
+    <p>Compromete-se a manter confidenciais as nossas metodologias, frameworks e materiais que não estejam publicados no sítio, salvo acordo escrito em contrário.</p>
+
+    <h2>5. Propriedade intelectual</h2>
+    <p>Os conteúdos, frameworks, textos e outros materiais do sítio continuam a ser nossos, ou dos respetivos autores, salvo acordo escrito em contrário. Pode lê-los para sua informação. Não pode copiá-los para uso comercial sem a nossa autorização.</p>
+    <p>Os resultados de um serviço contratado são licenciados nos termos desse acordo.</p>
+
+    <h2>6. Limitação de responsabilidade</h2>
+    <p>Prestamos consultoria e informação. As decisões sobre a forma como as aplica são suas.</p>
+    <p>Quando um serviço é contratado, a nossa responsabilidade limita-se ao valor desse serviço. Na medida em que a lei portuguesa o permita, não respondemos por danos indiretos ou consequenciais, nem por perda de lucros. Nada nestes termos exclui responsabilidade que a lei não permita excluir.</p>
+
+    <h2>7. Proteção de dados</h2>
+    <p>Os dados pessoais são tratados como descrito na nossa <a href="/politica-de-privacidade">Política de Privacidade</a>, nos termos do RGPD. Quando um serviço o exigir, podemos celebrar um acordo de tratamento de dados.</p>
+
+    <h2>8. Duração e cessação</h2>
+    <p>Pode utilizar o sítio enquanto estiver disponível. Um serviço contratado dura pelo período definido no respetivo acordo e termina nos termos desse acordo.</p>
+
+    <h2>9. Lei e foro</h2>
+    <p>Estes termos regem-se pela lei portuguesa. Os litígios que deles resultem são submetidos aos tribunais de Portugal.</p>
+
+    <h2>10. Alterações</h2>
+    <p>Podemos atualizar estes termos. As alterações aplicam-se quando são publicadas nesta página. Se continuar a utilizar o sítio depois disso, aceita os termos atualizados.</p>
+
+    <h2>11. Contacto</h2>
+    <p>LINKWITH UNIPESSOAL, LDA<br>NIPC 517054124<br><a href="mailto:info@ai-gov.network">info@ai-gov.network</a></p>
+    {% endif %}
+  </main>
+
+  {% include '_legal_footer.html' %}
+</body>
+</html>
