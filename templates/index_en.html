@@ -586,7 +586,8 @@
     <a href="https://www.linkedin.com/in/pedro-alves-martins-431336/" class="nav-logo">Pedro Martins</a>
     <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
     </div>
-    <ul class="nav-links">
+    {% with nav_lang='en' %}{% include '_nav_toggle.html' %}{% endwith %}
+    <ul class="nav-links" id="site-nav-links">
       <li><a href="/en/framework">Framework</a></li>
       <li><a href="#">Services</a></li>
       {% if trainings %}<li><a href="#training">Training</a></li>{% endif %}
