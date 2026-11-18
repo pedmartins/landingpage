@@ -178,7 +178,8 @@
       <a href="{{ '/' if pt else '/en' }}" class="nav-logo">Pedro Martins</a>
       <span class="nav-tagline">{% if pt %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</span>
     </div>
-    <ul class="nav-links">
+    {% include '_nav_toggle.html' %}
+    <ul class="nav-links" id="site-nav-links">
       <li><a href="{{ '/framework' if pt else '/en/framework' }}">Framework</a></li>
       {% if pt %}<li><a href="/observatorio">Observatório</a></li>{% endif %}
       <li><a href="{{ '/publicacoes' if pt else '/en/publicacoes' }}">{{ 'Publicações' if pt else 'Publications' }}</a></li>
