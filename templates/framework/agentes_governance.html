@@ -1,0 +1,989 @@
+{% macro T(pt_text, en_text) -%}{{ en_text if lang == 'en' else pt_text }}{%- endmacro %}
+{% macro ico(name) -%}
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{%- if name == 'db' -%}
+<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>
+{%- elif name == 'lock' -%}
+<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/>
+{%- elif name == 'doc' -%}
+<path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M8 13h8M8 17h5"/>
+{%- elif name == 'branch' -%}
+<path d="M6 4v16M6 6h6a3 3 0 010 6H9a3 3 0 000 6h9"/>
+{%- elif name == 'users' -%}
+<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-2.8 2.8-4 5.5-4s4.9 1.2 5.5 4"/><circle cx="17" cy="9" r="2.2"/><path d="M16.2 15c1.8.3 3.2 1.4 3.8 3.2"/>
+{%- elif name == 'shield' -%}
+<path d="M12 3l7 3v6c0 4.2-2.8 7.4-7 8.5C7.8 19.4 5 16.2 5 12V6l7-3z"/><path d="M9 12l2 2 4-4"/>
+{%- elif name == 'search' -%}
+<circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/>
+{%- elif name == 'check' -%}
+<circle cx="12" cy="12" r="8"/><path d="M8.5 12.2l2.3 2.3 4.7-5"/>
+{%- elif name == 'spark' -%}
+<path d="M12 3v3M12 18v3M4.8 6.2l2.1 2.1M17.1 15.7l2.1 2.1M3 12h3M18 12h3M4.8 17.8l2.1-2.1M17.1 8.3l2.1-2.1"/><circle cx="12" cy="12" r="3"/>
+{%- elif name == 'monitor' -%}
+<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/>
+{%- elif name == 'star' -%}
+<path d="M12 3.5l2.2 4.6 5 .7-3.6 3.5.9 5.1L12 15l-4.5 2.4.9-5.1L4.8 8.8l5-.7L12 3.5z"/>
+{%- elif name == 'bolt' -%}
+<path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+{%- elif name == 'target' -%}
+<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}
+{% macro panel(id, family, badge, title, lead, items, callout) %}
+{% set colors = {
+  'data': ('#1a9e8a', 'rgba(26,158,138,0.10)'),
+  'ai': ('#1a2d3d', 'rgba(26,45,61,0.08)'),
+  'shared': ('#0d6e5f', 'rgba(13,110,95,0.10)'),
+  'stack': ('#1a2d3d', 'rgba(26,45,61,0.06)'),
+  'control': ('#1a9e8a', 'rgba(26,158,138,0.10)')
+} %}
+{% set color, callbg = colors[family] %}
+<div class="info-panel" id="panel-{{ id }}">
+  <div class="info-badge" style="background:{{ color }}">{{ badge }}</div>
+  <h2 class="info-title">{{ title }}</h2>
+  <p class="info-lead">{{ lead }}</p>
+  <div class="info-items">
+    {% for h, t in items %}
+    <div class="info-item"><strong>{{ h }}</strong><span>{{ t }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="info-obligation" style="background:{{ callbg }};color:{{ color }}">{{ callout }}</div>
+</div>
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="{{ 'en' if lang == 'en' else 'pt' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_google_analytics.html' %}
+  <title>{{ T('Stack de governação de agentes — AI Governance', 'AI agent governance stack — AI Governance') }}</title>
+  <meta name="description" content="{{ T('A stack de governação por trás de agentes de IA fiáveis: governação de dados nos inputs, governação de IA nos outputs, cinco camadas e cinco controlos.', 'The governance stack behind reliable AI agents: data governance on the inputs, AI governance on the outputs, five layers and five controls.') }}">
+  <link rel="canonical" href="{{ 'https://ai-gov.network/en/framework/agents' if lang == 'en' else 'https://ai-gov.network/framework/agentes' }}">
+  <link rel="alternate" hreflang="pt-PT" href="https://ai-gov.network/framework/agentes">
+  <link rel="alternate" hreflang="en-GB" href="https://ai-gov.network/en/framework/agents">
+  <link rel="alternate" hreflang="x-default" href="https://ai-gov.network/framework/agentes">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Governance — Pedro Martins">
+  <meta property="og:locale" content="{{ 'en_GB' if lang == 'en' else 'pt_PT' }}">
+  <meta property="og:title" content="{{ T('Stack de governação de agentes — AI Governance', 'AI agent governance stack — AI Governance') }}">
+  <meta property="og:description" content="{{ T('Governação de dados nos inputs, governação de IA nos outputs, cinco camadas e cinco controlos.', 'Data governance on the inputs, AI governance on the outputs, five layers and five controls.') }}">
+  <meta property="og:url" content="{{ 'https://ai-gov.network/en/framework/agents' if lang == 'en' else 'https://ai-gov.network/framework/agentes' }}">
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+  {% if og_image %}<meta name="twitter:image" content="{{ og_image }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ T('Stack de governação de agentes — AI Governance', 'AI agent governance stack — AI Governance') }}">
+  <meta name="twitter:description" content="{{ T('Governação de dados nos inputs, governação de IA nos outputs, cinco camadas e cinco controlos.', 'Data governance on the inputs, AI governance on the outputs, five layers and five controls.') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal: #1a9e8a;
+      --teal-dark: #0d6e5f;
+      --navy: #1a2d3d;
+      --cream: #f5f3ee;
+      --muted: #5a6a78;
+      --line: rgba(26,45,61,0.10);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4vw;
+      background: rgba(245, 243, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(26,45,61,0.07);
+    }
+    .nav-tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.76rem; font-weight: 300;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+      display: inline;
+      margin-left: 1.2rem;
+      padding-left: 1.2rem;
+      border-left: 1px solid rgba(26,45,61,0.12);
+      line-height: 1.6;
+    }
+    .nav-tagline strong { font-weight: 700; color: var(--navy); }
+    .nav-brand { display: flex; align-items: center; flex-wrap: wrap; row-gap: 0.28rem; }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--navy); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: clamp(1rem, 2vw, 2.5rem); list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+
+    .page { padding-top: 64px; min-height: 100vh; }
+
+    .page-header {
+      padding: 2rem 4vw 2.2rem;
+      border-bottom: 1px solid rgba(26,45,61,0.08);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; font-weight: 500;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--teal); }
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    .page-title em { font-style: normal; color: var(--teal); }
+    .page-desc {
+      font-size: 0.97rem; line-height: 1.75;
+      color: var(--muted); max-width: 68ch;
+      font-weight: 300;
+    }
+
+    .framework-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+      align-items: start;
+    }
+
+    .diagram-col {
+      position: relative;
+      padding: 1.6rem 1.6rem 3rem 4vw;
+    }
+    .diagram-col::after {
+      content: '';
+      position: absolute; right: 0; top: 3%; bottom: 3%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(26,45,61,0.12), transparent);
+    }
+    .diagram-hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 1.1rem;
+    }
+
+    .node {
+      font: inherit;
+      color: inherit;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s, background 0.2s;
+    }
+    .node:hover { border-color: var(--teal); }
+    .node:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .node[data-family="data"] { --accent: var(--teal); }
+    .node[data-family="ai"] { --accent: var(--navy); }
+    .node[data-family="shared"] { --accent: var(--teal-dark); }
+    .node[data-family="stack"] { --accent: var(--navy); }
+    .node[data-family="control"] { --accent: var(--teal); }
+    .diagram.has-selection .node:not(.active) { opacity: 0.72; }
+    .diagram.has-selection .node.active,
+    .diagram.has-selection .node:not(.active):hover { opacity: 1; }
+    .node.active[data-family="data"],
+    .node.active[data-family="shared"],
+    .node.active[data-family="control"] {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(26,158,138,0.18);
+      background: rgba(26,158,138,0.05);
+    }
+    .node.active[data-family="ai"],
+    .node.active[data-family="stack"] {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(26,45,61,0.14);
+      background: rgba(26,45,61,0.04);
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 158px minmax(0, 1fr);
+      gap: 0.7rem;
+      align-items: stretch;
+    }
+    .domain {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--accent);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      min-width: 0;
+    }
+    .domain.data { --accent: var(--teal); }
+    .domain.ai { --accent: var(--navy); }
+    .domain-head {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.4rem 0.45rem;
+      background: transparent;
+      border-color: transparent;
+    }
+    .domain-icon {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      border: 1px solid var(--line);
+      background: var(--cream);
+      flex-shrink: 0;
+    }
+    .domain-kicker {
+      display: block;
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .domain-title {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 1.28rem;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-top: 0.12rem;
+    }
+    .domain-lede {
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--muted);
+      font-weight: 300;
+      padding: 0 0.2rem;
+    }
+    .domain-split {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 0.4rem;
+      min-width: 0;
+    }
+    .col-list { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+    .states { position: relative; padding-left: 0.55rem; }
+    .states::before {
+      content: '';
+      position: absolute;
+      left: 0.15rem; top: 0.55rem; bottom: 0.55rem;
+      width: 1px;
+      background: var(--accent);
+      opacity: 0.45;
+    }
+    .row, .state {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.42rem 0.45rem;
+      font-size: 0.76rem;
+      line-height: 1.3;
+    }
+    .row-icon { display: flex; color: var(--accent); flex-shrink: 0; }
+    .row-icon svg, .layer-icon svg, .control-icon svg, .domain-icon svg { width: 16px; height: 16px; }
+    .protect {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      font-size: 0.76rem;
+      line-height: 1.45;
+      color: var(--navy);
+      background: rgba(26,45,61,0.03);
+      padding: 0.6rem 0.65rem;
+      border-left: 3px solid var(--accent);
+    }
+    .protect svg { flex-shrink: 0; margin-top: 1px; color: var(--accent); width: 16px; height: 16px; }
+
+    .shared {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.7rem 0.5rem;
+      border: 1px solid rgba(26,158,138,0.30);
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(26,158,138,0.025),
+          rgba(26,158,138,0.025) 6px,
+          rgba(26,158,138,0.07) 6px,
+          rgba(26,158,138,0.07) 7px
+        );
+    }
+    .shared-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.74rem;
+      text-align: center;
+      line-height: 1.2;
+      padding: 0.5rem 0.3rem;
+      background: rgba(255,255,255,0.86);
+    }
+    .shared .node:not(.shared-title) {
+      font-size: 0.74rem;
+      text-align: center;
+      padding: 0.48rem 0.3rem;
+      line-height: 1.3;
+      background: #fff;
+    }
+
+    .section-rule {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.7rem 0 0.9rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.92rem;
+      color: var(--navy);
+    }
+    .section-rule::before, .section-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(26,45,61,0.14);
+    }
+
+    .arch {
+      display: grid;
+      grid-template-columns: minmax(132px, 0.78fr) 26px minmax(0, 1.5fr) 26px minmax(148px, 0.9fr);
+      gap: 0.35rem;
+      align-items: stretch;
+    }
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      color: var(--teal);
+    }
+    .side {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 0.8rem 0.75rem;
+    }
+    .side-kicker {
+      font-size: 0.64rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .side-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.98rem;
+      letter-spacing: 0.03em;
+      line-height: 1.05;
+    }
+    .side-items { display: flex; flex-direction: column; gap: 0.22rem; margin-top: 0.4rem; }
+    .side-items span {
+      display: block;
+      font-size: 0.75rem;
+      line-height: 1.35;
+      color: #37485a;
+      padding-left: 0.7rem;
+      position: relative;
+    }
+    .side-items span::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.42rem;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .layers { display: flex; flex-direction: column; gap: 0.38rem; }
+    .layer {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      padding: 0.55rem 0.65rem;
+    }
+    .layer-icon { color: var(--accent); display: flex; margin-top: 1px; flex-shrink: 0; }
+    .layer-title {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.88rem;
+      line-height: 1.1;
+    }
+    .layer-sub {
+      display: block;
+      margin-top: 0.12rem;
+      font-size: 0.73rem;
+      line-height: 1.4;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+    .control {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.85rem 0.75rem 0.95rem;
+      min-height: 100%;
+    }
+    .control-icon { color: var(--teal); display: flex; }
+    .control-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.92rem;
+      line-height: 1.1;
+    }
+    .control-text {
+      font-size: 0.75rem;
+      line-height: 1.45;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .info-col {
+      padding: 1.8rem 4vw 3rem 1.5rem;
+      position: sticky;
+      top: 118px;
+      align-self: start;
+      max-height: calc(100vh - 92px);
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+    .info-panel { display: none; animation: fadeIn 0.3s ease; }
+    .info-panel.visible { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 2px;
+      color: #fff;
+      margin-bottom: 1.2rem;
+    }
+    .info-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.6rem, 2.4vw, 2.3rem);
+      text-transform: uppercase;
+      line-height: 0.98;
+      letter-spacing: -0.01em;
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    .info-lead {
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 1.4rem;
+    }
+    .info-items {
+      display: flex;
+      flex-direction: column;
+      border-left: 2px solid rgba(26,45,61,0.1);
+      padding-left: 1.1rem;
+      margin-bottom: 1.3rem;
+    }
+    .info-item {
+      padding: 0.55rem 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--navy);
+      border-bottom: 1px solid rgba(26,45,61,0.06);
+    }
+    .info-item:last-child { border-bottom: none; }
+    .info-item strong { font-weight: 500; display: block; margin-bottom: 0.12rem; }
+    .info-item span { font-weight: 300; color: var(--muted); font-size: 0.83rem; }
+    .info-obligation {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.75rem 1rem;
+      border-radius: 3px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 1.45;
+    }
+    .info-default { display: flex; flex-direction: column; align-items: flex-start; gap: 1.1rem; }
+    .info-default-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(26,45,61,0.35);
+    }
+    .pyramid-hint { display: flex; flex-direction: column; gap: 0.15rem; width: 100%; }
+    .pyramid-hint-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font: inherit;
+      font-size: 0.84rem;
+      color: rgba(26,45,61,0.55);
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 0.38rem 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      text-align: left;
+      width: 100%;
+    }
+    .pyramid-hint-item:hover { color: var(--navy); }
+    .pyramid-hint-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .key-hint { font-size: 0.75rem; color: var(--muted); font-weight: 300; }
+
+    .framework-source {
+      margin: 0;
+      padding: 1.25rem 4vw 0.25rem;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .info-panel { animation: none; }
+    }
+    @media (max-width: 1180px) {
+      .nav-tagline { display: none; }
+      .controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 980px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .framework-layout { grid-template-columns: 1fr; }
+      .diagram-col { padding: 1.1rem 1.25rem 2.5rem; }
+      .diagram-col::after { display: none; }
+      .info-col {
+        order: -1;
+        position: sticky;
+        top: 112px;
+        max-height: 42vh;
+        z-index: 30;
+        background: rgba(245,243,238,0.96);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(26,45,61,0.08);
+        padding: 0.9rem 1.25rem 1rem;
+      }
+      .page-header { padding: 2.2rem 1.25rem 1.6rem; }
+      .pair { grid-template-columns: 1fr; }
+      .arch { grid-template-columns: 1fr; }
+      .arch-arrow { transform: rotate(90deg); padding: 0.15rem 0; }
+    }
+    @media (max-width: 640px) {
+      .domain-split { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 1fr; }
+      .states { padding-left: 0; }
+      .states::before { display: none; }
+    }
+  </style>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "9dbd0b155b28463494355b6113e8efcd"}'></script>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">
+      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">Pedro Martins</a>
+      <span class="nav-tagline">{% if lang == 'en' %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% else %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% endif %}</span>
+    </div>
+    <ul class="nav-links">
+      {% if lang == 'en' %}
+      <li><a href="/en/framework" class="active">Framework</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="/publicacoes/ai-gov">Publications</a></li>
+      <li><a href="mailto:info@ai-gov.network">Contact</a></li>
+      <li><a href="/framework/agentes">PT</a></li>
+      {% else %}
+      <li><a href="/framework" class="active">Framework</a></li>
+      <li><a href="#">Serviços</a></li>
+      <li><a href="/observatorio">Observatório</a></li>
+      <li><a href="/publicacoes/ai-gov">Publicações</a></li>
+      <li><a href="mailto:info@ai-gov.network">Contacto</a></li>
+      <li><a href="/en/framework/agents">EN</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="page">
+    {% set fw_tab = 'agents' %}
+    {% set fw_lang = lang %}
+    {% include 'framework/_tabs.html' %}
+    <div class="page-header">
+      <div class="eyebrow">{{ T('Framework · Agentes de IA', 'Framework · AI Agents') }}</div>
+      <h1 class="page-title">{% if lang == 'en' %}The governance stack for reliable <em>AI agents</em>{% else %}Stack de governação de agentes <em>fiáveis</em>{% endif %}</h1>
+      <p class="page-desc">{{ T('Dois lados da mesma stack. A governação de dados controla o que entra no agente; a governação de IA controla o que sai. No meio ficam as preocupações partilhadas. Por baixo, cinco camadas e cinco controlos. Selecione um elemento para ver o que exige na prática.', 'Two sides of the same stack. Data governance controls what enters the agent; AI governance controls what comes out. Shared concerns sit between them. Underneath, five layers and five controls. Select an element to see what it demands in practice.') }}</p>
+    </div>
+
+    <div class="framework-layout">
+      <div class="diagram-col diagram" id="diagram">
+        <p class="diagram-hint">{{ T('Clique num elemento. As setas do teclado percorrem o diagrama.', 'Click an element. Arrow keys move through the diagram.') }}</p>
+
+        <div class="pair">
+          <article class="domain data">
+            <button type="button" class="node domain-head" data-node="data-gov" data-family="data" aria-pressed="false">
+              <span class="domain-icon">{{ ico('db') }}</span>
+              <span>
+                <span class="domain-kicker">{{ T('Controla os inputs', 'Controls the inputs') }}</span>
+                <span class="domain-title">{{ T('Governação de dados', 'Data Governance') }}</span>
+              </span>
+            </button>
+            <p class="domain-lede">{{ T('Garante que os inputs são exatos, seguros, rastreáveis e devidamente governados.', 'Ensures the inputs are accurate, secure, traceable, and appropriately governed.') }}</p>
+            <div class="domain-split">
+              <div class="col-list">
+                <button type="button" class="node row" data-node="quality" data-family="data" aria-pressed="false"><span class="row-icon">{{ ico('target') }}</span><span>{{ T('Exatidão e qualidade dos dados', 'Data accuracy and quality') }}</span></button>
+                <button type="button" class="node row" data-node="access" data-family="data" aria-pressed="false"><span class="row-icon">{{ ico('lock') }}</span><span>{{ T('Acesso e utilização seguros', 'Secure access and usage') }}</span></button>
+                <button type="button" class="node row" data-node="lineage" data-family="data" aria-pressed="false"><span class="row-icon">{{ ico('branch') }}</span><span>{{ T('Linhagem e rastreabilidade', 'Data lineage and traceability') }}</span></button>
+                <button type="button" class="node row" data-node="standards" data-family="data" aria-pressed="false"><span class="row-icon">{{ ico('doc') }}</span><span>{{ T('Políticas e normas', 'Policy and standards compliance') }}</span></button>
+              </div>
+              <div class="col-list states">
+                <button type="button" class="node state" data-node="raw" data-family="data" aria-pressed="false">{{ T('Dados em bruto', 'Raw data') }}</button>
+                <button type="button" class="node state" data-node="validated" data-family="data" aria-pressed="false">{{ T('Dados validados', 'Validated data') }}</button>
+                <button type="button" class="node state" data-node="trusted" data-family="data" aria-pressed="false">{{ T('Dados de confiança', 'Trusted data') }}</button>
+                <button type="button" class="node state" data-node="accessible" data-family="data" aria-pressed="false">{{ T('Dados acessíveis', 'Accessible data') }}</button>
+                <button type="button" class="node state" data-node="certified" data-family="data" aria-pressed="false">{{ T('Dados certificados', 'Certified data') }}</button>
+              </div>
+            </div>
+            <p class="protect">{{ ico('check') }}<span>{{ T('Protege a organização de dados de má qualidade, incompletos ou não autorizados.', 'Protects the organisation from poor-quality, incomplete, or unauthorised data entering the system.') }}</span></p>
+          </article>
+
+          <div class="shared">
+            <button type="button" class="node shared-title" data-node="shared" data-family="shared" aria-pressed="false">{{ T('Preocupações partilhadas', 'Shared concerns') }}</button>
+            <button type="button" class="node" data-node="bias" data-family="shared" aria-pressed="false">{{ T('Viés dos dados', 'Data bias') }}</button>
+            <button type="button" class="node" data-node="privacy" data-family="shared" aria-pressed="false">{{ T('Privacidade', 'Privacy') }}</button>
+            <button type="button" class="node" data-node="auditability" data-family="shared" aria-pressed="false">{{ T('Linhagem e auditabilidade', 'Lineage and auditability') }}</button>
+            <button type="button" class="node" data-node="risk" data-family="shared" aria-pressed="false">{{ T('Risco', 'Risk') }}</button>
+          </div>
+
+          <article class="domain ai">
+            <button type="button" class="node domain-head" data-node="ai-gov" data-family="ai" aria-pressed="false">
+              <span class="domain-icon">{{ ico('spark') }}</span>
+              <span>
+                <span class="domain-kicker">{{ T('Controla o output', 'Controls the output') }}</span>
+                <span class="domain-title">{{ T('Governação de IA', 'AI Governance') }}</span>
+              </span>
+            </button>
+            <p class="domain-lede">{{ T('Garante que os outputs são explicáveis, auditáveis, conformes e imputáveis.', 'Ensures the outputs are explainable, auditable, compliant, and accountable.') }}</p>
+            <div class="domain-split">
+              <div class="col-list">
+                <button type="button" class="node row" data-node="explain" data-family="ai" aria-pressed="false"><span class="row-icon">{{ ico('search') }}</span><span>{{ T('Explicabilidade e transparência', 'Explainability and transparency') }}</span></button>
+                <button type="button" class="node row" data-node="fairness" data-family="ai" aria-pressed="false"><span class="row-icon">{{ ico('shield') }}</span><span>{{ T('Equidade, viés e segurança', 'Fairness, bias and safety') }}</span></button>
+                <button type="button" class="node row" data-node="accountability" data-family="ai" aria-pressed="false"><span class="row-icon">{{ ico('check') }}</span><span>{{ T('Responsabilidade e auditabilidade', 'Accountability and auditability') }}</span></button>
+                <button type="button" class="node row" data-node="alignment" data-family="ai" aria-pressed="false"><span class="row-icon">{{ ico('doc') }}</span><span>{{ T('Conformidade e alinhamento', 'Compliance and policy alignment') }}</span></button>
+              </div>
+              <div class="col-list states">
+                <button type="button" class="node state" data-node="audit-log" data-family="ai" aria-pressed="false">{{ T('Registo de auditoria', 'Audit log') }}</button>
+                <button type="button" class="node state" data-node="policy-check" data-family="ai" aria-pressed="false">{{ T('Verificação de política', 'Policy check') }}</button>
+                <button type="button" class="node state" data-node="confidence" data-family="ai" aria-pressed="false">{{ T('Pontuação de confiança', 'Confidence score') }}</button>
+                <button type="button" class="node state" data-node="explanation" data-family="ai" aria-pressed="false">{{ T('Explicação', 'Explanation') }}</button>
+                <button type="button" class="node state" data-node="execute" data-family="ai" aria-pressed="false">{{ T('Executar, rejeitar ou reverter', 'Execute, reject or roll back') }}</button>
+              </div>
+            </div>
+            <p class="protect">{{ ico('check') }}<span>{{ T('Protege a organização de decisões opacas, viés e automação sem controlo.', 'Protects the organisation from opaque decisions, bias, and uncontrolled automation.') }}</span></p>
+          </article>
+        </div>
+
+        <h2 class="section-rule">{{ T('Arquitetura da stack de governação', 'The governance stack architecture') }}</h2>
+        <div class="arch">
+          <button type="button" class="node side" data-node="input-side" data-family="data" aria-pressed="false">
+            <span class="side-kicker">{{ T('Lado do input', 'Input side') }}</span>
+            <span class="side-title">{{ T('Governação de dados', 'Data Governance') }}</span>
+            <span class="side-items">
+              <span>{{ T('Fontes de dados', 'Data sources') }}</span>
+              <span>{{ T('Ingestão e integração', 'Ingestion and integration') }}</span>
+              <span>{{ T('Verificações de qualidade', 'Data quality checks') }}</span>
+              <span>{{ T('Metadados e linhagem', 'Metadata and lineage') }}</span>
+              <span>{{ T('Acesso e permissões', 'Access and permissions') }}</span>
+              <span>{{ T('Políticas e normas', 'Policies and standards') }}</span>
+            </span>
+          </button>
+          <div class="arch-arrow" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+          <div class="layers">
+            <button type="button" class="node layer" data-node="policy-layer" data-family="stack" aria-pressed="false">
+              <span class="layer-icon">{{ ico('star') }}</span>
+              <span>
+                <span class="layer-title">{{ T('Política e normas', 'Policy and standards') }}</span>
+                <span class="layer-sub">{{ T('Políticas da organização, normas e apetite de risco.', 'Enterprise policies, regulatory standards, risk appetite.') }}</span>
+              </span>
+            </button>
+            <button type="button" class="node layer" data-node="runtime-layer" data-family="stack" aria-pressed="false">
+              <span class="layer-icon">{{ ico('bolt') }}</span>
+              <span>
+                <span class="layer-title">{{ T('Governação em runtime', 'Runtime governance') }}</span>
+                <span class="layer-sub">{{ T('Aplicação em tempo real, escalamento, auditorias e controlo da ação.', 'Real-time enforcement, escalation, audits, and action control.') }}</span>
+              </span>
+            </button>
+            <button type="button" class="node layer" data-node="ai-layer" data-family="ai" aria-pressed="false">
+              <span class="layer-icon">{{ ico('spark') }}</span>
+              <span>
+                <span class="layer-title">{{ T('Camada de governação de IA', 'AI governance layer') }}</span>
+                <span class="layer-sub">{{ T('Guardrails do modelo, equidade, explicabilidade, segurança.', 'Model guardrails, fairness, explainability, safety.') }}</span>
+              </span>
+            </button>
+            <button type="button" class="node layer" data-node="data-layer" data-family="data" aria-pressed="false">
+              <span class="layer-icon">{{ ico('db') }}</span>
+              <span>
+                <span class="layer-title">{{ T('Camada de governação de dados', 'Data governance layer') }}</span>
+                <span class="layer-sub">{{ T('Qualidade, linhagem, classificação, controlo de acesso.', 'Data quality, lineage, classification, access control.') }}</span>
+              </span>
+            </button>
+            <button type="button" class="node layer" data-node="infra-layer" data-family="stack" aria-pressed="false">
+              <span class="layer-icon">{{ ico('lock') }}</span>
+              <span>
+                <span class="layer-title">{{ T('Infraestrutura e segurança', 'Infrastructure and security') }}</span>
+                <span class="layer-sub">{{ T('Identidade, rede, cifra, segredos, conformidade.', 'Identity, network, encryption, secrets, compliance.') }}</span>
+              </span>
+            </button>
+          </div>
+          <div class="arch-arrow" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+          <button type="button" class="node side" data-node="output-side" data-family="ai" aria-pressed="false">
+            <span class="side-kicker">{{ T('Lado do output', 'Output side') }}</span>
+            <span class="side-title">{{ T('Governação de IA', 'AI Governance') }}</span>
+            <span class="side-items">
+              <span>{{ T('Output do modelo', 'Model output') }}</span>
+              <span>{{ T('Explicação e racional', 'Explanation and rationale') }}</span>
+              <span>{{ T('Confiança e pontuações', 'Confidence and scores') }}</span>
+              <span>{{ T('Verificação de política', 'Policy and safety check') }}</span>
+              <span>{{ T('Rejeição ou reversão', 'Rejection or rollback') }}</span>
+              <span>{{ T('Logs e relatórios', 'Audit logs and reports') }}</span>
+              <span>{{ T('Feedback e melhoria', 'Feedback and improvement') }}</span>
+            </span>
+          </button>
+        </div>
+
+        <h2 class="section-rule">{{ T('Os 5 controlos que todo o agente precisa', 'The 5 controls every AI agent needs') }}</h2>
+        <div class="controls">
+          <button type="button" class="node control" data-node="pipelines" data-family="control" aria-pressed="false">
+            <span class="control-icon">{{ ico('db') }}</span>
+            <span class="control-title">{{ T('Pipelines de dados de confiança', 'Trusted data pipelines') }}</span>
+            <span class="control-text">{{ T('Linhagem, propriedade e ciclo de vida, da origem ao uso.', 'Clear lineage, ownership, and lifecycle management from source to use.') }}</span>
+          </button>
+          <button type="button" class="node control" data-node="access-ctl" data-family="control" aria-pressed="false">
+            <span class="control-icon">{{ ico('lock') }}</span>
+            <span class="control-title">{{ T('Controlos de acesso', 'Access controls') }}</span>
+            <span class="control-text">{{ T('Menor privilégio, alinhado à política de negócio e às normas.', 'Least privilege, aligned to business policy and regulatory requirements.') }}</span>
+          </button>
+          <button type="button" class="node control" data-node="guardrails" data-family="control" aria-pressed="false">
+            <span class="control-icon">{{ ico('shield') }}</span>
+            <span class="control-title">{{ T('Guardrails do modelo', 'Model guardrails') }}</span>
+            <span class="control-text">{{ T('Transparência, mitigação de viés, filtros e supervisão da decisão em cada passo.', 'Transparency, bias mitigation, content filters, and decision oversight at every step.') }}</span>
+          </button>
+          <button type="button" class="node control" data-node="escalation" data-family="control" aria-pressed="false">
+            <span class="control-icon">{{ ico('users') }}</span>
+            <span class="control-title">{{ T('Escalamento humano', 'Human escalation') }}</span>
+            <span class="control-text">{{ T('Pessoa no circuito para ações de alto impacto, sensíveis ou de exceção.', 'Human-in-the-loop for high-impact, sensitive, or exception-based actions.') }}</span>
+          </button>
+          <button type="button" class="node control" data-node="monitoring" data-family="control" aria-pressed="false">
+            <span class="control-icon">{{ ico('monitor') }}</span>
+            <span class="control-title">{{ T('Monitorização contínua', 'Continuous monitoring') }}</span>
+            <span class="control-text">{{ T('Integridade do input e comportamento do output em tempo real.', 'Monitor input integrity and output behaviour in real time.') }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="info-col" id="info" aria-live="polite">
+        <div class="info-default" id="panel-default">
+          <div class="info-default-title">{{ T('Selecione um elemento', 'Select an element') }}</div>
+          <div class="pyramid-hint">
+            <button type="button" class="pyramid-hint-item" data-node="data-gov"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Governação de dados — controla os inputs', 'Data governance — controls the inputs') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="shared"><span class="pyramid-hint-dot" style="background:#0d6e5f"></span>{{ T('Preocupações partilhadas', 'Shared concerns') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="ai-gov"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Governação de IA — controla o output', 'AI governance — controls the output') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="policy-layer"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Arquitetura em cinco camadas', 'Five-layer architecture') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="pipelines"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Cinco controlos do agente', 'Five controls every agent needs') }}</button>
+          </div>
+          <p class="key-hint">{{ T('Setas do teclado para percorrer.', 'Arrow keys to move through.') }}</p>
+        </div>
+
+        {{ panel("data-gov", "data", T("Governação de dados", "Data Governance"), T("Controla os inputs", "Controls the inputs"), T("É a condição de entrada do agente. O que ele pode saber tem de ser exato, seguro, rastreável e autorizado para aquele uso.", "This is the agent entry condition. What it is allowed to know has to be accurate, secure, traceable, and authorised for that use."), [(T("O que protege", "What it protects"), T("A organização, de dados de má qualidade, incompletos ou sem autorização para entrar no sistema.", "The organisation, from poor-quality, incomplete, or unauthorised data entering the system.")), (T("Relação com o output", "Link to the output"), T("Explicabilidade e auditoria do lado da IA só têm base se o input tiver origem, dono e permissão.", "Explainability and audit on the AI side only hold if the input has an origin, an owner, and a permission.")), (T("O que inclui", "What it includes"), T("Qualidade, acesso, linhagem e políticas, mais o percurso do dado: bruto, validado, de confiança, acessível, certificado.", "Quality, access, lineage, and policy, plus the path of the data: raw, validated, trusted, accessible, certified."))], T("Sem input governado, o controlo do output chega tarde.", "Without a governed input, output control arrives too late.")) }}
+
+        {{ panel("quality", "data", T("Governação de dados", "Data Governance"), T("Exatidão e qualidade dos dados", "Data accuracy and quality"), T("A qualidade mede se o dado está completo, atual, consistente e adequado ao uso que o agente lhe vai dar.", "Quality measures whether the data is complete, current, consistent, and fit for the use the agent will make of it."), [(T("O que se verifica", "What is checked"), T("Valores em falta, duplicados, formatos, deriva face à fonte e regras de negócio.", "Missing values, duplicates, formats, drift from the source, and business rules.")), (T("Efeito no agente", "Effect on the agent"), T("Um input incompleto segue para a decisão e para o registo como se fosse um facto.", "An incomplete input travels into the decision and the record as if it were a fact.")), (T("Evidência", "Evidence"), T("Regras de qualidade com resultado visível antes de o dado passar a validado.", "Quality rules with a visible result before the data is marked validated."))], T("Dado fraco resolve-se antes da camada do modelo.", "Weak data is dealt with before the model layer.")) }}
+
+        {{ panel("access", "data", T("Governação de dados", "Data Governance"), T("Acesso e utilização seguros", "Secure access and usage"), T("Quem chega ao dado, com que finalidade e com que privilégio. O agente usa a identidade de quem o invoca, e não devia herdar mais do que essa finalidade permite.", "Who reaches the data, for what purpose, and with what privilege. The agent acts with the identity that calls it, and should inherit only what that purpose allows."), [(T("Princípio", "Principle"), T("Menor privilégio, identidade distinta para o agente, finalidade explícita.", "Least privilege, a distinct identity for the agent, an explicit purpose.")), (T("Falha típica", "Typical failure"), T("Uma chave de serviço com leitura sobre repositórios que o caso de uso não precisa.", "A service key with read access to repositories the use case does not need.")), (T("Ligação ao output", "Link to the output"), T("Uma ação só é legítima se o dado que a sustentou estava acessível para aquela finalidade.", "An action is legitimate only if the data behind it was accessible for that purpose."))], T("Acesso a mais é um input fora de governação.", "Access beyond the purpose is an ungoverned input.")) }}
+
+        {{ panel("lineage", "data", T("Governação de dados", "Data Governance"), T("Linhagem e rastreabilidade", "Data lineage and traceability"), T("Linhagem é a história do dado: origem, transformações, dono e o momento em que foi aceite para este uso.", "Lineage is the history of the data: origin, transformations, owner, and the moment it was accepted for this use."), [(T("O que se reconstrói", "What must be reconstructable"), T("Fonte, transformações, versão e quem aprovou o uso.", "Source, transformations, version, and who approved the use.")), (T("Para o auditor", "For the auditor"), T("Sem linhagem, o registo do agente descreve uma decisão sem origem.", "Without lineage, the agent record describes a decision with no origin.")), (T("No stack", "In the stack"), T("É a ponte entre a governação de dados e a auditabilidade do output.", "It is the bridge between data governance and output auditability."))], T("O que não se rastreia não se explica depois.", "What cannot be traced cannot be explained later.")) }}
+
+        {{ panel("standards", "data", T("Governação de dados", "Data Governance"), T("Políticas e normas", "Policy and standards compliance"), T("Políticas internas, normas e apetite de risco aplicados ao dado antes de ele alimentar o agente.", "Internal policies, standards, and risk appetite applied to the data before it feeds the agent."), [(T("O que alinha", "What it aligns"), T("Classificação, retenção, bases de uso e exclusões: dados que o agente não pode ver.", "Classification, retention, grounds for use, and exclusions: data the agent must not see.")), (T("Onde vive", "Where it lives"), T("Na camada de política, e outra vez na verificação imediatamente antes da ação.", "In the policy layer, and again in the check immediately before the action.")), (T("Falha típica", "Typical failure"), T("Uma política escrita que não está ligada a uma regra que o runtime consiga executar.", "A written policy that is not tied to a rule the runtime can enforce."))], T("Política que não rejeita um dado não está a governar o input.", "A policy that cannot reject a data item is not governing the input.")) }}
+
+        {{ panel("raw", "data", T("Estado do dado", "Data state"), T("Dados em bruto", "Raw data"), T("Dado acabado de extrair. Ainda não passou por regras de qualidade nem tem um dono aceite para este uso.", "Data just extracted. It has not passed quality rules, and it has no accepted owner for this use."), [(T("Serve para", "Fit for"), T("Exploração e desenho do fluxo.", "Exploration and design of the flow.")), (T("Não serve para", "Unfit for"), T("Decidir ou agir em nome da organização.", "Deciding or acting on behalf of the organisation.")), (T("Passo seguinte", "Next step"), T("Validação.", "Validation."))], T("Dado em bruto fica fora do contexto de um agente em produção.", "Raw data stays out of the context of an agent in production.")) }}
+
+        {{ panel("validated", "data", T("Estado do dado", "Data state"), T("Dados validados", "Validated data"), T("O dado passou as regras de qualidade definidas para o caso de uso. A forma está certa. A confiança ainda não.", "The data has passed the quality rules set for the use case. The shape is right. Trust is not there yet."), [(T("O que já se sabe", "What is already known"), T("Completude, formato e uma consistência mínima.", "Completeness, format, and a minimum of consistency.")), (T("O que ainda falta", "What is still missing"), T("Dono, classificação e autorização de uso.", "Owner, classification, and authorisation to use it.")), (T("Passo seguinte", "Next step"), T("Dado de confiança.", "Trusted data."))], T("Validado é uma porta no percurso, não o estado final.", "Validated is a gate on the path, not the final state.")) }}
+
+        {{ panel("trusted", "data", T("Estado do dado", "Data state"), T("Dados de confiança", "Trusted data"), T("Origem conhecida, dono identificado e qualidade aceite. É o primeiro estado em que o dado pode sustentar uma decisão.", "Known origin, identified owner, accepted quality. This is the first state in which the data can support a decision."), [(T("Condições", "Conditions"), T("Linhagem mínima, responsável nomeado e qualidade dentro do limiar.", "Minimum lineage, a named owner, and quality inside the threshold.")), (T("Uso", "Use"), T("Treino, recuperação ou contexto do agente, conforme a classificação.", "Training, retrieval, or agent context, according to classification.")), (T("Passo seguinte", "Next step"), T("Torná-lo acessível só a quem tem a finalidade certa.", "Make it accessible only to the purpose that is allowed."))], T("A confiança no dado é atribuída, com dono e limiar.", "Trust in the data is assigned, with an owner and a threshold.")) }}
+
+        {{ panel("accessible", "data", T("Estado do dado", "Data state"), T("Dados acessíveis", "Accessible data"), T("O dado de confiança está disponível para a identidade certa, no momento certo, para a finalidade declarada.", "Trusted data is available to the right identity, at the right moment, for the declared purpose."), [(T("O que se controla", "What is controlled"), T("Permissão, finalidade e canal.", "Permission, purpose, and channel.")), (T("O que se recusa", "What is refused"), T("Acesso lateral por uma credencial partilhada do agente.", "Lateral access through a shared agent credential.")), (T("Passo seguinte", "Next step"), T("Certificação para o uso concreto.", "Certification for the specific use."))], T("Acessível quer dizer acessível a uma finalidade, não a toda a plataforma.", "Accessible means accessible to a purpose, not to the whole platform.")) }}
+
+        {{ panel("certified", "data", T("Estado do dado", "Data state"), T("Dados certificados", "Certified data"), T("O dado está apto a entrar numa decisão do agente, com evidência de qualidade, linhagem, permissão e alinhamento com a política.", "The data is fit to enter an agent decision, with evidence of quality, lineage, permission, and policy alignment."), [(T("Quem chega aqui", "What reaches this state"), T("É o estado que deve alimentar uma ação com efeito.", "This is the state that should feed an action with effect.")), (T("Certificação por uso", "Certification is per use"), T("O mesmo dado pode estar certificado para um fluxo e fora de outro.", "The same data can be certified for one flow and out of scope for another.")), (T("Validade", "Validity"), T("Quando a fonte ou a política mudam, a certificação cai e o percurso recomeça.", "When the source or the policy changes, certification drops and the path starts again."))], T("Sem certificação, o agente age sobre uma suposição.", "Without certification, the agent acts on an assumption.")) }}
+
+        {{ panel("shared", "shared", T("Partilhado", "Shared"), T("Preocupações partilhadas", "Shared concerns"), T("Viés, privacidade, linhagem e risco atravessam os dois lados. Entram no dado e saem na ação.", "Bias, privacy, lineage, and risk cross both sides. They enter in the data and leave in the action."), [(T("Só no dado", "On the data side alone"), T("O output continua opaco: a ação não mostra o que herdou.", "The output stays opaque: the action does not show what it inherited.")), (T("Só na IA", "On the AI side alone"), T("O input continua contaminado, e o controlo do output trabalha sobre uma base torta.", "The input stays contaminated, and output control works on a crooked base.")), (T("No stack", "In the stack"), T("Cada preocupação tem um controlo à entrada e outro à saída, ligados pelo mesmo rasto.", "Each concern has a control on the way in and another on the way out, tied by the same trace."))], T("Preocupação partilhada pede dois controlos, um de cada lado.", "A shared concern needs two controls, one on each side.")) }}
+
+        {{ panel("bias", "shared", T("Partilhado", "Shared"), T("Viés dos dados", "Data bias"), T("O viés entra pela amostra, pela omissão e pela variável que substitui outra. Sai na decisão do agente, muitas vezes com uma explicação que parece neutra.", "Bias enters through the sample, through omission, and through a variable that stands in for another. It leaves in the agent decision, often with an explanation that looks neutral."), [(T("À entrada", "On the way in"), T("De onde vem a distribuição, quem fica de fora, que atributo substitui outro.", "Where the distribution comes from, who is left out, which attribute stands in for another.")), (T("À saída", "On the way out"), T("A ação trata grupos de forma desigual, ou a explicação esconde a substituição.", "The action treats groups unequally, or the explanation hides the stand-in.")), (T("O controlo", "The control"), T("Medir no dado e voltar a medir na ação.", "Measure it in the data and measure it again in the action."))], T("O viés trata-se na fonte e outra vez na ação.", "Bias is handled at the source and again in the action.")) }}
+
+        {{ panel("privacy", "shared", T("Partilhado", "Shared"), T("Privacidade", "Privacy"), T("O agente tende a juntar contexto. Privacidade é o limite: minimização, finalidade, base de uso e retenção.", "The agent tends to gather context. Privacy is the limit: minimisation, purpose, grounds for use, and retention."), [(T("À entrada", "On the way in"), T("O contexto leva só o que a finalidade justifica.", "Context carries only what the purpose justifies.")), (T("À saída", "On the way out"), T("A explicação e o log não reproduzem dados que não deviam sair.", "The explanation and the log do not reproduce data that should not leave.")), (T("Falha típica", "Typical failure"), T("Um registo de auditoria que se torna uma segunda base de dados pessoais.", "An audit log that becomes a second store of personal data."))], T("O log também é um tratamento de dados.", "The log is a data processing activity too.")) }}
+
+        {{ panel("auditability", "shared", T("Partilhado", "Shared"), T("Linhagem e auditabilidade", "Lineage and auditability"), T("Auditabilidade partilhada é conseguir reconstruir as duas metades: que dado o agente viu e que ação tomou.", "Shared auditability means reconstructing both halves: which data the agent saw, and which action it took."), [(T("Lado do dado", "Data side"), T("Origem, versão, permissão.", "Origin, version, permission.")), (T("Lado da ação", "Action side"), T("Pedido, política aplicada, decisão, execução ou rejeição.", "Request, policy applied, decision, execution or rejection.")), (T("O encontro", "Where they meet"), T("Os dois identificadores encontram-se no mesmo rasto.", "The two identifiers meet in the same trace."))], T("Um log da ação sem o rasto do dado não chega para prestar contas.", "An action log without the data trace is not enough to account for the decision.")) }}
+
+        {{ panel("risk", "shared", T("Partilhado", "Shared"), T("Risco", "Risk"), T("O risco do agente é o risco do dado mais o risco da ação. O apetite definido na política tem de chegar ao runtime.", "The risk of the agent is the risk of the data plus the risk of the action. The appetite set in policy has to reach the runtime."), [(T("No dado", "In the data"), T("Sensibilidade, qualidade, autorização.", "Sensitivity, quality, authorisation.")), (T("Na ação", "In the action"), T("Impacto, reversibilidade, quem é afetado.", "Impact, reversibility, who is affected.")), (T("No runtime", "At runtime"), T("O que passa do limiar escala para uma pessoa.", "What crosses the threshold escalates to a person."))], T("Risco que não altera uma ação não está a ser gerido.", "Risk that does not change an action is not being managed.")) }}
+
+        {{ panel("ai-gov", "ai", T("Governação de IA", "AI Governance"), T("Controla o output", "Controls the output"), T("Controla o que o agente produz e o que lhe é permitido fazer. O output tem de ser explicável, auditável, conforme e imputável a alguém.", "It controls what the agent produces and what it is allowed to do. The output has to be explainable, auditable, compliant, and accountable to someone."), [(T("O que não substitui", "What it does not replace"), T("A governação de dados. Explica e trava uma decisão sobre inputs que já deviam estar governados.", "Data governance. It explains and stops a decision about inputs that should already be governed.")), (T("Como fecha o ciclo", "How it closes the loop"), T("Verificação de política, confiança, explicação, execução ou rejeição.", "Policy check, confidence, explanation, execution or rejection.")), (T("O que protege", "What it protects"), T("A organização, de decisões opacas, viés e automação sem travão.", "The organisation, from opaque decisions, bias, and automation with no brake."))], T("Output com controlo é uma decisão que se pode explicar e travar.", "A controlled output is a decision that can be explained and stopped.")) }}
+
+        {{ panel("explain", "ai", T("Governação de IA", "AI Governance"), T("Explicabilidade e transparência", "Explainability and transparency"), T("É a razão da decisão, legível por quem é afetado e por quem audita. Nasce do rasto, não de um texto escrito depois para justificar.", "It is the reason for the decision, readable by the person affected and by the auditor. It comes from the trace, not from a text written afterwards to justify it."), [(T("Para onde aponta", "What it points to"), T("Os inputs que contaram e a regra que travou ou deixou passar.", "The inputs that counted, and the rule that stopped or allowed the action.")), (T("Dois leitores", "Two readers"), T("O utilizador e o auditor não lêem o mesmo texto, mas partem do mesmo facto.", "The user and the auditor do not read the same text, but both start from the same fact.")), (T("Sem isto", "Without it"), T("A pontuação de confiança fica um número sem narrativa.", "The confidence score is a number with no narrative."))], T("Explicação que não se liga ao log não explica a decisão.", "An explanation that does not tie to the log does not explain the decision.")) }}
+
+        {{ panel("fairness", "ai", T("Governação de IA", "AI Governance"), T("Equidade, viés e segurança", "Fairness, bias and safety"), T("A ação não amplia um enviesamento do dado e não produz um resultado que a política considera inseguro.", "The action does not amplify a bias in the data, and it does not produce a result the policy treats as unsafe."), [(T("Equidade", "Fairness"), T("O efeito da ação por grupo, não só a média.", "The effect of the action by group, not only the average.")), (T("Segurança", "Safety"), T("O output não instrui, revela ou executa o que a política proíbe.", "The output does not instruct, reveal, or execute what policy forbids.")), (T("Quando corre", "When it runs"), T("Antes da execução, no mesmo passo da verificação de política.", "Before execution, in the same step as the policy check."))], T("O efeito mede-se antes de a ação acontecer.", "The effect is measured before the action happens.")) }}
+
+        {{ panel("accountability", "ai", T("Governação de IA", "AI Governance"), T("Responsabilidade e auditabilidade", "Accountability and auditability"), T("Alguém responde pela ação do agente. A auditabilidade é o rasto que torna essa resposta possível.", "Someone answers for the agent action. Auditability is the trace that makes that answer possible."), [(T("Três nomes", "Three names"), T("Dono do caso de uso, dono do modelo, dono do dado, definidos antes da produção.", "Use-case owner, model owner, data owner, named before production.")), (T("O rasto", "The trace"), T("Liga pedido, contexto, regra, decisão e execução.", "It ties request, context, rule, decision, and execution.")), (T("Escalamento", "Escalation"), T("Sem dono, o escalamento humano não tem para quem subir.", "Without an owner, human escalation has nowhere to go."))], T("Imputabilidade é um nome associado ao rasto.", "Accountability is a name attached to the trace.")) }}
+
+        {{ panel("alignment", "ai", T("Governação de IA", "AI Governance"), T("Conformidade e alinhamento", "Compliance and policy alignment"), T("A ação proposta é comparada com a política e com a norma antes de acontecer.", "The proposed action is compared with policy and with the standard before it happens."), [(T("Regra executável", "An enforceable rule"), T("Permitir, limitar, escalar ou rejeitar.", "Allow, constrain, escalate, or reject.")), (T("Fora disto", "Outside this"), T("Um documento que o runtime não consulta não alinha o agente.", "A document the runtime does not consult does not align the agent.")), (T("Apetite de risco", "Risk appetite"), T("Chega aqui como limiar: confiança mínima, impacto máximo, quando escala.", "It arrives here as a threshold: minimum confidence, maximum impact, when to escalate."))], T("O alinhamento corre no momento da ação.", "Alignment runs at the moment of the action.")) }}
+
+        {{ panel("audit-log", "ai", T("Resultado", "Output"), T("Registo de auditoria", "Audit log"), T("O registo do que foi pedido, que contexto foi usado, que regra correu, que decisão saiu e o que foi executado ou recusado.", "The record of what was asked, which context was used, which rule ran, which decision came out, and what was executed or refused."), [(T("Campos mínimos", "Minimum fields"), T("Tempo, identidade, caso de uso, fontes, resultado da política, ação.", "Time, identity, use case, sources, policy result, action.")), (T("Integridade", "Integrity"), T("O agente não é o único sítio onde o seu log existe.", "The agent is not the only place its own log exists.")), (T("Retenção", "Retention"), T("Alinhada com a privacidade. O log tem prazo e finalidade.", "Aligned with privacy. The log has a retention period and a purpose."))], T("Sem log íntegro, a explicação fica uma história.", "Without an intact log, the explanation is only a story.")) }}
+
+        {{ panel("policy-check", "ai", T("Resultado", "Output"), T("Verificação de política", "Policy check"), T("A porta imediatamente antes da ação. A proposta do agente passa ou falha regras declaradas.", "The gate immediately before the action. The agent proposal passes or fails declared rules."), [(T("Resultado explícito", "An explicit result"), T("Permitir, limitar, escalar ou rejeitar.", "Allow, constrain, escalate, or reject.")), (T("Rasto da regra", "Trace of the rule"), T("A regra cita a política que a originou, para o auditor seguir.", "The rule cites the policy it came from, so the auditor can follow it.")), (T("Falha fechada", "Fail closed"), T("Se a verificação não corre, a ação não corre.", "If the check does not run, the action does not run."))], T("Quando a verificação falta, a ação fica por acontecer.", "When the check is missing, the action does not happen.")) }}
+
+        {{ panel("confidence", "ai", T("Resultado", "Output"), T("Pontuação de confiança", "Confidence score"), T("O agente declara quão sustentada está a decisão. Abaixo do limiar, não age sozinho.", "The agent states how well supported the decision is. Below the threshold, it does not act alone."), [(T("De onde vem o limiar", "Where the threshold comes from"), T("Da camada de política, por tipo de ação.", "From the policy layer, by type of action.")), (T("O que a confiança baixa faz", "What low confidence does"), T("Desvia para escalamento ou rejeição. Não fica um aviso no ecrã.", "It diverts to escalation or rejection. It does not remain a notice on the screen.")), (T("Calibragem", "Calibration"), T("A pontuação usada aqui é a que foi calibrada para o caso de uso.", "The score used here is the one calibrated for the use case."))], T("Confiança sem limiar não muda a ação.", "Confidence without a threshold does not change the action.")) }}
+
+        {{ panel("explanation", "ai", T("Resultado", "Output"), T("Explicação", "Explanation"), T("O texto que diz por que a ação foi proposta, que dados pesaram e que regra decidiu o desfecho.", "The text that says why the action was proposed, which data weighed, and which rule decided the outcome."), [(T("Para o utilizador", "For the user"), T("O que aconteceu e o que pode contestar.", "What happened, and what they can challenge.")), (T("Para o auditor", "For the auditor"), T("A ponte para o log e para a versão da política.", "The bridge to the log and to the policy version.")), (T("Origem", "Origin"), T("Gerada a partir do rasto, no momento da decisão.", "Produced from the trace, at the moment of the decision."))], T("A explicação é um produto do controlo.", "The explanation is a product of the control.")) }}
+
+        {{ panel("execute", "ai", T("Resultado", "Output"), T("Executar, rejeitar ou reverter", "Execute, reject or roll back"), T("Há três saídas, e só uma é agir: executar, rejeitar, ou reverter se a ação já tinha começado.", "There are three exits, and only one of them is to act: execute, reject, or roll back if the action had already started."), [(T("Executar", "Execute"), T("Política satisfeita, confiança acima do limiar e dono definido.", "Policy satisfied, confidence above the threshold, and an owner named.")), (T("Rejeitar", "Reject"), T("Fica rasto do que foi pedido e da razão da recusa.", "The trace keeps what was asked and why it was refused.")), (T("Reverter", "Roll back"), T("Só existe se a ação foi desenhada para ser desfeita.", "It exists only if the action was designed to be undone."))], T("Ação irreversível passa primeiro por uma pessoa.", "An irreversible action goes through a person first.")) }}
+
+        {{ panel("input-side", "data", T("Arquitetura", "Architecture"), T("Lado do input", "Input side"), T("A governação de dados vista como fluxo: da fonte até à política que autoriza o uso.", "Data governance seen as a flow: from the source to the policy that authorises the use."), [(T("Origem", "Origin"), T("Fontes, ingestão e integração.", "Sources, ingestion, and integration.")), (T("Prova", "Proof"), T("Verificações de qualidade, metadados e linhagem.", "Quality checks, metadata, and lineage.")), (T("Autorização", "Authorisation"), T("Acesso, permissões, políticas e normas.", "Access, permissions, policies, and standards."))], T("Tudo o que o agente pode saber passa por este lado.", "Everything the agent is allowed to know passes through this side.")) }}
+
+        {{ panel("policy-layer", "stack", T("Arquitetura", "Architecture"), T("Política e normas", "Policy and standards"), T("A camada de topo. Define o que é aceitável antes de qualquer execução: políticas da organização, normas e apetite de risco.", "The top layer. It defines what is acceptable before any execution: organisation policies, standards, and risk appetite."), [(T("O que escreve", "What it writes"), T("Os limiares que o runtime aplica: que ações, que dados, que confiança, quando escala.", "The thresholds the runtime applies: which actions, which data, which confidence, when to escalate.")), (T("Ligação às regras", "Link to the rules"), T("As regras por baixo citam esta camada. A política não fica num documento à parte.", "The rules below cite this layer. Policy does not live in a separate document.")), (T("Mudança", "Change"), T("Mudou a política, muda o comportamento do agente, sem esperar por um modelo novo.", "When policy changes, the agent behaviour changes, without waiting for a new model."))], T("Política que o runtime não lê está fora desta camada.", "Policy the runtime does not read sits outside this layer.")) }}
+
+        {{ panel("runtime-layer", "stack", T("Arquitetura", "Architecture"), T("Governação em runtime", "Runtime governance"), T("Onde a governação acontece enquanto o agente trabalha: aplicação em tempo real, escalamento, auditoria e controlo da ação.", "Where governance happens while the agent is working: real-time enforcement, escalation, audit, and action control."), [(T("O que interceta", "What it intercepts"), T("A ação proposta. Corre a verificação e decide executar, escalar ou rejeitar.", "The proposed action. It runs the check and decides to execute, escalate, or reject.")), (T("O rasto", "The trace"), T("Produzido no momento da ação.", "Produced at the moment of the action.")), (T("Função no stack", "Role in the stack"), T("Torna as outras quatro camadas operativas.", "It makes the other four layers operational."))], T("Fora do runtime, a governação chega depois do efeito.", "Outside the runtime, governance arrives after the effect.")) }}
+
+        {{ panel("ai-layer", "ai", T("Arquitetura", "Architecture"), T("Camada de governação de IA", "AI governance layer"), T("Guardrails do modelo, equidade, explicabilidade e segurança aplicados ao que o agente propõe.", "Model guardrails, fairness, explainability, and safety applied to what the agent proposes."), [(T("Filtra", "It filters"), T("Conteúdo e ações que a política proíbe.", "Content and actions that policy forbids.")), (T("Exige", "It requires"), T("Explicação e confiança antes de a proposta seguir.", "Explanation and confidence before the proposal proceeds.")), (T("Devolve", "It sends back"), T("Um dado mau volta à camada de dados. O guardrail não o reescreve em silêncio.", "Bad data goes back to the data layer. The guardrail does not quietly rewrite it."))], T("O guardrail trava a proposta e deixa rasto da regra que disparou.", "The guardrail stops the proposal and records the rule that fired.")) }}
+
+        {{ panel("data-layer", "data", T("Arquitetura", "Architecture"), T("Camada de governação de dados", "Data governance layer"), T("Qualidade, linhagem, classificação e controlo de acesso no momento em que o contexto do agente é montado.", "Quality, lineage, classification, and access control at the moment the agent context is assembled."), [(T("O que entra no contexto", "What enters context"), T("Só o que está classificado e permitido para a finalidade.", "Only what is classified and permitted for the purpose.")), (T("Linhagem", "Lineage"), T("Segue com o dado, para o log a poder citar.", "It travels with the data, so the log can cite it.")), (T("Qualidade", "Quality"), T("Abaixo do limiar, a confiança desce ou o uso é recusado.", "Below the threshold, confidence drops or the use is refused."))], T("O contexto do agente é um produto governado.", "The agent context is a governed product.")) }}
+
+        {{ panel("infra-layer", "stack", T("Arquitetura", "Architecture"), T("Infraestrutura e segurança", "Infrastructure and security"), T("A base que as outras camadas assumem: identidade, rede, cifra, segredos e conformidade da plataforma.", "The base the other layers assume: identity, network, encryption, secrets, and platform compliance."), [(T("Identidade e segredos", "Identity and secrets"), T("Identidade própria para o agente. Segredos fora do prompt. Cifra em trânsito e em repouso.", "A distinct identity for the agent. Secrets outside the prompt. Encryption in transit and at rest.")), (T("Plataforma", "Platform"), T("Rede e permissões coerentes com o menor privilégio.", "Network and permissions consistent with least privilege.")), (T("Se falha", "If it fails"), T("Os controlos de cima assentam num acesso que já está aberto.", "The controls above sit on access that is already open."))], T("Um segredo no prompt atravessa todas as camadas.", "A secret in the prompt crosses every layer.")) }}
+
+        {{ panel("output-side", "ai", T("Arquitetura", "Architecture"), T("Lado do output", "Output side"), T("O que a organização recebe do agente, já passado pelos controlos. Inclui a recusa.", "What the organisation receives from the agent, after the controls. The refusal is part of it."), [(T("A decisão", "The decision"), T("Output, explicação e racional.", "Output, explanation, and rationale.")), (T("O controlo", "The control"), T("Confiança, verificação de política e de segurança.", "Confidence, policy check, and safety check.")), (T("O rasto e o ciclo", "The trace and the loop"), T("Rejeição ou reversão, logs, relatórios e feedback para corrigir o fluxo.", "Rejection or rollback, logs, reports, and feedback to correct the flow."))], T("Uma recusa também é um resultado governado.", "A refusal is a governed result too.")) }}
+
+        {{ panel("pipelines", "control", T("Controlo", "Control"), T("Pipelines de dados de confiança", "Trusted data pipelines"), T("Linhagem, propriedade e ciclo de vida do dado, da origem até ao uso pelo agente.", "Lineage, ownership, and lifecycle of the data, from the source to use by the agent."), [(T("Dono e definição", "Owner and definition"), T("Cada conjunto tem dono e uma definição de pronto a usar.", "Each set has an owner and a definition of ready to use.")), (T("Falha fechada", "Fail closed"), T("A pipeline pára quando a qualidade ou a linhagem quebram.", "The pipeline stops when quality or lineage breaks.")), (T("O que o agente consome", "What the agent consumes"), T("A saída da pipeline, não a fonte em bruto.", "The pipeline output, not the raw source."))], T("Atalho à pipeline é um input à margem da governação.", "A shortcut around the pipeline is an input outside governance.")) }}
+
+        {{ panel("access-ctl", "control", T("Controlo", "Control"), T("Controlos de acesso", "Access controls"), T("Menor privilégio, alinhado à política de negócio e ao que a norma exige para aquele dado.", "Least privilege, aligned to business policy and to what the standard requires for that data."), [(T("A permissão", "The permission"), T("É da finalidade, não do canal em que o agente corre.", "It belongs to the purpose, not to the channel the agent runs in.")), (T("Credenciais", "Credentials"), T("As do agente não se partilham entre casos de uso.", "Agent credentials are not shared across use cases.")), (T("Revisão", "Review"), T("Quem já não tem a finalidade sai do contexto.", "Whoever no longer has the purpose leaves the context."))], T("Privilégio a mais aparece no incidente, não no ecrã do output.", "Excess privilege shows up in the incident, not on the output screen.")) }}
+
+        {{ panel("guardrails", "control", T("Controlo", "Control"), T("Guardrails do modelo", "Model guardrails"), T("Transparência, mitigação de viés, filtros de conteúdo e supervisão da decisão em cada passo, não só na resposta final.", "Transparency, bias mitigation, content filters, and decision oversight at every step, not only in the final reply."), [(T("Conhecem a política", "They know the policy"), T("O guardrail aplica a camada de política, não uma lista solta.", "The guardrail applies the policy layer, not a loose list.")), (T("Dois objetos", "Two objects"), T("O que o agente diz e o que o agente faz.", "What the agent says and what the agent does.")), (T("Rasto", "Trace"), T("Cada disparo fica no log, com a regra que disparou.", "Each trigger stays in the log, with the rule that fired."))], T("Guardrail com rasto é um controlo. Sem rasto, é um filtro opaco.", "A guardrail with a trace is a control. Without a trace, it is an opaque filter.")) }}
+
+        {{ panel("escalation", "control", T("Controlo", "Control"), T("Escalamento humano", "Human escalation"), T("Uma pessoa no circuito quando a ação é de alto impacto, sensível, ou uma exceção à regra.", "A person in the loop when the action is high-impact, sensitive, or an exception to the rule."), [(T("O critério", "The criterion"), T("Está na política. Não fica ao juízo do modelo.", "It sits in policy. It is not left to the judgement of the model.")), (T("O que a pessoa vê", "What the person sees"), T("Contexto, regra e proposta. A decisão dela entra no log.", "Context, rule, and proposal. Their decision enters the log.")), (T("Exceção repetida", "A repeated exception"), T("É um sinal para corrigir a regra.", "It is a signal to correct the rule."))], T("Escalar com contexto mantém a governação na decisão humana.", "Escalating with context keeps governance in the human decision.")) }}
+
+        {{ panel("monitoring", "control", T("Controlo", "Control"), T("Monitorização contínua", "Continuous monitoring"), T("Integridade do input e comportamento do output, em tempo real, com um sítio para onde o desvio vai.", "Input integrity and output behaviour, in real time, with a place the deviation goes to."), [(T("No input", "On the input"), T("Qualidade, volume, deriva da fonte, falhas de permissão.", "Quality, volume, source drift, permission failures.")), (T("No output", "On the output"), T("Taxa de rejeição, escalamentos, confiança, ações irreversíveis.", "Rejection rate, escalations, confidence, irreversible actions.")), (T("O desvio", "The deviation"), T("Reabre a classificação do caso de uso.", "It reopens the classification of the use case."))], T("Monitorizar com limiar de ação muda o fluxo. Observar apenas, não.", "Monitoring with an action threshold changes the flow. Watching alone does not.")) }}
+      </div>
+    </div>
+
+    <p class="framework-source">{{ T('Estrutura adaptada do diagrama The Governance Stack Behind Reliable AI Agents. Leitura operacional para o desenho de agentes em produção.', 'Structure adapted from the diagram The Governance Stack Behind Reliable AI Agents. An operational reading for designing agents in production.') }}</p>
+  </div>
+
+  {% include '_legal_footer.html' %}
+
+  <script>
+    const ORDER = [
+      "data-gov", "quality", "access", "lineage", "standards",
+      "raw", "validated", "trusted", "accessible", "certified",
+      "shared", "bias", "privacy", "auditability", "risk",
+      "ai-gov", "explain", "fairness", "accountability", "alignment",
+      "audit-log", "policy-check", "confidence", "explanation", "execute",
+      "input-side", "policy-layer", "runtime-layer", "ai-layer", "data-layer", "infra-layer", "output-side",
+      "pipelines", "access-ctl", "guardrails", "escalation", "monitoring"
+    ];
+    let current = null;
+    let userPicked = false;
+
+    function selectNode(id, fromUser) {
+      if (fromUser) userPicked = true;
+      const panel = document.getElementById("panel-" + id);
+      if (!panel) return;
+      current = id;
+      document.getElementById("diagram").classList.add("has-selection");
+      document.querySelectorAll("[data-node]").forEach(function (el) {
+        const on = el.dataset.node === id;
+        el.classList.toggle("active", on);
+        if (el.classList.contains("node")) el.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      document.getElementById("panel-default").style.display = "none";
+      document.querySelectorAll(".info-panel").forEach(function (p) { p.classList.remove("visible"); });
+      void panel.offsetWidth;
+      panel.classList.add("visible");
+    }
+
+    document.getElementById("diagram").addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-node]");
+      if (!btn) return;
+      selectNode(btn.dataset.node, true);
+    });
+    document.getElementById("panel-default").addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-node]");
+      if (!btn) return;
+      selectNode(btn.dataset.node, true);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const ae = document.activeElement;
+      if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
+      const dir = (e.key === "ArrowDown" || e.key === "ArrowRight") ? 1 : -1;
+      let idx = ORDER.indexOf(current);
+      if (idx < 0) idx = dir === 1 ? -1 : 0;
+      const next = ORDER[(idx + dir + ORDER.length) % ORDER.length];
+      selectNode(next, true);
+      const el = document.querySelector('#diagram [data-node="' + next + '"]');
+      if (el) el.focus();
+      e.preventDefault();
+    });
+
+    setTimeout(function () { if (!userPicked) selectNode("data-gov", false); }, 400);
+  </script>
+</body>
+</html>

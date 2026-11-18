@@ -513,6 +513,16 @@ def framework_en():
     return render_template("conhecer_framework_en.html")
 
 
+@app.route("/framework/agentes")
+def framework_agentes():
+    return render_template("framework/agentes_governance.html", lang="pt")
+
+
+@app.route("/en/framework/agents")
+def framework_agents_en():
+    return render_template("framework/agentes_governance.html", lang="en")
+
+
 @app.route("/publicacoes")
 def publicacoes():
     cat = 'ai-gov'
@@ -840,6 +850,7 @@ def sitemap():
     static_paths = [
         "/", "/en",
         "/framework", "/en/framework",
+        "/framework/agentes", "/en/framework/agents",
         "/observatorio",
         "/publicacoes", "/en/publicacoes",
         "/book", "/en/book",

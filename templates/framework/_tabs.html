@@ -1,0 +1,38 @@
+<style>
+  nav.fw-tabs {
+    position: sticky;
+    top: 64px;
+    z-index: 90;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 1.75rem;
+    padding: 0 4vw;
+    background: rgba(245, 243, 238, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(26, 45, 61, 0.08);
+  }
+  .fw-tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.84rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 0.85rem 0 0.7rem;
+    border-bottom: 2px solid transparent;
+  }
+  .fw-tab:hover { color: var(--navy); }
+  .fw-tab.is-active {
+    color: var(--navy);
+    border-bottom-color: var(--teal);
+  }
+  @media (max-width: 820px) {
+    nav.fw-tabs { padding: 0 1.25rem; }
+  }
+</style>
+<nav class="fw-tabs" aria-label="{{ 'Frameworks' if fw_lang == 'en' else 'Frameworks' }}">
+  <a class="fw-tab{% if fw_tab == 'aiact' %} is-active{% endif %}" href="{{ '/en/framework' if fw_lang == 'en' else '/framework' }}" {% if fw_tab == 'aiact' %}aria-current="page"{% endif %}>AI Act</a>
+  <a class="fw-tab{% if fw_tab == 'agents' %} is-active{% endif %}" href="{{ '/en/framework/agents' if fw_lang == 'en' else '/framework/agentes' }}" {% if fw_tab == 'agents' %}aria-current="page"{% endif %}>{{ 'Agents' if fw_lang == 'en' else 'Agentes' }}</a>
+</nav>
