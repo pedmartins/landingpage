@@ -56,6 +56,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_favicon.html' %}
   {% include '_google_analytics.html' %}
   <title>{{ T('Stack de governação de agentes — AI Governance', 'AI agent governance stack — AI Governance') }}</title>
   <meta name="description" content="{{ T('A stack de governação por trás de agentes de IA fiáveis: governação de dados nos inputs, governação de IA nos outputs, cinco camadas e cinco controlos.', 'The governance stack behind reliable AI agents: data governance on the inputs, AI governance on the outputs, five layers and five controls.') }}">
@@ -633,7 +634,7 @@
 
   <nav class="nav-collapse-wide">
     <div class="nav-brand">
-      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">Pedro Martins</a>
+      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
       <span class="nav-tagline">{% if lang == 'en' %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% else %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% endif %}</span>
     </div>
     {% include '_nav_toggle.html' %}

@@ -1,14 +1,18 @@
 # app.py
 import logging
+import mimetypes
 import os
 import time
 import html as html_lib
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from flask import Flask, render_template, request, abort, jsonify, Response
+from flask import Flask, render_template, request, abort, jsonify, Response, send_from_directory
 from wc_catalog import get_catalog as get_training_catalog, is_configured as training_catalog_configured
 from wc_catalog import get_course as get_training_course
 from meta_webhooks import meta_webhooks_bp
+
+mimetypes.add_type("image/svg+xml", ".svg")
+mimetypes.add_type("image/x-icon", ".ico")
 
 app = Flask(__name__)
 # gunicorn não está em debug; sem isto o resumo dos webhooks (INFO) não aparece.
@@ -830,6 +834,16 @@ def get_default_og_image():
 @app.context_processor
 def inject_og_image():
     return {"og_image": get_default_og_image()}
+
+
+@app.route("/favicon.ico")
+def favicon():
+    """Browsers request /favicon.ico from the site root."""
+    return send_from_directory(
+        app.static_folder,
+        "favicon.ico",
+        mimetype="image/x-icon",
+    )
 
 
 @app.route("/robots.txt")
