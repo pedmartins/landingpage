@@ -1,4 +1,5 @@
 # app.py
+import logging
 import os
 import time
 import html as html_lib
@@ -7,8 +8,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Flask, render_template, request, abort, jsonify, Response
 from wc_catalog import get_catalog as get_training_catalog, is_configured as training_catalog_configured
 from wc_catalog import get_course as get_training_course
+from meta_webhooks import meta_webhooks_bp
 
 app = Flask(__name__)
+# gunicorn não está em debug; sem isto o resumo dos webhooks (INFO) não aparece.
+app.logger.setLevel(logging.INFO)
+# Callback da Meta. Sem sessão nem CSRF: a Meta autentica-se com o token
+# de verificação (GET) e com X-Hub-Signature-256 (POST).
+app.register_blueprint(meta_webhooks_bp)
 
 # URL base do WordPress — define a variável de ambiente WP_API_URL
 # Exemplo: https://o-teu-site.railway.app
@@ -857,6 +864,7 @@ def sitemap():
         "/lab",
         "/politica-de-privacidade", "/en/privacy-policy",
         "/termos", "/en/terms",
+        # /webhooks/meta fica de fora: é um callback, não uma página.
     ]
     urls = list(static_paths)
 
