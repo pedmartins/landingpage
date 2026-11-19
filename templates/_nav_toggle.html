@@ -3,6 +3,19 @@
 {% set _menu_en = (nav_lang == 'en') if nav_lang is defined else ((lang == 'en') if lang is defined else ((not pt) if pt is defined else false)) %}
 <div hidden class="nav-menu-assets">
 <style>
+  a.nav-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  a.nav-logo:hover { text-decoration: none; }
+  a.nav-logo .nav-mark {
+    display: block;
+    width: auto;
+    height: 17px;
+    flex: 0 0 auto;
+  }
   .nav-toggle {
     display: none;
     align-items: center;

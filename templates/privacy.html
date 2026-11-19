@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_favicon.html' %}
   {% include '_google_analytics.html' %}
   {% if lang == 'en' %}
   <title>Privacy Policy — Pedro Martins · AI Governance</title>
@@ -159,7 +160,7 @@
 
   <nav>
     <div class="nav-brand">
-      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">Pedro Martins</a>
+      <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
       <span class="nav-tagline">{% if lang == 'en' %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% else %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% endif %}</span>
     </div>
     {% include '_nav_toggle.html' %}

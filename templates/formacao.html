@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include '_favicon.html' %}
   {% include '_google_analytics.html' %}
   <title>{{ course.name }} — {{ 'Formação' if lang == 'pt' else 'Training' }} · Pedro Martins · AI Governance</title>
   <meta name="description" content="{{ course.short_description }}">
@@ -175,7 +176,7 @@
   {% set pt = lang == 'pt' %}
   <nav>
     <div class="nav-brand">
-      <a href="{{ '/' if pt else '/en' }}" class="nav-logo">Pedro Martins</a>
+      <a href="{{ '/' if pt else '/en' }}" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
       <span class="nav-tagline">{% if pt %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</span>
     </div>
     {% include '_nav_toggle.html' %}
