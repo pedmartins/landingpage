@@ -307,7 +307,7 @@
   <nav>
     <div class="nav-brand">
     <a href="{{ '/' if lang == 'pt' else '/en' }}" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
-    <span class="nav-tagline">{% if lang == "pt" %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% else %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% endif %}</span>
+    {% include '_header_cta.html' %}
     </div>
     {% include '_nav_toggle.html' %}
     <ul class="nav-links" id="site-nav-links">
@@ -323,6 +323,7 @@
     </ul>
   </nav>
 
+  {% include '_mission_strip.html' %}
 
   <!-- HERO IMAGE -->
   <div class="article-hero">

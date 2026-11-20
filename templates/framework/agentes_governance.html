@@ -635,7 +635,7 @@
   <nav class="nav-collapse-wide">
     <div class="nav-brand">
       <a href="{{ '/en' if lang == 'en' else '/' }}" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
-      <span class="nav-tagline">{% if lang == 'en' %}Turning <strong>AI</strong> into real, sustainable competitive advantage{% else %}Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis{% endif %}</span>
+      {% include '_header_cta.html' %}
     </div>
     {% include '_nav_toggle.html' %}
     <ul class="nav-links" id="site-nav-links">
@@ -655,6 +655,8 @@
       {% endif %}
     </ul>
   </nav>
+
+  {% include '_mission_strip.html' %}
 
   <div class="page">
     {% set fw_tab = 'agents' %}

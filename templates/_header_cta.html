@@ -1,0 +1,69 @@
+{# Chamada no cabeçalho, no lugar da frase de missão.
+   Idioma: nav_lang='en', ou lang / pt já presentes no template. #}
+{% set _cta_en = (nav_lang == 'en') if nav_lang is defined else ((lang == 'en') if lang is defined else ((not pt) if pt is defined else false)) %}
+<a class="header-cta" href="{{ '/en/book' if _cta_en else '/book' }}">
+  <span class="header-cta-dot" aria-hidden="true"></span>
+  <span class="header-cta-status">{% if _cta_en %}Available{% else %}Disponível{% endif %}</span>
+  <span class="header-cta-sep" aria-hidden="true">·</span>
+  <span class="header-cta-action">{% if _cta_en %}Talk to us{% else %}Fale connosco{% endif %}</span>
+</a>
+<style>
+  a.header-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: 1rem;
+    padding: 0.28rem 0.7rem 0.28rem 0.55rem;
+    border: 1px solid rgba(26, 45, 61, 0.14);
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.45);
+    color: var(--navy, #1a2d3d);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  a.header-cta:hover {
+    border-color: rgba(26, 158, 138, 0.55);
+    color: var(--teal-dark, #0d6e5f);
+    text-decoration: none;
+  }
+  a.header-cta:focus-visible {
+    outline: 2px solid var(--teal, #1a9e8a);
+    outline-offset: 2px;
+  }
+  .header-cta-dot {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #A9DD22;
+    box-shadow: 0 0 0 4px rgba(169, 221, 34, 0.28);
+    flex: 0 0 auto;
+  }
+  .header-cta-dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(169, 221, 34, 0.85);
+    animation: header-cta-pulse 2.4s ease-out infinite;
+  }
+  .header-cta-sep { color: var(--muted, #5a6a78); font-weight: 400; }
+  @keyframes header-cta-pulse {
+    0% { transform: scale(0.65); opacity: 0.75; }
+    100% { transform: scale(1.7); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .header-cta-dot::after { animation: none; opacity: 0.45; }
+  }
+  @media (max-width: 820px) {
+    a.header-cta { margin-left: 0.55rem; padding: 0.22rem 0.5rem 0.22rem 0.42rem; font-size: 0.78rem; }
+    .header-cta-status,
+    .header-cta-sep { display: none; }
+  }
+</style>

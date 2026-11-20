@@ -247,7 +247,7 @@
   <nav>
     <div class="nav-brand">
     <a href="/en" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
-    <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
+    {% with nav_lang='en' %}{% include '_header_cta.html' %}{% endwith %}
     </div>
     {% with nav_lang='en' %}{% include '_nav_toggle.html' %}{% endwith %}
     <ul class="nav-links" id="site-nav-links">
@@ -259,6 +259,7 @@
     </ul>
   </nav>
 
+  {% with nav_lang='en' %}{% include '_mission_strip.html' %}{% endwith %}
 
   <!-- PAGE HEADER -->
   <header class="page-header">
