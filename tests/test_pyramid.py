@@ -117,3 +117,11 @@ def test_layers_are_one_triangle_in_both_languages():
         # Decorative arrows and the active-layer shadow stay in place.
         assert html.count('id="indicator-arrow-') == 3
         assert "drop-shadow" in html
+
+        # Each layer is a button: the polygon and its labels are the hit target,
+        # and the info panels share one grid cell so clicks cannot resize the row.
+        assert html.count('class="pyramid-layer"') == 4
+        assert html.count('role="button"') == 4
+        assert html.count('tabindex="0"') == 4
+        assert "grid-area: 1 / 1" in html
+        assert "pointer-events: none" not in html

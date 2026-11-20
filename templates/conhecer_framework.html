@@ -154,18 +154,24 @@
     /* SVG pyramid layers */
     .pyramid-layer {
       cursor: pointer;
-      transition: filter 0.2s, transform 0.2s;
-      transform-origin: center;
-      transform-box: fill-box;
+      transition: filter 0.2s;
     }
     .pyramid-layer:hover {
-      filter: brightness(1.12);
+      filter: brightness(1.14);
     }
     .pyramid-layer.active {
       filter: brightness(1.18) drop-shadow(0 0 14px rgba(0,0,0,0.25));
     }
     .pyramid-layer:not(.active) {
       opacity: 0.72;
+    }
+    .pyramid-layer:focus {
+      outline: none;
+    }
+    .pyramid-layer:focus-visible polygon {
+      stroke: #1a2d3d;
+      stroke-width: 2.5;
+      stroke-linejoin: round;
     }
     .pyramid-layer-label {
       font-family: 'Barlow Condensed', sans-serif;
@@ -174,7 +180,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       fill: white;
-      pointer-events: none;
+      cursor: pointer;
       dominant-baseline: middle;
       text-anchor: middle;
     }
@@ -184,7 +190,7 @@
       font-size: 10px;
       letter-spacing: 0.04em;
       fill: rgba(255,255,255,0.8);
-      pointer-events: none;
+      cursor: pointer;
       dominant-baseline: middle;
       text-anchor: middle;
     }
@@ -192,17 +198,22 @@
     /* ── RIGHT: INFO PANEL ── */
     .info-col {
       padding: 3rem 4vw 3rem 3rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      display: grid;
+      align-content: center;
     }
-
-    .info-panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Every panel shares one grid cell, so the column is always as tall as
+       the tallest panel. Switching layers cannot resize the row or move the pyramid. */
+    .info-col > .info-default,
+    .info-col > .info-panel {
+      grid-area: 1 / 1;
+      visibility: hidden;
+    }
+    .info-col > .info-default.is-shown,
+    .info-col > .info-panel.visible {
+      visibility: visible;
     }
     .info-panel.visible {
-      display: block;
+      animation: fadeIn 0.3s ease;
     }
 
     @keyframes fadeIn {
@@ -412,7 +423,7 @@
       <div class="info-col">
 
         <!-- Default state -->
-        <div class="info-default" id="panel-default">
+        <div class="info-default is-shown" id="panel-default">
           <div class="info-default-title">Selecione uma camada</div>
           <div class="pyramid-hint">
             <div class="pyramid-hint-item" onclick="selectLayer('unacceptable')">
