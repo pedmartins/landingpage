@@ -395,47 +395,16 @@
       <!-- PYRAMID -->
       <div class="pyramid-col">
         <div class="pyramid-wrap">
-          <svg id="pyramid-svg" viewBox="-55 0 585 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
-
-            <!-- Layer 4: MINIMAL RISK (bottom, widest) -->
-            <g class="pyramid-layer" id="layer-minimal" onclick="selectLayer('minimal')">
-              <polygon points="10,385 490,385 428,295 72,295" fill="#1a9e8a"/>
-              <text class="pyramid-layer-label" x="250" y="336">Risco Mínimo</text>
-              <text class="pyramid-layer-sub" x="250" y="352">Livre Utilização</text>
-            </g>
-
-            <!-- Layer 3: LIMITED RISK -->
-            <g class="pyramid-layer" id="layer-limited" onclick="selectLayer('limited')">
-              <polygon points="72,292 428,292 366,208 134,208" fill="#5B3F9E"/>
-              <text class="pyramid-layer-label" x="250" y="247">Risco Limitado</text>
-              <text class="pyramid-layer-sub" x="250" y="263">Obrigações de Transparência</text>
-            </g>
-
-            <!-- Layer 2: HIGH RISK -->
-            <g class="pyramid-layer" id="layer-high" onclick="selectLayer('high')">
-              <polygon points="134,205 366,205 314,123 186,123" fill="#C4408C"/>
-              <text class="pyramid-layer-label" x="250" y="161">Risco Elevado</text>
-              <text class="pyramid-layer-sub" x="250" y="176">Conformidade Obrigatória</text>
-            </g>
-
-            <!-- Layer 1: UNACCEPTABLE RISK (top, smallest) -->
-            <g class="pyramid-layer" id="layer-unacceptable" onclick="selectLayer('unacceptable')">
-              <polygon points="186,120 314,120 250,38" fill="#E05555"/>
-              <text class="pyramid-layer-label" x="250" y="90">Inibido</text>
-              <text class="pyramid-layer-sub" x="250" y="106">Risco Inaceitável</text>
-            </g>
-
-            <!-- Divider lines -->
-            <line x1="72" y1="293" x2="428" y2="293" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
-            <line x1="134" y1="206" x2="366" y2="206" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
-            <line x1="186" y1="121" x2="314" y2="121" stroke="rgba(245,243,238,0.4)" stroke-width="1"/>
-
-            <!-- Selection indicator: 3 arrows on left side pointing toward pyramid -->
-            <polygon id="indicator-arrow-1" points="-22,330 -8,340 -22,350" fill="#1a9e8a" opacity="1"/>
-            <polygon id="indicator-arrow-2" points="-36,330 -22,340 -36,350" fill="#1a9e8a" opacity="0.55"/>
-            <polygon id="indicator-arrow-3" points="-50,330 -36,340 -50,350" fill="#1a9e8a" opacity="0.25"/>
-
-          </svg>
+          {% set pyr_aria = 'Pirâmide de classificação de risco do AI Act' %}
+          {% set pyr_min_label = 'Risco Mínimo' %}
+          {% set pyr_min_sub = 'Livre Utilização' %}
+          {% set pyr_lim_label = 'Risco Limitado' %}
+          {% set pyr_lim_sub = 'Obrigações de Transparência' %}
+          {% set pyr_high_label = 'Risco Elevado' %}
+          {% set pyr_high_sub = 'Conformidade Obrigatória' %}
+          {% set pyr_un_label = 'Inibido' %}
+          {% set pyr_un_sub = 'Risco Inaceitável' %}
+          {% include 'framework/_aiact_pyramid.html' %}
         </div>
       </div>
 
@@ -577,63 +546,6 @@
   </div>
 
   {% include '_legal_footer.html' %}
-
-  <script>
-    const layers = ['minimal', 'limited', 'high', 'unacceptable'];
-
-    // Vertical center of each layer in the SVG coordinate space
-    const layerCenters = {
-      minimal:      340,
-      limited:      250,
-      high:         164,
-      unacceptable:  79
-    };
-
-const layerColors = {
-      minimal:      '#1a9e8a',
-      limited:      '#5B3F9E',
-      high:         '#C4408C',
-      unacceptable: '#E05555'
-    };
-
-    function moveIndicator(id) {
-      const cy = layerCenters[id];
-      const color = layerColors[id];
-      const h = 10; // half-height of arrow
-
-      // 3 arrows pointing right, cascading left with decreasing opacity
-      document.getElementById('indicator-arrow-1').setAttribute('points', `-22,${cy-h} -8,${cy} -22,${cy+h}`);
-      document.getElementById('indicator-arrow-1').setAttribute('fill', color);
-      document.getElementById('indicator-arrow-2').setAttribute('points', `-36,${cy-h} -22,${cy} -36,${cy+h}`);
-      document.getElementById('indicator-arrow-2').setAttribute('fill', color);
-      document.getElementById('indicator-arrow-3').setAttribute('points', `-50,${cy-h} -36,${cy} -50,${cy+h}`);
-      document.getElementById('indicator-arrow-3').setAttribute('fill', color);
-    }
-
-    function selectLayer(id) {
-      layers.forEach(l => {
-        document.getElementById('layer-' + l).classList.remove('active');
-        document.getElementById('panel-' + l).classList.remove('visible');
-      });
-
-      document.getElementById('layer-' + id).classList.add('active');
-      document.getElementById('panel-default').style.display = 'none';
-      document.getElementById('panel-' + id).classList.add('visible');
-      moveIndicator(id);
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      const order = ['minimal', 'limited', 'high', 'unacceptable'];
-      const active = layers.find(l => document.getElementById('layer-' + l).classList.contains('active'));
-      const idx = order.indexOf(active);
-      if (e.key === 'ArrowUp' && idx < order.length - 1) selectLayer(order[idx + 1]);
-      if (e.key === 'ArrowDown' && idx > 0) selectLayer(order[idx - 1]);
-    });
-
-    // Activate minimal by default after a short delay
-    setTimeout(() => selectLayer('minimal'), 400);
-  </script>
 
 </body>
 </html>
