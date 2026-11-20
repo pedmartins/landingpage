@@ -31,7 +31,6 @@ PT = {
         "Inferência de emoções no trabalho e na educação",
         "modelos de IA de finalidade geral (GPAI)",
         "Regulamento (UE) 2024/1689 (Artificial Intelligence Act), em vigor desde agosto de 2024, alterado pelo Regulamento (UE) 2026/1744",
-        "https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act",
     ],
 }
 EN = {
@@ -68,6 +67,8 @@ ABSENT = {
         "entidades governamentais",
         "vigilância biométrica em tempo real em espaços públicos",
         "Risco Inaceitável",
+        "Fontes:",
+        "whitecase.com",
     ],
     "/en/framework": [
         "emotion recognition systems, deepfakes",
@@ -75,6 +76,8 @@ ABSENT = {
         "Social scoring by government entities",
         "real-time biometric surveillance in public spaces",
         "Unacceptable Risk",
+        "Sources:",
+        "whitecase.com",
     ],
 }
 
