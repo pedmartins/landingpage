@@ -82,3 +82,8 @@ def test_article_and_training_headers_follow_the_page_language():
     assert "Agendar sessão" in pt_article and "Talk to us" in en_article
     assert "#A9DD22" in pt_course
     assert "prefers-reduced-motion" in pt_course
+    assert "font-size: 0.82rem" in pt_course
+    assert "letter-spacing: 0.06em" in pt_course
+    assert "font-weight: 400" in pt_course
+    assert "color: var(--muted, #5a6a78)" in pt_course
+    assert "color: var(--teal, #1a9e8a)" in pt_course
