@@ -1,0 +1,41 @@
+{# Frase de missão, por baixo do cabeçalho fixo.
+   mission_html pode substituir o texto por omissão da página. #}
+{% set _m_en = (nav_lang == 'en') if nav_lang is defined else ((lang == 'en') if lang is defined else ((not pt) if pt is defined else false)) %}
+{% if mission_html is defined %}
+  {% set _m = mission_html %}
+{% elif _m_en %}
+  {% set _m = 'Turning <strong>AI</strong> into real, sustainable competitive advantage' %}
+{% else %}
+  {% set _m = 'Converte a <strong>AI</strong> em vantagens competitivas reais e sustentáveis' %}
+{% endif %}
+<p class="page-mission">{{ _m|safe }}</p>
+<style>
+  .page-mission {
+    margin: 64px 0 0;
+    padding: 0.8rem 4vw 0.85rem;
+    border-bottom: 1px solid rgba(26, 45, 61, 0.08);
+    background: var(--cream, #f5f3ee);
+    color: var(--muted, #5a6a78);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+  }
+  .page-mission strong { font-weight: 600; color: var(--navy, #1a2d3d); }
+  .page-mission + .hero { padding-top: 0; }
+  .page-mission + .page { padding-top: 1.15rem; }
+  .page-mission + main.agendar { padding-top: 2.6rem; }
+  .page-mission + .article-hero { padding-top: 0; }
+  .page-mission + main.policy { padding-top: 2.6rem; }
+  .page-mission + header.page-header { padding-top: 2.4rem; }
+  .page-mission + main.course-wrapper { padding-top: 2.4rem; }
+  .page-mission + .observatory-frame { margin-top: 0; height: calc(100vh - 7.6rem); }
+  @media (max-width: 820px) {
+    .page-mission { margin-top: 5.1rem; padding: 0.7rem 1.5rem 0.75rem; font-size: 0.9rem; }
+    .page-mission + main.agendar,
+    .page-mission + main.policy,
+    .page-mission + header.page-header,
+    .page-mission + main.course-wrapper { padding-top: 1.8rem; }
+  }
+</style>

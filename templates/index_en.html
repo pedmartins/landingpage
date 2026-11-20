@@ -585,7 +585,7 @@
   <nav>
     <div class="nav-brand">
     <a href="https://www.linkedin.com/in/pedro-alves-martins-431336/" class="nav-logo">{% include '_nav_mark.html' %}Pedro Martins</a>
-    <span class="nav-tagline">Turning <strong>AI</strong> into real, sustainable competitive advantage</span>
+    {% with nav_lang='en' %}{% include '_header_cta.html' %}{% endwith %}
     </div>
     {% with nav_lang='en' %}{% include '_nav_toggle.html' %}{% endwith %}
     <ul class="nav-links" id="site-nav-links">
@@ -599,6 +599,7 @@
     </ul>
   </nav>
 
+  {% with nav_lang='en' %}{% include '_mission_strip.html' %}{% endwith %}
 
   <!-- HERO -->
   <section class="hero">
@@ -614,10 +615,6 @@
       <p class="hero-desc">
 	From strategic adoption to operational excellence — here we shape frameworks and deliver guidance for professionals driving AI adoption across their organisations.
       </p>
-
-      <div class="cta-row">
-        <a href="/en/book" class="btn btn-primary">Book a Call</a>
-      </div>
 
       <a href="/lab" class="lab-cta">
         <svg class="lab-cta-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
