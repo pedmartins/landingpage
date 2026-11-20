@@ -356,6 +356,7 @@
       color: var(--navy);
       font-weight: 400;
     }
+    .info-note strong { font-weight: 600; }
     .date-badge {
       display: inline-block;
       margin: 0 0.15rem;
@@ -499,7 +500,7 @@
           {% set pyr_high_label = 'Risco Elevado' %}
           {% set pyr_high_sub = 'Conformidade Obrigatória' %}
           {% set pyr_un_label = 'Inibido' %}
-          {% set pyr_un_sub = 'Risco Inaceitável' %}
+          {% set pyr_un_sub = 'Práticas Proibidas' %}
           {% include 'framework/_aiact_pyramid.html' %}
         </div>
         <aside class="gpai-note">
@@ -517,7 +518,7 @@
           <div class="pyramid-hint">
             <div class="pyramid-hint-item" onclick="selectLayer('unacceptable')">
               <div class="pyramid-hint-dot" style="background:#E05555"></div>
-              Risco Inaceitável — Proibido
+              Práticas Proibidas — Proibido
             </div>
             <div class="pyramid-hint-item" onclick="selectLayer('high')">
               <div class="pyramid-hint-dot" style="background:#C4408C"></div>
@@ -541,7 +542,7 @@
           <p class="info-lead">
             A grande maioria dos sistemas de IA em uso hoje enquadra-se nesta categoria. Não há obrigações de conformidade próprias deste nível — as organizações podem desenvolvê-los e implementá-los ao abrigo da legislação existente.
           </p>
-          <p class="info-note">Mesmo sem obrigações específicas, aplica-se o dever de literacia em IA (art. 4.º). Depois do Omnibus, é um dever de adotar medidas, não de garantir um resultado. Continua a ser obrigatório.</p>
+          <p class="info-note">Mesmo sem obrigações específicas, aplica-se o dever de literacia em IA (art. 4.º). Depois do Omnibus, <strong>o dever consiste na adoção de medidas mas ainda não, nesta fase transitória, a obrigação de demonstrar evidências dos resultados.</strong> Continua a ser obrigatório.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Exemplos</strong>
@@ -621,7 +622,7 @@
 
         <!-- UNACCEPTABLE RISK panel -->
         <div class="info-panel" id="panel-unacceptable">
-          <div class="info-badge" style="background:var(--c-unacceptable)">Risco Inaceitável</div>
+          <div class="info-badge" style="background:var(--c-unacceptable)">Práticas Proibidas</div>
           <h2 class="info-title">Proibido<br>na União Europeia</h2>
           <p class="info-lead">
             Estes sistemas são considerados uma ameaça inaceitável aos direitos fundamentais e aos valores da União Europeia. A sua utilização é estritamente proibida, com coimas que podem atingir 35 milhões de euros ou 7% do volume de negócios global.

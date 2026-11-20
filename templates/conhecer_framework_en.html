@@ -356,6 +356,7 @@
       color: var(--navy);
       font-weight: 400;
     }
+    .info-note strong { font-weight: 600; }
     .date-badge {
       display: inline-block;
       margin: 0 0.15rem;
@@ -495,7 +496,7 @@
           {% set pyr_high_label = 'High Risk' %}
           {% set pyr_high_sub = 'Mandatory Compliance' %}
           {% set pyr_un_label = 'Prohibited' %}
-          {% set pyr_un_sub = 'Unacceptable Risk' %}
+          {% set pyr_un_sub = 'Prohibited Practices' %}
           {% include 'framework/_aiact_pyramid.html' %}
         </div>
         <aside class="gpai-note">
@@ -513,7 +514,7 @@
           <div class="pyramid-hint">
             <div class="pyramid-hint-item" onclick="selectLayer('unacceptable')">
               <div class="pyramid-hint-dot" style="background:#E05555"></div>
-              Unacceptable Risk — Prohibited
+              Prohibited Practices — Prohibited
             </div>
             <div class="pyramid-hint-item" onclick="selectLayer('high')">
               <div class="pyramid-hint-dot" style="background:#C4408C"></div>
@@ -537,7 +538,7 @@
           <p class="info-lead">
             The vast majority of AI systems in use today fall into this category. There are no conformity obligations specific to this level — organisations may develop and deploy them under existing legislation.
           </p>
-          <p class="info-note">Even without specific obligations, the AI literacy duty applies (Article 4). After the Omnibus, it is a duty to adopt measures, not to guarantee an outcome. It remains mandatory.</p>
+          <p class="info-note">Even without specific obligations, the AI literacy duty applies (Art. 4). After the Omnibus, <strong>the duty consists of adopting measures but not yet, in this transitional phase, an obligation to demonstrate evidence of results.</strong> It remains mandatory.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Examples</strong>
@@ -617,7 +618,7 @@
 
         <!-- UNACCEPTABLE RISK panel -->
         <div class="info-panel" id="panel-unacceptable">
-          <div class="info-badge" style="background:var(--c-unacceptable)">Unacceptable Risk</div>
+          <div class="info-badge" style="background:var(--c-unacceptable)">Prohibited Practices</div>
           <h2 class="info-title">Prohibited<br>in the European Union</h2>
           <p class="info-lead">
             These systems are deemed an unacceptable threat to fundamental rights and European Union values. Their use is strictly forbidden, with fines of up to €35 million or 7% of global annual turnover.

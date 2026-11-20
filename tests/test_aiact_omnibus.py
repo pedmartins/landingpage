@@ -11,6 +11,8 @@ PT = {
         "Atualização — Omnibus Digital sobre IA.",
         "Regulamento (UE) 2026/1744, em vigor desde 27 de julho de 2026",
         "Mesmo sem obrigações específicas, aplica-se o dever de literacia em IA (art. 4.º).",
+        "o dever consiste na adoção de medidas mas ainda não, nesta fase transitória, a obrigação de demonstrar evidências dos resultados.",
+        "Práticas Proibidas",
         "Aplicável desde 2 de agosto de 2026 (o Omnibus não adiou estas obrigações).",
         "2 de dezembro de 2026",
         "Calendário revisto (Omnibus): sistemas do Anexo III",
@@ -36,7 +38,9 @@ EN = {
     "/en/framework": [
         "Update — Digital Omnibus on AI.",
         "Regulation (EU) 2026/1744, in force since 27 July 2026",
-        "the AI literacy duty applies (Article 4)",
+        "the AI literacy duty applies (Art. 4)",
+        "the duty consists of adopting measures but not yet, in this transitional phase, an obligation to demonstrate evidence of results.",
+        "Prohibited Practices",
         "the Omnibus did not postpone these obligations",
         "2 December 2026",
         "Annex III systems, including credit, insurance, employment and education, from 2 December 2027",
@@ -63,12 +67,14 @@ ABSENT = {
         "sistemas de reconhecimento de emoções, deepfakes",
         "entidades governamentais",
         "vigilância biométrica em tempo real em espaços públicos",
+        "Risco Inaceitável",
     ],
     "/en/framework": [
         "emotion recognition systems, deepfakes",
         "recommendation systems that materially influence",
         "Social scoring by government entities",
         "real-time biometric surveillance in public spaces",
+        "Unacceptable Risk",
     ],
 }
 
