@@ -2,27 +2,27 @@
    Apex (250, 30), base y=390 from x=10 to x=490.
    Side edges share the slope dx/dy = ∓2/3, so each layer's top
    is the same width the layer above would have, inset by a uniform 6px gap. #}
-<svg id="pyramid-svg" viewBox="-55 0 585 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;" role="img" aria-label="{{ pyr_aria }}">
+<svg id="pyramid-svg" viewBox="-55 0 585 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;" role="img" aria-label="{{ pyr_aria }}">
 
-  <g class="pyramid-layer" id="layer-minimal" data-cy="348" onclick="selectLayer('minimal')">
+  <g class="pyramid-layer" id="layer-minimal" data-layer="minimal" data-cy="348" role="button" tabindex="0" aria-pressed="false" aria-label="{{ pyr_min_label }}. {{ pyr_min_sub }}">
     <polygon points="10,390 490,390 434,306 66,306" fill="#1a9e8a"/>
     <text class="pyramid-layer-label" x="250" y="340">{{ pyr_min_label }}</text>
     <text class="pyramid-layer-sub" x="250" y="356">{{ pyr_min_sub }}</text>
   </g>
 
-  <g class="pyramid-layer" id="layer-limited" data-cy="260" onclick="selectLayer('limited')">
+  <g class="pyramid-layer" id="layer-limited" data-layer="limited" data-cy="260" role="button" tabindex="0" aria-pressed="false" aria-label="{{ pyr_lim_label }}. {{ pyr_lim_sub }}">
     <polygon points="70,300 430,300 376,219 124,219" fill="#5B3F9E"/>
     <text class="pyramid-layer-label" x="250" y="252">{{ pyr_lim_label }}</text>
     <text class="pyramid-layer-sub" x="250" y="268">{{ pyr_lim_sub }}</text>
   </g>
 
-  <g class="pyramid-layer" id="layer-high" data-cy="173" onclick="selectLayer('high')">
+  <g class="pyramid-layer" id="layer-high" data-layer="high" data-cy="173" role="button" tabindex="0" aria-pressed="false" aria-label="{{ pyr_high_label }}. {{ pyr_high_sub }}">
     <polygon points="128,213 372,213 318,132 182,132" fill="#C4408C"/>
     <text class="pyramid-layer-label" x="250" y="165">{{ pyr_high_label }}</text>
     <text class="pyramid-layer-sub" x="250" y="181">{{ pyr_high_sub }}</text>
   </g>
 
-  <g class="pyramid-layer" id="layer-unacceptable" data-cy="110" onclick="selectLayer('unacceptable')">
+  <g class="pyramid-layer" id="layer-unacceptable" data-layer="unacceptable" data-cy="110" role="button" tabindex="0" aria-pressed="false" aria-label="{{ pyr_un_label }}. {{ pyr_un_sub }}">
     <polygon points="186,126 314,126 250,30" fill="#E05555"/>
     <text class="pyramid-layer-label" x="250" y="102">{{ pyr_un_label }}</text>
     <text class="pyramid-layer-sub" x="250" y="118">{{ pyr_un_sub }}</text>
@@ -59,22 +59,47 @@
 
   function selectLayer(id) {
     layers.forEach(l => {
-      document.getElementById('layer-' + l).classList.remove('active');
+      const layer = document.getElementById('layer-' + l);
+      layer.classList.remove('active');
+      layer.setAttribute('aria-pressed', 'false');
       document.getElementById('panel-' + l).classList.remove('visible');
     });
 
-    document.getElementById('layer-' + id).classList.add('active');
-    document.getElementById('panel-default').style.display = 'none';
+    const selected = document.getElementById('layer-' + id);
+    selected.classList.add('active');
+    selected.setAttribute('aria-pressed', 'true');
+    document.getElementById('panel-default').classList.remove('is-shown');
     document.getElementById('panel-' + id).classList.add('visible');
     moveIndicator(id);
   }
 
-  document.addEventListener('keydown', (e) => {
+  document.querySelectorAll('.pyramid-layer').forEach(el => {
+    // Keep the browser from scrolling the focused layer into view on click.
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      el.focus({ preventScroll: true });
+    });
+    el.addEventListener('click', () => selectLayer(el.dataset.layer));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectLayer(el.dataset.layer);
+      }
+    });
+  });
+
+  document.getElementById('pyramid-svg').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
     const order = ['minimal', 'limited', 'high', 'unacceptable'];
     const active = layers.find(l => document.getElementById('layer-' + l).classList.contains('active'));
     const idx = order.indexOf(active);
-    if (e.key === 'ArrowUp' && idx < order.length - 1) selectLayer(order[idx + 1]);
-    if (e.key === 'ArrowDown' && idx > 0) selectLayer(order[idx - 1]);
+    let next = null;
+    if (e.key === 'ArrowUp' && idx < order.length - 1) next = order[idx + 1];
+    if (e.key === 'ArrowDown' && idx > 0) next = order[idx - 1];
+    if (!next) return;
+    e.preventDefault();
+    selectLayer(next);
+    document.getElementById('layer-' + next).focus({ preventScroll: true });
   });
 
   setTimeout(() => selectLayer('minimal'), 400);
