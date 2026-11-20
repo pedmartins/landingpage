@@ -16,7 +16,7 @@ def test_header_cta_replaces_the_booking_button_and_keeps_the_mission():
     client = site.app.test_client()
     home = client.get("/").get_data(as_text=True)
     assert 'class="header-cta" href="/book"' in home
-    assert "Disponível" in home and "Fale connosco" in home
+    assert "Disponível" in home and "Agendar sessão" in home
     assert "Agendar Sessão" not in home
     assert "Converter <strong>AI</strong> em vantagens competitivas reais e sustentáveis" in home
     assert 'class="page-mission"' in home
@@ -79,6 +79,6 @@ def test_article_and_training_headers_follow_the_page_language():
         en_article = render_template("article.html", article=article, lang="en")
     assert 'href="/book"' in pt_course and 'href="/en/book"' in en_course
     assert 'href="/book"' in pt_article and 'href="/en/book"' in en_article
-    assert "Fale connosco" in pt_article and "Talk to us" in en_article
+    assert "Agendar sessão" in pt_article and "Talk to us" in en_article
     assert "#A9DD22" in pt_course
     assert "prefers-reduced-motion" in pt_course

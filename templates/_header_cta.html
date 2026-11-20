@@ -5,7 +5,7 @@
   <span class="header-cta-dot" aria-hidden="true"></span>
   <span class="header-cta-status">{% if _cta_en %}Available{% else %}Disponível{% endif %}</span>
   <span class="header-cta-sep" aria-hidden="true">·</span>
-  <span class="header-cta-action">{% if _cta_en %}Talk to us{% else %}Fale connosco{% endif %}</span>
+  <span class="header-cta-action">{% if _cta_en %}Talk to us{% else %}Agendar sessão{% endif %}</span>
 </a>
 <style>
   a.header-cta {
@@ -13,10 +13,9 @@
     align-items: center;
     gap: 0.45rem;
     margin-left: 1rem;
-    padding: 0.28rem 0.7rem 0.28rem 0.55rem;
-    border: 1px solid rgba(26, 45, 61, 0.14);
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.45);
+    padding: 0.15rem 0;
+    border: 0;
+    background: transparent;
     color: var(--navy, #1a2d3d);
     font-family: 'Barlow', sans-serif;
     font-size: 0.82rem;
@@ -28,9 +27,9 @@
     flex: 0 0 auto;
   }
   a.header-cta:hover {
-    border-color: rgba(26, 158, 138, 0.55);
     color: var(--teal-dark, #0d6e5f);
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   a.header-cta:focus-visible {
     outline: 2px solid var(--teal, #1a9e8a);
@@ -62,7 +61,7 @@
     .header-cta-dot::after { animation: none; opacity: 0.45; }
   }
   @media (max-width: 820px) {
-    a.header-cta { margin-left: 0.55rem; padding: 0.22rem 0.5rem 0.22rem 0.42rem; font-size: 0.78rem; }
+    a.header-cta { margin-left: 0.55rem; font-size: 0.78rem; }
     .header-cta-status,
     .header-cta-sep { display: none; }
   }
