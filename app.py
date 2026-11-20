@@ -846,6 +846,25 @@ def favicon():
     )
 
 
+# Ficheiro de verificação de domínio da Meta (Facebook Business). O corpo tem
+# de ser exactamente o token, sem HTML e sem newline final. A Meta pede o
+# ficheiro na raiz, em www e no apex; não há redirect por host nesta rota.
+META_DOMAIN_VERIFICATION = "blj9d2hmf73otrtcilhc7x0ncqix03"
+
+
+@app.route(f"/{META_DOMAIN_VERIFICATION}.html")
+def meta_domain_verification():
+    """Serve the Meta domain-verification file from the site root."""
+    response = send_from_directory(
+        app.static_folder,
+        f"{META_DOMAIN_VERIFICATION}.html",
+        mimetype="text/html",
+    )
+    # Werkzeug acrescenta "; charset=utf-8" a text/*. A Meta pede text/html.
+    response.headers["Content-Type"] = "text/html"
+    return response
+
+
 @app.route("/robots.txt")
 def robots():
     """robots.txt da origem: permite todos os crawlers (incluindo motores de
