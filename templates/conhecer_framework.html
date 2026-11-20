@@ -136,7 +136,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      align-self: stretch;
+      justify-content: flex-start;
       padding: 3rem 2rem 3rem 4vw;
       position: relative;
     }
@@ -150,6 +151,9 @@
     .pyramid-wrap {
       width: 100%;
       max-width: 480px;
+      position: sticky;
+      top: 7.75rem;
+      z-index: 1;
     }
 
     /* SVG pyramid layers */
@@ -200,7 +204,7 @@
     .info-col {
       padding: 3rem 4vw 3rem 3rem;
       display: grid;
-      align-content: center;
+      align-content: start;
     }
     /* Every panel shares one grid cell, so the column is always as tall as
        the tallest panel. Switching layers cannot resize the row or move the pyramid. */
@@ -415,9 +419,13 @@
       .nav-links { display: none; }
       .framework-layout {
         grid-template-columns: 1fr;
+        align-content: start;
       }
       .pyramid-col {
-        padding: 2rem 1.5rem;
+        padding: 1.25rem 1.5rem 0.5rem;
+      }
+      .pyramid-wrap {
+        position: static;
       }
       .pyramid-col::after { display: none; }
       .info-col {
