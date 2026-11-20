@@ -15,7 +15,7 @@ HALF = 240
 LABELS = {
     "/framework": [
         "Inibido",
-        "Risco Inaceitável",
+        "Práticas Proibidas",
         "Risco Elevado",
         "Conformidade Obrigatória",
         "Risco Limitado",
@@ -25,7 +25,7 @@ LABELS = {
     ],
     "/en/framework": [
         "Prohibited",
-        "Unacceptable Risk",
+        "Prohibited Practices",
         "High Risk",
         "Mandatory Compliance",
         "Limited Risk",
