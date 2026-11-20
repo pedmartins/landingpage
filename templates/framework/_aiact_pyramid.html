@@ -1,0 +1,81 @@
+{# Risk pyramid: four slices of one triangle.
+   Apex (250, 30), base y=390 from x=10 to x=490.
+   Side edges share the slope dx/dy = ∓2/3, so each layer's top
+   is the same width the layer above would have, inset by a uniform 6px gap. #}
+<svg id="pyramid-svg" viewBox="-55 0 585 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;" role="img" aria-label="{{ pyr_aria }}">
+
+  <g class="pyramid-layer" id="layer-minimal" data-cy="348" onclick="selectLayer('minimal')">
+    <polygon points="10,390 490,390 434,306 66,306" fill="#1a9e8a"/>
+    <text class="pyramid-layer-label" x="250" y="340">{{ pyr_min_label }}</text>
+    <text class="pyramid-layer-sub" x="250" y="356">{{ pyr_min_sub }}</text>
+  </g>
+
+  <g class="pyramid-layer" id="layer-limited" data-cy="260" onclick="selectLayer('limited')">
+    <polygon points="70,300 430,300 376,219 124,219" fill="#5B3F9E"/>
+    <text class="pyramid-layer-label" x="250" y="252">{{ pyr_lim_label }}</text>
+    <text class="pyramid-layer-sub" x="250" y="268">{{ pyr_lim_sub }}</text>
+  </g>
+
+  <g class="pyramid-layer" id="layer-high" data-cy="173" onclick="selectLayer('high')">
+    <polygon points="128,213 372,213 318,132 182,132" fill="#C4408C"/>
+    <text class="pyramid-layer-label" x="250" y="165">{{ pyr_high_label }}</text>
+    <text class="pyramid-layer-sub" x="250" y="181">{{ pyr_high_sub }}</text>
+  </g>
+
+  <g class="pyramid-layer" id="layer-unacceptable" data-cy="110" onclick="selectLayer('unacceptable')">
+    <polygon points="186,126 314,126 250,30" fill="#E05555"/>
+    <text class="pyramid-layer-label" x="250" y="102">{{ pyr_un_label }}</text>
+    <text class="pyramid-layer-sub" x="250" y="118">{{ pyr_un_sub }}</text>
+  </g>
+
+  <!-- Selection indicator: 3 arrows on the left, pointing at the active layer -->
+  <polygon id="indicator-arrow-1" points="-22,338 -8,348 -22,358" fill="#1a9e8a" opacity="1"/>
+  <polygon id="indicator-arrow-2" points="-36,338 -22,348 -36,358" fill="#1a9e8a" opacity="0.55"/>
+  <polygon id="indicator-arrow-3" points="-50,338 -36,348 -50,358" fill="#1a9e8a" opacity="0.25"/>
+
+</svg>
+<script>
+  const layers = ['minimal', 'limited', 'high', 'unacceptable'];
+
+  const layerColors = {
+    minimal:      '#1a9e8a',
+    limited:      '#5B3F9E',
+    high:         '#C4408C',
+    unacceptable: '#E05555'
+  };
+
+  function moveIndicator(id) {
+    const cy = Number(document.getElementById('layer-' + id).dataset.cy);
+    const color = layerColors[id];
+    const h = 10;
+
+    document.getElementById('indicator-arrow-1').setAttribute('points', `-22,${cy - h} -8,${cy} -22,${cy + h}`);
+    document.getElementById('indicator-arrow-1').setAttribute('fill', color);
+    document.getElementById('indicator-arrow-2').setAttribute('points', `-36,${cy - h} -22,${cy} -36,${cy + h}`);
+    document.getElementById('indicator-arrow-2').setAttribute('fill', color);
+    document.getElementById('indicator-arrow-3').setAttribute('points', `-50,${cy - h} -36,${cy} -50,${cy + h}`);
+    document.getElementById('indicator-arrow-3').setAttribute('fill', color);
+  }
+
+  function selectLayer(id) {
+    layers.forEach(l => {
+      document.getElementById('layer-' + l).classList.remove('active');
+      document.getElementById('panel-' + l).classList.remove('visible');
+    });
+
+    document.getElementById('layer-' + id).classList.add('active');
+    document.getElementById('panel-default').style.display = 'none';
+    document.getElementById('panel-' + id).classList.add('visible');
+    moveIndicator(id);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const order = ['minimal', 'limited', 'high', 'unacceptable'];
+    const active = layers.find(l => document.getElementById('layer-' + l).classList.contains('active'));
+    const idx = order.indexOf(active);
+    if (e.key === 'ArrowUp' && idx < order.length - 1) selectLayer(order[idx + 1]);
+    if (e.key === 'ArrowDown' && idx > 0) selectLayer(order[idx - 1]);
+  });
+
+  setTimeout(() => selectLayer('minimal'), 400);
+</script>

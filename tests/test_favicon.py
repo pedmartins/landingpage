@@ -54,9 +54,10 @@ def _lime_runs(im):
 def test_svg_icon_file():
     svg = open(os.path.join(site.app.static_folder, "favicon.svg"), encoding="utf-8").read()
     assert 'viewBox="0 0 1024 879"' in svg
-    assert 'fill="#FBFCF6"' in svg
+    assert "#FBFCF6" not in svg
     assert 'fill="#A9DD22"' in svg
-    assert svg.count("<rect") == 4
+    # Background rect removed; only the three lime bars remain.
+    assert svg.count("<rect") == 3
 
 
 def test_png_fallbacks_are_square_and_centered():
@@ -65,14 +66,23 @@ def test_png_fallbacks_are_square_and_centered():
     apple = Image.open(os.path.join(folder, "apple-touch-icon.png"))
     assert png32.size == (32, 32)
     assert apple.size == (180, 180)
-    for im in (png32, apple):
-        assert im.mode == "RGB"
-        assert im.getpixel((0, 0)) == CREAM
-        assert im.getpixel((im.width - 1, im.height - 1)) == CREAM
-        assert im.getpixel((im.width // 2, im.height // 2)) == LIME
-        # Three lime bars separated by cream, group centered.
-        runs = _lime_runs(im)
-        assert runs == [False, True, False, True, False, True, False], runs
+
+    assert png32.mode == "RGBA"
+    assert png32.getpixel((0, 0))[3] == 0
+    assert png32.getpixel((png32.width - 1, png32.height - 1))[3] == 0
+    center = png32.getpixel((png32.width // 2, png32.height // 2))
+    assert center[:3] == LIME and center[3] == 255
+    # Three lime bars separated by transparent gaps, group centered.
+    runs = _lime_runs(png32)
+    assert runs == [False, True, False, True, False, True, False], runs
+
+    # iOS home-screen icons need an opaque background.
+    assert apple.mode == "RGB"
+    assert apple.getpixel((0, 0)) == CREAM
+    assert apple.getpixel((apple.width - 1, apple.height - 1)) == CREAM
+    assert apple.getpixel((apple.width // 2, apple.height // 2)) == LIME
+    runs = _lime_runs(apple)
+    assert runs == [False, True, False, True, False, True, False], runs
 
 
 def test_favicon_ico_route():
@@ -83,6 +93,14 @@ def test_favicon_ico_route():
     ico = Image.open(io.BytesIO(response.data))
     assert ico.format == "ICO"
     assert set(ico.info["sizes"]) == {(16, 16), (32, 32), (48, 48)}
+    for size in ico.info["sizes"]:
+        ico.size = size
+        frame = ico.convert("RGBA")
+        assert frame.getpixel((0, 0))[3] == 0, size
+        assert frame.getpixel((frame.width - 1, frame.height - 1))[3] == 0, size
+        mid = frame.getpixel((frame.width // 2, frame.height // 2))
+        assert mid[:3] == LIME and mid[3] == 255, size
+        assert _lime_runs(frame) == [False, True, False, True, False, True, False], size
 
     svg = client.get("/static/favicon.svg")
     assert svg.status_code == 200
