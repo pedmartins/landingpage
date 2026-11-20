@@ -134,6 +134,7 @@
     /* ── LEFT: PYRAMID ── */
     .pyramid-col {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 3rem 2rem 3rem 4vw;
@@ -330,14 +331,90 @@
       flex-shrink: 0;
     }
 
+    /* ── OMNIBUS BANNER ── */
+    .omnibus-banner {
+      margin: 0;
+      padding: 0.9rem 4vw;
+      background: rgba(26, 45, 61, 0.045);
+      border-bottom: 1px solid rgba(26, 45, 61, 0.08);
+      font-size: 0.84rem;
+      line-height: 1.6;
+      color: var(--navy);
+      font-weight: 400;
+    }
+    .omnibus-banner strong {
+      font-weight: 600;
+    }
+
+    .info-note {
+      margin: 0 0 1.15rem;
+      padding: 0.8rem 0.95rem;
+      background: rgba(26, 45, 61, 0.045);
+      border-radius: 2px;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      color: var(--navy);
+      font-weight: 400;
+    }
+    .date-badge {
+      display: inline-block;
+      margin: 0 0.15rem;
+      padding: 0.08rem 0.45rem;
+      border-radius: 2px;
+      background: var(--c-limited);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      white-space: nowrap;
+      vertical-align: baseline;
+    }
+
+    .gpai-note {
+      width: 100%;
+      max-width: 480px;
+      margin-top: 1.35rem;
+      padding: 0.85rem 1rem;
+      border-left: 2px solid var(--teal);
+      background: rgba(26, 158, 138, 0.07);
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .gpai-note strong {
+      display: block;
+      margin-bottom: 0.28rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--navy);
+      font-size: 0.78rem;
+    }
+
     /* ── SOURCE NOTE ── */
     .framework-source {
       margin: 0;
-      padding: 1.25rem 4vw 0.25rem;
+      padding: 1.25rem 4vw 0.35rem;
       font-size: 0.78rem;
       line-height: 1.5;
       color: var(--muted);
       font-weight: 300;
+    }
+    .framework-sources {
+      margin: 0;
+      padding: 0 4vw 1.4rem;
+      font-size: 0.74rem;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .framework-sources a {
+      color: var(--teal-dark);
+      text-underline-offset: 2px;
     }
 
     /* ── RESPONSIVE ── */
@@ -359,6 +436,12 @@
       }
       .page-header {
         padding: 2.5rem 1.5rem 2rem;
+      }
+      .omnibus-banner,
+      .framework-source,
+      .framework-sources {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
       }
     }
   </style>
@@ -391,6 +474,8 @@
     {% set fw_lang = 'pt' %}
     {% include 'framework/_tabs.html' %}
 
+    <p class="omnibus-banner"><strong>Atualização — Omnibus Digital sobre IA.</strong> O AI Act foi alterado pelo Regulamento (UE) 2026/1744, em vigor desde 27 de julho de 2026. A lógica de classificação por risco mantém-se. As principais mudanças são: datas fixas e adiadas para os sistemas de risco elevado, duas novas práticas proibidas, alívio para PME e small mid-caps, e mais poderes para o AI Office. As datas desta página já incluem estas alterações.</p>
+
     <!-- PAGE HEADER -->
     <div class="page-header">
       <div class="eyebrow">EU AI Act — Regulação Europeia</div>
@@ -417,6 +502,10 @@
           {% set pyr_un_sub = 'Risco Inaceitável' %}
           {% include 'framework/_aiact_pyramid.html' %}
         </div>
+        <aside class="gpai-note">
+          <strong>Modelos de finalidade geral</strong>
+          Os modelos de IA de finalidade geral (GPAI) têm obrigações próprias desde 2 de agosto de 2025. Com o Omnibus, o AI Office passa a ter a supervisão exclusiva dos sistemas de IA construídos sobre um modelo GPAI do mesmo fornecedor e dos que estão integrados em plataformas em linha de muito grande dimensão ou motores de pesquisa ao abrigo do DSA.
+        </aside>
       </div>
 
       <!-- INFO PANEL -->
@@ -450,8 +539,9 @@
           <div class="info-badge" style="background:var(--c-minimal)">Risco Mínimo</div>
           <h2 class="info-title">Livre Utilização</h2>
           <p class="info-lead">
-            A grande maioria dos sistemas de IA em uso hoje enquadra-se nesta categoria. O AI Act não impõe obrigações específicas — as organizações podem desenvolvê-los e implementá-los ao abrigo da legislação existente.
+            A grande maioria dos sistemas de IA em uso hoje enquadra-se nesta categoria. Não há obrigações de conformidade próprias deste nível — as organizações podem desenvolvê-los e implementá-los ao abrigo da legislação existente.
           </p>
+          <p class="info-note">Mesmo sem obrigações específicas, aplica-se o dever de literacia em IA (art. 4.º). Depois do Omnibus, é um dever de adotar medidas, não de garantir um resultado. Continua a ser obrigatório.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Exemplos</strong>
@@ -459,15 +549,15 @@
             </div>
             <div class="info-item">
               <strong>O que a lei exige</strong>
-              <span>Nenhuma obrigação mandatória. Adoção voluntária de códigos de conduta é encorajada, mas não obrigatória.</span>
+              <span>Não há obrigações de conformidade específicas desta categoria. A adoção voluntária de códigos de conduta é encorajada. O dever de literacia em IA mantém-se para todos os sistemas.</span>
             </div>
             <div class="info-item">
               <strong>Impacto organizacional</strong>
-              <span>Baixo. As equipas podem continuar a inovar sem burocracia regulatória adicional.</span>
+              <span>Baixo. As equipas podem continuar a inovar, com medidas de literacia junto de quem trabalha com IA ou a opera em nome da organização.</span>
             </div>
           </div>
           <div class="info-obligation" style="background:rgba(26,158,138,0.1); color:var(--teal)">
-            ✓ Sem obrigações específicas ao abrigo do AI Act
+            ✓ Sem obrigações específicas de conformidade — o dever de literacia mantém-se
           </div>
         </div>
 
@@ -478,14 +568,15 @@
           <p class="info-lead">
             Sistemas com risco limitado devem cumprir obrigações de transparência específicas — os utilizadores têm o direito de saber que estão a interagir com IA ou a consumir conteúdo gerado por IA.
           </p>
+          <p class="info-note">Aplicável desde 2 de agosto de 2026 (o Omnibus não adiou estas obrigações). Os sistemas generativos lançados antes dessa data têm até <span class="date-badge">2 de dezembro de 2026</span> para marcar o conteúdo sintético.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Exemplos</strong>
-              <span>Chatbots, sistemas de reconhecimento de emoções, deepfakes, conteúdo sintético de áudio/vídeo/imagem, sistemas de recomendação com impacto nas escolhas dos utilizadores</span>
+              <span>Chatbots, deepfakes e conteúdo sintético de áudio, vídeo ou imagem</span>
             </div>
             <div class="info-item">
               <strong>Obrigação de divulgação</strong>
-              <span>Os utilizadores devem ser informados de que interagem com um sistema de IA. Conteúdo gerado por IA deve ser identificado como tal (exceto em contextos claramente artísticos ou satíricos).</span>
+              <span>Os utilizadores devem ser informados de que interagem com um sistema de IA. Conteúdo gerado por IA deve ser identificado como tal (exceto em contextos claramente artísticos ou satíricos). O art. 50.º acrescenta um dever de informação; o reconhecimento de emoções, em si, é de risco elevado no Anexo III e é proibido no trabalho e na educação.</span>
             </div>
             <div class="info-item">
               <strong>Impacto organizacional</strong>
@@ -504,14 +595,19 @@
           <p class="info-lead">
             Sistemas de IA de alto risco estão sujeitos a requisitos rigorosos antes de poderem ser colocados no mercado europeu. Representam o núcleo da regulação e o maior desafio operacional para as organizações.
           </p>
+          <p class="info-note">Calendário revisto (Omnibus): sistemas do Anexo III, incluindo crédito, seguros, emprego e educação, a partir de 2 de dezembro de 2027. Componentes de segurança de produtos regulados (Anexo I) a partir de 2 de agosto de 2028. O adiamento dá mais tempo, mas não muda os requisitos. Quem declarar que um sistema não é de risco elevado (art. 6.º, n.º 3) continua a ter de documentar essa avaliação e de o registar, em regime simplificado.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Domínios abrangidos</strong>
-              <span>Infraestruturas críticas, educação e formação profissional, emprego e gestão de trabalhadores, acesso a serviços essenciais, aplicação da lei, migração e controlo de fronteiras, administração da justiça</span>
+              <span>Biometria (Anexo III, ponto 1), infraestruturas críticas, educação e formação profissional, emprego e gestão de trabalhadores, acesso a serviços essenciais — incluindo crédito e seguros —, aplicação da lei, migração e controlo de fronteiras, administração da justiça, e componentes de segurança de produtos regulados (Anexo I)</span>
             </div>
             <div class="info-item">
               <strong>Requisitos mandatórios</strong>
-              <span>Sistema de gestão de risco, governação de dados, documentação técnica, registo de atividades, transparência com utilizadores, supervisão humana, avaliação de conformidade, registo na base de dados da UE</span>
+              <span>Sistema de gestão de risco, governação de dados, documentação técnica, registo de atividades, transparência com utilizadores, supervisão humana, avaliação de conformidade pelo fornecedor e registo na base de dados da UE. Quem utiliza sistemas de avaliação da solvabilidade ou de notação de crédito, ou sistemas de avaliação de risco e de tarifação em seguros de vida e de saúde, tem de realizar uma avaliação de impacto sobre os direitos fundamentais (FRIA, art. 27.º).</span>
+            </div>
+            <div class="info-item">
+              <strong>O que o Omnibus alterou neste nível</strong>
+              <span>Os sistemas já no mercado só ficam abrangidos se forem substancialmente alterados depois da nova data. As datas são fixas: o mecanismo de prontidão das normas foi removido. A definição de componente de segurança fica limitada aos sistemas cujo fim é prevenir ou mitigar riscos para a saúde e a segurança. O Regulamento Máquinas passou da Secção A para a Secção B do Anexo I.</span>
             </div>
             <div class="info-item">
               <strong>Impacto organizacional</strong>
@@ -530,18 +626,19 @@
           <p class="info-lead">
             Estes sistemas são considerados uma ameaça inaceitável aos direitos fundamentais e aos valores da União Europeia. A sua utilização é estritamente proibida, com coimas que podem atingir 35 milhões de euros ou 7% do volume de negócios global.
           </p>
+          <p class="info-note">Às proibições em vigor desde fevereiro de 2025, o Omnibus acrescenta, a partir de 2 de dezembro de 2026, a geração de conteúdo íntimo não consentido de pessoas identificáveis e de material de abuso sexual de menores.</p>
           <div class="info-items">
             <div class="info-item">
               <strong>Práticas proibidas</strong>
-              <span>Social scoring por entidades governamentais, vigilância biométrica em tempo real em espaços públicos (com exceções limitadas), sistemas de manipulação subliminar, exploração de vulnerabilidades de grupos específicos</span>
+              <span>Pontuação social por entidades públicas ou privadas; identificação biométrica remota em tempo real em espaços acessíveis ao público, para efeitos de aplicação da lei (com exceções estritas); manipulação subliminar; exploração de vulnerabilidades de grupos específicos</span>
             </div>
             <div class="info-item">
               <strong>Também proibido</strong>
-              <span>Inferência de emoções em contextos de trabalho e educação, categorização biométrica baseada em características sensíveis (raça, religião, orientação sexual, opiniões políticas)</span>
+              <span>Inferência de emoções no trabalho e na educação; categorização biométrica com base em características sensíveis (raça, religião, orientação sexual, opiniões políticas); recolha não direcionada de imagens faciais na internet ou em CCTV para criar bases de reconhecimento facial; policiamento preditivo baseado apenas em perfilagem ou em traços de personalidade</span>
             </div>
             <div class="info-item">
               <strong>Consequências do incumprimento</strong>
-              <span>Coimas até €35 000 000 ou 7% do volume de negócios global anual, o que for mais elevado. Aplicação a partir de fevereiro de 2025.</span>
+              <span>Coimas até €35 000 000 ou 7% do volume de negócios global anual. Para PME e small mid-caps aplica-se o mais baixo dos dois valores. As small mid-caps são uma categoria nova: empresas que não são PME, com menos de 750 trabalhadores e um volume de negócios até €150 milhões ou um balanço até €129 milhões. As proibições iniciais aplicam-se desde fevereiro de 2025.</span>
             </div>
           </div>
           <div class="info-obligation" style="background:rgba(224,85,85,0.1); color:var(--c-unacceptable)">
@@ -552,7 +649,8 @@
       </div>
     </div>
 
-    <p class="framework-source">Fonte: Regulamento (UE) 2024/1689 — Artificial Intelligence Act, em vigor desde agosto de 2024.</p>
+    <p class="framework-source">Regulamento (UE) 2024/1689 (Artificial Intelligence Act), em vigor desde agosto de 2024, alterado pelo Regulamento (UE) 2026/1744 (Omnibus Digital sobre IA), em vigor desde 27 de julho de 2026.</p>
+    <p class="framework-sources">Fontes: <a href="https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act" rel="noopener">White &amp; Case</a> · <a href="https://www.akos-rs.si/en/telecommunications/explore/news/news-1/sprejet-digitalni-omnibus-za-umetno-inteligenco-kljucne-spremembe-akta-o-umetni-inteligenci-in-novi-casovni-okvir-skladnosti" rel="noopener">AKOS</a> · <a href="https://www.orrick.com/fr-FR/Insights/2026/07/EU-AI-Act-Update-Digital-Omnibus-Finalizes-8-Compliance-Changes" rel="noopener">Orrick</a> · <a href="https://edge.sitecorecloud.io/allenoveryllp1-aoshearmanwe0db-production-ecf3/media/project/aoshearman/pdf-downloads/insights/2026/06/ealert---digital-omnibus-on-ai---the-trilogue-deal-is-done.pdf" rel="noopener">A&amp;O Shearman</a> · <a href="https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/" rel="noopener">Cooley</a></p>
 
   </div>
 
