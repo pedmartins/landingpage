@@ -15,6 +15,7 @@ ROUTES = [
     ("/framework", "Abrir menu", False),
     ("/en/framework", "Open menu", False),
     ("/observatorio", "Abrir menu", False),
+    ("/en/observatory", "Open menu", False),
     ("/framework/agentes", "Abrir menu", True),
     ("/en/framework/agents", "Open menu", True),
     ("/publicacoes", "Abrir menu", False),
