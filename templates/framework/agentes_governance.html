@@ -34,7 +34,7 @@
 {% set colors = {
   'data': ('#1a9e8a', 'rgba(26,158,138,0.10)'),
   'ai': ('#1a2d3d', 'rgba(26,45,61,0.08)'),
-  'shared': ('#0d6e5f', 'rgba(13,110,95,0.10)'),
+  'shared': ('#8A4518', 'rgba(212,132,74,0.16)'),
   'stack': ('#1a2d3d', 'rgba(26,45,61,0.06)'),
   'control': ('#1a9e8a', 'rgba(26,158,138,0.10)')
 } %}
@@ -202,18 +202,22 @@
     .node:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
     .node[data-family="data"] { --accent: var(--teal); }
     .node[data-family="ai"] { --accent: var(--navy); }
-    .node[data-family="shared"] { --accent: var(--teal-dark); }
+    .node[data-family="shared"] { --accent: #8A4518; }
     .node[data-family="stack"] { --accent: var(--navy); }
     .node[data-family="control"] { --accent: var(--teal); }
     .diagram.has-selection .node:not(.active) { opacity: 0.72; }
     .diagram.has-selection .node.active,
     .diagram.has-selection .node:not(.active):hover { opacity: 1; }
     .node.active[data-family="data"],
-    .node.active[data-family="shared"],
     .node.active[data-family="control"] {
       border-color: var(--teal);
       box-shadow: 0 0 0 3px rgba(26,158,138,0.18);
       background: rgba(26,158,138,0.05);
+    }
+    .node.active[data-family="shared"] {
+      border-color: #8A4518;
+      box-shadow: 0 0 0 3px rgba(212,132,74,0.28);
+      background: rgba(212,132,74,0.10);
     }
     .node.active[data-family="ai"],
     .node.active[data-family="stack"] {
@@ -326,14 +330,14 @@
       justify-content: center;
       gap: 0.4rem;
       padding: 0.7rem 0.5rem;
-      border: 1px solid rgba(26,158,138,0.30);
+      border: 1px solid rgba(138,69,24,0.45);
       background:
         repeating-linear-gradient(
           -45deg,
-          rgba(26,158,138,0.025),
-          rgba(26,158,138,0.025) 6px,
-          rgba(26,158,138,0.07) 6px,
-          rgba(26,158,138,0.07) 7px
+          rgba(212,132,74,0.05),
+          rgba(212,132,74,0.05) 6px,
+          rgba(212,132,74,0.16) 6px,
+          rgba(212,132,74,0.16) 7px
         );
     }
     .shared-title {
@@ -665,7 +669,7 @@
     <div class="page-header">
       <div class="eyebrow">{{ T('Framework · Agentes de IA', 'Framework · AI Agents') }}</div>
       <h1 class="page-title">{% if lang == 'en' %}The governance stack for reliable <em>AI agents</em>{% else %}Stack de governação de agentes <em>fiáveis</em>{% endif %}</h1>
-      <p class="page-desc">{{ T('Dois lados da mesma stack. A governação de dados controla o que entra no agente; a governação de IA controla o que sai. No meio ficam as preocupações partilhadas. Por baixo, cinco camadas e cinco controlos. Selecione um elemento para ver o que exige na prática.', 'Two sides of the same stack. Data governance controls what enters the agent; AI governance controls what comes out. Shared concerns sit between them. Underneath, five layers and five controls. Select an element to see what it demands in practice.') }}</p>
+      <p class="page-desc">{{ T('Dois lados da mesma stack. A governação de dados controla o que entra no agente; a governação de IA controla o que sai. No meio ficam os temas transversais. Por baixo, cinco camadas e cinco controlos. Selecione um elemento para ver o que exige na prática.', 'Two sides of the same stack. Data governance controls what enters the agent; AI governance controls what comes out. Cross-cutting themes sit between them. Underneath, five layers and five controls. Select an element to see what it demands in practice.') }}</p>
     </div>
 
     <div class="framework-layout">
@@ -701,7 +705,7 @@
           </article>
 
           <div class="shared">
-            <button type="button" class="node shared-title" data-node="shared" data-family="shared" aria-pressed="false">{{ T('Preocupações partilhadas', 'Shared concerns') }}</button>
+            <button type="button" class="node shared-title" data-node="shared" data-family="shared" aria-pressed="false">{{ T('Temas transversais', 'Cross-cutting themes') }}</button>
             <button type="button" class="node" data-node="bias" data-family="shared" aria-pressed="false">{{ T('Enviesamento dos dados', 'Data bias') }}</button>
             <button type="button" class="node" data-node="privacy" data-family="shared" aria-pressed="false">{{ T('Privacidade', 'Privacy') }}</button>
             <button type="button" class="node" data-node="auditability" data-family="shared" aria-pressed="false">{{ T('Linhagem e auditabilidade', 'Lineage and auditability') }}</button>
@@ -843,7 +847,7 @@
           <div class="info-default-title">{{ T('Selecione um elemento', 'Select an element') }}</div>
           <div class="pyramid-hint">
             <button type="button" class="pyramid-hint-item" data-node="data-gov"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Governação de dados — controla os inputs', 'Data governance — controls the inputs') }}</button>
-            <button type="button" class="pyramid-hint-item" data-node="shared"><span class="pyramid-hint-dot" style="background:#0d6e5f"></span>{{ T('Preocupações partilhadas', 'Shared concerns') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="shared"><span class="pyramid-hint-dot" style="background:#D4844A"></span>{{ T('Temas transversais', 'Cross-cutting themes') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="ai-gov"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Governação de IA — controla o output', 'AI governance — controls the output') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="policy-layer"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Arquitetura em cinco camadas', 'Five-layer architecture') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="pipelines"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Cinco controlos do agente', 'Five controls every agent needs') }}</button>
@@ -871,7 +875,7 @@
 
         {{ panel("certified", "data", T("Estado do dado", "Data state"), T("Dados certificados", "Certified data"), T("O dado está apto a entrar numa decisão do agente, com evidência de qualidade, linhagem, permissão e alinhamento com a política.", "The data is fit to enter an agent decision, with evidence of quality, lineage, permission, and policy alignment."), [(T("Quem chega aqui", "What reaches this state"), T("É o estado que deve alimentar uma ação com efeito.", "This is the state that should feed an action with effect.")), (T("Certificação por uso", "Certification is per use"), T("O mesmo dado pode estar certificado para um fluxo e fora de outro.", "The same data can be certified for one flow and out of scope for another.")), (T("Validade", "Validity"), T("Quando a fonte ou a política mudam, a certificação cai e o percurso recomeça.", "When the source or the policy changes, certification drops and the path starts again."))], T("Sem certificação, o agente age sobre uma suposição.", "Without certification, the agent acts on an assumption.")) }}
 
-        {{ panel("shared", "shared", T("Partilhado", "Shared"), T("Preocupações partilhadas", "Shared concerns"), T("Enviesamento, privacidade, linhagem e risco atravessam os dois lados. Entram no dado e saem na ação.", "Bias, privacy, lineage, and risk cross both sides. They enter in the data and leave in the action."), [(T("Só no dado", "On the data side alone"), T("O output continua opaco: a ação não mostra o que herdou.", "The output stays opaque: the action does not show what it inherited.")), (T("Só na IA", "On the AI side alone"), T("O input continua contaminado, e o controlo do output trabalha sobre uma base torta.", "The input stays contaminated, and output control works on a crooked base.")), (T("No stack", "In the stack"), T("Cada preocupação tem um controlo à entrada e outro à saída, ligados pelo mesmo rasto.", "Each concern has a control on the way in and another on the way out, tied by the same trace."))], T("Preocupação partilhada pede dois controlos, um de cada lado.", "A shared concern needs two controls, one on each side.")) }}
+        {{ panel("shared", "shared", T("Partilhado", "Shared"), T("Temas transversais", "Cross-cutting themes"), T("Enviesamento, privacidade, linhagem e risco são temas transversais. Partem dos dados e criam efeitos através de ações concretas.", "Bias, privacy, lineage, and risk are cross-cutting themes. They originate in the data and create effects through concrete actions."), [(T("Só no dado", "On the data side alone"), T("O output continua opaco: a ação não mostra o que herdou.", "The output stays opaque: the action does not show what it inherited.")), (T("Só na IA", "On the AI side alone"), T("O input continua contaminado, e o controlo do output trabalha sobre uma base torta.", "The input stays contaminated, and output control works on a crooked base.")), (T("No stack", "In the stack"), T("Cada preocupação tem um controlo à entrada e outro à saída, ligados pelo mesmo rasto.", "Each concern has a control on the way in and another on the way out, tied by the same trace."))], T("Preocupação partilhada pede dois controlos, um de cada lado.", "A shared concern needs two controls, one on each side.")) }}
 
         {{ panel("bias", "shared", T("Partilhado", "Shared"), T("Enviesamento dos dados", "Data bias"), T("O enviesamento entra pela amostra, pela omissão e pela variável que substitui outra. Sai na decisão do agente, muitas vezes com uma explicação que parece neutra.", "Bias enters through the sample, through omission, and through a variable that stands in for another. It leaves in the agent decision, often with an explanation that looks neutral."), [(T("À entrada", "On the way in"), T("De onde vem a distribuição, quem fica de fora, que atributo substitui outro.", "Where the distribution comes from, who is left out, which attribute stands in for another.")), (T("À saída", "On the way out"), T("A ação trata grupos de forma desigual, ou a explicação esconde a substituição.", "The action treats groups unequally, or the explanation hides the stand-in.")), (T("O controlo", "The control"), T("Medir no dado e voltar a medir na ação.", "Measure it in the data and measure it again in the action."))], T("O enviesamento trata-se na fonte e outra vez na ação.", "Bias is handled at the source and again in the action.")) }}
 
