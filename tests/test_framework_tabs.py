@@ -26,6 +26,11 @@ def test_framework_tab_labels_and_links():
     assert 'href="/framework/agentes"' in _tabs(pt)
     assert ">AI Act</a>" not in _tabs(pt)
     assert "O AI Act foi alterado" in pt
+    assert "EU AI Act — Regulamentação Europeia" in pt
+    assert "EU AI Act — European Regulation" in en
+    pubs = client.get("/publicacoes").get_data(as_text=True)
+    assert "regulamentação europeia" in pubs
+    assert "regulação europeia" not in pubs
 
     assert '>Regulation</a>' in _tabs(en)
     assert '>Agentic AI</a>' in _tabs(en)
