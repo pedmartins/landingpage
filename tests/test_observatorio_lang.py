@@ -59,7 +59,7 @@ def test_observatory_detail_exists_in_both_languages():
     detail = client.get("/static/observatorio/ict-specialist-demand-pt-eu.html")
     assert detail.status_code == 200
     body = detail.get_data(as_text=True)
-    assert "Portugal seeks proportionally twice the share of ICT specialists" in body
+    assert "Portugal seeks twice as many ICT specialists as the EU average" in body
     assert "How to read this" in body
     assert "Recruitment difficulty" in body
     assert "Como ler" not in body
