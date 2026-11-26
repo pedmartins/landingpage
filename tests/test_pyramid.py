@@ -26,11 +26,11 @@ LABELS = {
     "/en/framework": [
         "Prohibited",
         "Prohibited Practices",
-        "High Risk",
+        "High-risk",
         "Mandatory Compliance",
         "Limited Risk",
         "Transparency Obligations",
-        "Minimal Risk",
+        "Minimal-risk",
         "Free Use",
     ],
 }

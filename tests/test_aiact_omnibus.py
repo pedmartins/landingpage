@@ -37,7 +37,7 @@ EN = {
     "/en/framework": [
         "Update — Digital Omnibus on AI.",
         "Regulation (EU) 2026/1744, in force since 27 July 2026",
-        "the AI literacy duty applies (Art. 4)",
+        "the AI literacy duty applies (Article 4)",
         "the duty consists of adopting measures but not yet, in this transitional phase, an obligation to demonstrate evidence of results.",
         "Prohibited Practices",
         "the Omnibus did not postpone these obligations",
