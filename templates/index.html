@@ -538,7 +538,8 @@
     .fw-card .s-soon p{ font-size:20px; color:var(--muted); font-weight:300; max-width:28ch; line-height:1.5; }
 
     /* slide editorial — Observatório */
-    .fw-card.obs-card{ text-decoration:none; transition:border-color .2s, box-shadow .2s; }
+    .fw-card.obs-card{ position:relative; text-decoration:none; transition:border-color .2s, box-shadow .2s; }
+    .obs-card-hit{ position:absolute; inset:0; z-index:1; }
     .fw-card.obs-card:hover{ border-color:rgba(26,158,138,.55); box-shadow:0 28px 78px rgba(26,45,61,.21); }
     .obs-top{ display:flex; align-items:center; justify-content:space-between; padding:30px 56px; border-bottom:1px solid var(--line); }
     .obs-brand{ font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--navy); }
@@ -566,7 +567,9 @@
     .obs-swatch.ue{ background:var(--orange); }
     .obs-chart svg{ display:block; width:100%; height:180px; overflow:visible; }
     .obs-footer{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding:28px 56px 32px; }
-    .obs-source{ max-width:48ch; color:var(--muted); font-size:13px; line-height:1.45; }
+    .obs-source{ position:relative; z-index:2; max-width:62ch; color:var(--muted); font-size:13px; line-height:1.45; }
+    .obs-source a{ color:var(--teal); text-decoration:underline; text-underline-offset:2px; }
+    .obs-source a:hover{ color:var(--teal-dark); }
     .obs-action{ flex-shrink:0; padding:13px 20px; background:var(--teal); color:#fff; font-size:14px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; transition:background .2s; }
     .obs-card:hover .obs-action{ background:var(--teal-dark); }
 
