@@ -13,7 +13,8 @@ def test_privacy_pages_and_sitemap():
     pt = client.get("/politica-de-privacidade")
     assert pt.status_code == 200
     body = pt.get_data(as_text=True)
-    assert "LINKWITH UNIPESSOAL, LDA" in body
+    assert "linkwith" not in body.lower()
+    assert "O responsável pelo tratamento é <strong>ai-gov.network</strong>, NIPC 517054124." in body
     assert "NIPC 517054124" in body
     assert "info@ai-gov.network" in body
     assert "17 de novembro de 2026" in body
@@ -22,7 +23,7 @@ def test_privacy_pages_and_sitemap():
     assert "Envio de informação sobre formação e eventos" in body
     assert "TODO" not in body
     assert "morada" not in body.lower()
-    assert "AI-GOV.NETWORK é uma marca da LINKWITH UNIPESSOAL, LDA" in body
+    assert "ai-gov.network («nós») protege a sua privacidade" in body
     assert 'href="/termos"' in body
     assert 'href="/politica-de-privacidade"' in body
 
@@ -39,6 +40,8 @@ def test_privacy_pages_and_sitemap():
     assert "TODO" not in en_body
     assert "postal address" not in en_body.lower()
     assert 'href="/en/terms"' in en_body
+    assert "linkwith" not in en_body.lower()
+    assert "The controller is <strong>ai-gov.network</strong>, NIPC 517054124." in en_body
 
     terms = client.get("/termos")
     assert terms.status_code == 200
@@ -46,22 +49,24 @@ def test_privacy_pages_and_sitemap():
     assert "Termos de" in terms_body
     assert "lei portuguesa" in terms_body
     assert 'href="/politica-de-privacidade"' in terms_body
+    assert "linkwith" not in terms_body.lower()
 
     terms_en = client.get("/en/terms")
     assert terms_en.status_code == 200
     assert "Terms of" in terms_en.get_data(as_text=True)
     assert "Portuguese law" in terms_en.get_data(as_text=True)
+    assert "linkwith" not in terms_en.get_data(as_text=True).lower()
 
     home = client.get("/")
     assert home.status_code == 200
     home_body = home.get_data(as_text=True)
-    assert "AI-GOV.NETWORK é uma marca da LINKWITH UNIPESSOAL, LDA" in home_body
+    assert "linkwith" not in home_body.lower()
     assert home_body.count("<footer") == 1
 
     home_en = client.get("/en")
     assert home_en.status_code == 200
     home_en_body = home_en.get_data(as_text=True)
-    assert "AI-GOV.NETWORK is a brand of LINKWITH UNIPESSOAL, LDA" in home_en_body
+    assert "linkwith" not in home_en_body.lower()
     assert "Terms" in home_en_body
     assert home_en_body.count("<footer") == 1
 

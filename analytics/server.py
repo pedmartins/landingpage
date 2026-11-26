@@ -26,7 +26,7 @@ def log(msg: str) -> None:
 # ─── App ──────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="LinkWith HTML Server",
+    title="ai-gov.network HTML Server",
     description="Servidor de templates HTML.",
     version="1.0.0",
 )
@@ -76,5 +76,5 @@ async def favicon():
 # ─── Arranque ─────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    log("🚀 A iniciar LinkWith HTML Server na porta 8003...")
+    log("🚀 A iniciar ai-gov.network HTML Server na porta 8003...")
     uvicorn.run("server:app", host="0.0.0.0", port=8003, reload=False, log_level="info")
