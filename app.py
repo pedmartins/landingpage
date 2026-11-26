@@ -865,6 +865,25 @@ def meta_domain_verification():
     return response
 
 
+# Verificação RogueLogics. Ficheiro estático em static/.well-known (o git e o
+# Nixpacks incluem pastas com ponto; não há .dockerignore). Rota explícita na
+# raiz, sem redirect por host nem por idioma.
+ROGUELOGICS_VERIFY = "78023cdc952e3ddd0a77f356c62ad4e376c76d0b"
+
+
+@app.route("/.well-known/roguelogics-verify.txt")
+def roguelogics_verify():
+    """Serve the RogueLogics verification file as plain text."""
+    response = send_from_directory(
+        os.path.join(app.static_folder, ".well-known"),
+        "roguelogics-verify.txt",
+        mimetype="text/plain",
+    )
+    # Werkzeug acrescenta "; charset=utf-8" a text/*. O verificador pede text/plain.
+    response.headers["Content-Type"] = "text/plain"
+    return response
+
+
 @app.route("/robots.txt")
 def robots():
     """robots.txt da origem: permite todos os crawlers (incluindo motores de
