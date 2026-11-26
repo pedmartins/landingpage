@@ -73,7 +73,7 @@ def test_privacy_pages_and_sitemap():
     assert "/termos" in xml
     assert "/en/terms" in xml
 
-    for path in ("/framework", "/en/framework", "/observatorio", "/book", "/en/book",
+    for path in ("/framework", "/en/framework", "/observatorio", "/en/observatory", "/book", "/en/book",
                  "/publicacoes", "/en/publicacoes", "/lab"):
         page = client.get(path)
         assert page.status_code == 200, path

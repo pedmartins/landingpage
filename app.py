@@ -519,6 +519,11 @@ def observatorio():
     return render_template("observatorio.html")
 
 
+@app.route("/en/observatory")
+def observatory_en():
+    return render_template("observatorio_en.html")
+
+
 @app.route("/en/framework")
 def framework_en():
     return render_template("conhecer_framework_en.html")
@@ -910,7 +915,7 @@ def sitemap():
         "/", "/en",
         "/framework", "/en/framework",
         "/framework/agentes", "/en/framework/agents",
-        "/observatorio",
+        "/observatorio", "/en/observatory",
         "/publicacoes", "/en/publicacoes",
         "/book", "/en/book",
         "/lab",

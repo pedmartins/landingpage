@@ -9,7 +9,7 @@ from flask import render_template
 import app as site
 
 PT_ROUTES = ["/", "/framework", "/observatorio", "/publicacoes", "/book", "/politica-de-privacidade", "/termos", "/framework/agentes"]
-EN_ROUTES = ["/en", "/en/framework", "/en/publicacoes", "/en/book", "/en/privacy-policy", "/en/terms", "/en/framework/agents", "/lab"]
+EN_ROUTES = ["/en", "/en/framework", "/en/observatory", "/en/publicacoes", "/en/book", "/en/privacy-policy", "/en/terms", "/en/framework/agents", "/lab"]
 
 
 def test_header_cta_replaces_the_booking_button_and_keeps_the_mission():

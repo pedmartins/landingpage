@@ -25,6 +25,7 @@ ROUTES = [
     "/framework",
     "/en/framework",
     "/observatorio",
+    "/en/observatory",
     "/framework/agentes",
     "/en/framework/agents",
     "/publicacoes",
