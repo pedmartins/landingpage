@@ -34,7 +34,7 @@
 {% set colors = {
   'data': ('#1a9e8a', 'rgba(26,158,138,0.10)'),
   'ai': ('#1a2d3d', 'rgba(26,45,61,0.08)'),
-  'shared': ('#8A4518', 'rgba(212,132,74,0.16)'),
+  'shared': ('#0d6e5f', 'rgba(13,110,95,0.10)'),
   'stack': ('#1a2d3d', 'rgba(26,45,61,0.06)'),
   'control': ('#1a9e8a', 'rgba(26,158,138,0.10)')
 } %}
@@ -202,22 +202,18 @@
     .node:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
     .node[data-family="data"] { --accent: var(--teal); }
     .node[data-family="ai"] { --accent: var(--navy); }
-    .node[data-family="shared"] { --accent: #8A4518; }
+    .node[data-family="shared"] { --accent: var(--teal-dark); }
     .node[data-family="stack"] { --accent: var(--navy); }
     .node[data-family="control"] { --accent: var(--teal); }
     .diagram.has-selection .node:not(.active) { opacity: 0.72; }
     .diagram.has-selection .node.active,
     .diagram.has-selection .node:not(.active):hover { opacity: 1; }
     .node.active[data-family="data"],
+    .node.active[data-family="shared"],
     .node.active[data-family="control"] {
       border-color: var(--teal);
       box-shadow: 0 0 0 3px rgba(26,158,138,0.18);
       background: rgba(26,158,138,0.05);
-    }
-    .node.active[data-family="shared"] {
-      border-color: #8A4518;
-      box-shadow: 0 0 0 3px rgba(212,132,74,0.28);
-      background: rgba(212,132,74,0.10);
     }
     .node.active[data-family="ai"],
     .node.active[data-family="stack"] {
@@ -330,14 +326,14 @@
       justify-content: center;
       gap: 0.4rem;
       padding: 0.7rem 0.5rem;
-      border: 1px solid rgba(138,69,24,0.45);
+      border: 1px solid rgba(26,158,138,0.30);
       background:
         repeating-linear-gradient(
           -45deg,
-          rgba(212,132,74,0.05),
-          rgba(212,132,74,0.05) 6px,
-          rgba(212,132,74,0.16) 6px,
-          rgba(212,132,74,0.16) 7px
+          rgba(26,158,138,0.025),
+          rgba(26,158,138,0.025) 6px,
+          rgba(26,158,138,0.07) 6px,
+          rgba(26,158,138,0.07) 7px
         );
     }
     .shared-title {
@@ -847,7 +843,7 @@
           <div class="info-default-title">{{ T('Selecione um elemento', 'Select an element') }}</div>
           <div class="pyramid-hint">
             <button type="button" class="pyramid-hint-item" data-node="data-gov"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Governação de dados — controla os inputs', 'Data governance — controls the inputs') }}</button>
-            <button type="button" class="pyramid-hint-item" data-node="shared"><span class="pyramid-hint-dot" style="background:#D4844A"></span>{{ T('Temas transversais', 'Cross-cutting themes') }}</button>
+            <button type="button" class="pyramid-hint-item" data-node="shared"><span class="pyramid-hint-dot" style="background:#0d6e5f"></span>{{ T('Temas transversais', 'Cross-cutting themes') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="ai-gov"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Governação de IA — controla o output', 'AI governance — controls the output') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="policy-layer"><span class="pyramid-hint-dot" style="background:#1a2d3d"></span>{{ T('Arquitetura em cinco camadas', 'Five-layer architecture') }}</button>
             <button type="button" class="pyramid-hint-item" data-node="pipelines"><span class="pyramid-hint-dot" style="background:#1a9e8a"></span>{{ T('Cinco controlos do agente', 'Five controls every agent needs') }}</button>
