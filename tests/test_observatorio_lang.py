@@ -65,3 +65,30 @@ def test_observatory_detail_exists_in_both_languages():
     assert "Como ler" not in body
     assert "Dificuldade de recrutamento" not in body
     assert "anúncios" not in body
+
+
+NOTE_URL = "https://ec.europa.eu/eurostat/documents/7894008/20552398/methodological-note.pdf/df235c60-fc19-c1d2-d218-312ecbdf65c6"
+PT_NOTE = (
+    'Fonte — Eurostat, anúncios de emprego online. '
+    f'<a href="{NOTE_URL}" target="_blank" rel="noopener noreferrer">Série estatística em desenvolvimento</a>, '
+    "com cobertura parcial das vagas de emprego. A representatividade varia por profissão e setor."
+)
+EN_NOTE = (
+    "Source — Eurostat, online job advertisements. "
+    f'<a href="{NOTE_URL}" target="_blank" rel="noopener noreferrer">Statistical series under development</a>, '
+    "covering only some job vacancies. Representativeness varies by occupation and sector."
+)
+
+
+def test_online_ads_source_note_is_exact_in_both_languages():
+    client = site.app.test_client()
+    pt_home = client.get("/").get_data(as_text=True)
+    en_home = client.get("/en").get_data(as_text=True)
+    pt_detail = client.get("/static/observatorio/procura-tic-anuncios-pt-ue.html").get_data(as_text=True)
+    en_detail = client.get("/static/observatorio/ict-specialist-demand-pt-eu.html").get_data(as_text=True)
+    assert PT_NOTE in pt_home and PT_NOTE in pt_detail
+    assert EN_NOTE in en_home and EN_NOTE in en_detail
+    assert "estatística experimental" not in pt_home
+    assert "experimental statistics" not in en_home
+    assert "estatística experimental" not in pt_detail
+    assert "experimental statistics" not in en_detail.lower()
